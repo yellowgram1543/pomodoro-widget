@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Volume2,
   VolumeX,
@@ -11,12 +11,43 @@ import {
   ListPlus,
   Tv,
   CloudRain,
+  CloudDrizzle,
+  CloudLightning,
   Trees,
   Waves,
   Headphones,
   Flame,
   Wind,
   ExternalLink,
+  TrainTrack,
+  BookOpen,
+  SunMedium,
+  Building,
+  Activity,
+  Sliders,
+  Zap,
+  Sparkles,
+  Moon,
+  MoonStar,
+  Coffee,
+  Sunrise,
+  Anchor,
+  Snowflake,
+  Fan,
+  Plane,
+  Bird,
+  Droplets,
+  Keyboard,
+  Fish,
+  UtensilsCrossed,
+  CircleDot,
+  Disc,
+  Orbit,
+  Clock,
+  Heart,
+  Tent,
+  Search,
+  BellRing,
 } from 'lucide-react';
 import { MediaSettings, PlaylistItem, BuiltInAmbientSound } from '../../types';
 import { extractYouTubeSource } from '../../utils/youtube';
@@ -29,6 +60,14 @@ interface MediaTabProps {
   onDockBack?: () => void;
 }
 
+interface SoundscapeItem {
+  id: BuiltInAmbientSound;
+  label: string;
+  category: 'All' | 'Rain & Water' | 'Nature' | 'Places' | 'Cozy & Home' | 'Noises' | 'Binaural';
+  desc: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
 export const MediaTab: React.FC<MediaTabProps> = ({
   media,
   onUpdateMedia,
@@ -38,7 +77,9 @@ export const MediaTab: React.FC<MediaTabProps> = ({
   const [customUrl, setCustomUrl] = useState('');
   const [customTitle, setCustomTitle] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'video' | 'soundscapes'>('video');
+  const [mediaType, setMediaType] = useState<'soundscapes' | 'video'>('soundscapes');
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const { videoId, listId } = media.currentSource;
@@ -176,40 +217,70 @@ export const MediaTab: React.FC<MediaTabProps> = ({
       onUpdateMedia({
         ambientSound: sound,
         isMuted: false,
-        ambientSoundVolume: media.ambientSoundVolume || 60,
+        ambientSoundVolume: media.ambientSoundVolume || 65,
       });
     }
   };
 
-  const soundscapeList: {
-    id: BuiltInAmbientSound;
-    label: string;
-    desc: string;
-    icon: React.FC<{ className?: string }>;
-  }[] = [
-    { id: 'rain', label: 'Gentle Rain', desc: 'Relaxing rainfall soundscape', icon: CloudRain },
-    { id: 'forest', label: 'Forest Breeze', desc: 'Calming woodland atmosphere', icon: Trees },
-    { id: 'waves', label: 'Ocean Waves', desc: 'Rhythmic rolling sea tide', icon: Waves },
-    { id: 'binaural', label: 'Alpha 432Hz', desc: 'Binaural wave for deep focus', icon: Headphones },
-    { id: 'fireplace', label: 'Crackling Fire', desc: 'Cozy fireplace warmth', icon: Flame },
-    { id: 'whitenoise', label: 'White Noise', desc: 'Smooth focus frequency mask', icon: Wind },
+  // Curated list of unique, authentic, high-quality soundscapes (Royalty-free audio loops & pure synthesis)
+  const soundscapeCatalog: SoundscapeItem[] = [
+    // Rain & Water
+    { id: 'light_rain', label: 'Light Rain', category: 'Rain & Water', desc: 'Gentle raindrops falling on leaves', icon: CloudDrizzle },
+    { id: 'heavy_rain', label: 'Heavy Rain', category: 'Rain & Water', desc: 'Deep steady downpour shower', icon: CloudRain },
+    { id: 'rain_on_tent', label: 'Rain on Tent', category: 'Rain & Water', desc: 'Raindrops pattering on canvas shelter', icon: Tent },
+    { id: 'thunderstorm', label: 'Thunderstorm', category: 'Rain & Water', desc: 'Distant rolling thunder & storm rain', icon: CloudLightning },
+    { id: 'waves', label: 'Ocean Waves', category: 'Rain & Water', desc: 'Rhythmic coastal surf and rolling tide', icon: Waves },
+    { id: 'waterfall', label: 'Mountain Waterfall', category: 'Rain & Water', desc: 'Rushing cascade of white water', icon: Droplets },
+    { id: 'river', label: 'River Stream', category: 'Rain & Water', desc: 'Gentle bubbling mountain brook', icon: Waves },
+    { id: 'underwater', label: 'Deep Underwater', category: 'Rain & Water', desc: 'Muffled aquatic bubbles & ocean current', icon: Anchor },
+    { id: 'whales', label: 'Ocean Whales', category: 'Rain & Water', desc: 'Authentic humpback whale echo songs', icon: Fish },
+    // Nature
+    { id: 'birds', label: 'Forest Birds', category: 'Nature', desc: 'Morning woodland birdsong & breeze', icon: Bird },
+    { id: 'summer_night', label: 'Night Crickets', category: 'Nature', desc: 'Evening dusk air & cricket chirps', icon: Sparkles },
+    { id: 'wind', label: 'Wind in Trees', category: 'Nature', desc: 'Rustling canopy gusts & mountain breeze', icon: Wind },
+    // Places & Travel
+    { id: 'street_cafe', label: 'Street Café', category: 'Places', desc: 'Espresso bar chatter & cup clinks', icon: Coffee },
+    { id: 'japanese_library', label: 'Quiet Library', category: 'Places', desc: 'Peaceful study silence & page turns', icon: BookOpen },
+    { id: 'commuter_train', label: 'Inside a Train', category: 'Places', desc: 'Rhythmic railway track carriage ride', icon: TrainTrack },
+    // Cozy & Home
+    { id: 'fireplace', label: 'Crackling Fireplace', category: 'Cozy & Home', desc: 'Warm hearth with popping wood embers', icon: Flame },
+    { id: 'wind_chimes', label: 'Wind Chimes', category: 'Cozy & Home', desc: 'Gentle melodic chimes in the breeze', icon: BellRing },
+    { id: 'keyboard', label: 'Mechanical Keyboard', category: 'Cozy & Home', desc: 'Real tactile mechanical typing clicks', icon: Keyboard },
+    { id: 'record_player', label: 'Vinyl Record Player', category: 'Cozy & Home', desc: 'Vintage needle crackle & turntable hum', icon: Disc },
+    { id: 'clock', label: 'Clock Ticking', category: 'Cozy & Home', desc: 'Steady pendulum mechanical tick-tock', icon: Clock },
+    { id: 'cat_purr', label: 'Cat Purring', category: 'Cozy & Home', desc: 'Deep rhythmic soothing cat purr', icon: Heart },
+    { id: 'room_fan', label: 'Ceiling Fan', category: 'Cozy & Home', desc: 'Steady whirring rotary blade airflow', icon: Fan },
+    // Pure Noises
+    { id: 'brownnoise', label: 'Brown Noise', category: 'Noises', desc: 'Deep low-frequency acoustic warmth', icon: Sliders },
+    { id: 'pinknoise', label: 'Pink Noise', category: 'Noises', desc: 'Natural 1/f balanced focus curve', icon: Activity },
+    { id: 'whitenoise', label: 'White Noise', category: 'Noises', desc: 'Full-frequency sound mask', icon: Radio },
+    // Binaural Beats
+    { id: 'binaural_alpha', label: 'Binaural: Alpha', category: 'Binaural', desc: '10Hz beat for calm flow state & memory', icon: Headphones },
+    { id: 'binaural_beta', label: 'Binaural: Beta', category: 'Binaural', desc: '20Hz beat for high alertness & focus', icon: Sparkles },
+    { id: 'binaural_gamma', label: 'Binaural: Gamma', category: 'Binaural', desc: '40Hz beat for peak cognition & problem solving', icon: Zap },
+    { id: 'binaural_theta', label: 'Binaural: Theta', category: 'Binaural', desc: '6Hz beat for meditation & creativity', icon: Moon },
+    { id: 'binaural_delta', label: 'Binaural: Delta', category: 'Binaural', desc: '2.5Hz beat for sleep & deep recovery', icon: MoonStar },
   ];
 
+  const categories = ['All', 'Rain & Water', 'Nature', 'Places', 'Cozy & Home', 'Noises', 'Binaural'];
+
+  const filteredSoundscapes = useMemo(() => {
+    return soundscapeCatalog.filter((item) => {
+      const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.desc.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [soundscapeCatalog, activeCategory, searchQuery]);
+
+  const activeSoundObj = soundscapeCatalog.find((s) => s.id === media.ambientSound);
+
   return (
-    <div className="flex flex-col w-full space-y-3.5 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
-      {/* Media Mode Selector: Integrated YouTube Player vs Ambient Soundscapes */}
+    <div className="flex flex-col w-full space-y-3.5 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+      {/* Media Mode Selector */}
       <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl">
-        <button
-          onClick={() => setMediaType('video')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            mediaType === 'video'
-              ? 'bg-amber-500/25 text-amber-300 border border-amber-400/30'
-              : 'text-neutral-400 hover:text-neutral-200'
-          }`}
-        >
-          <Tv className="w-3.5 h-3.5" />
-          <span>Ambient Video Player</span>
-        </button>
         <button
           onClick={() => setMediaType('soundscapes')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
@@ -219,12 +290,191 @@ export const MediaTab: React.FC<MediaTabProps> = ({
           }`}
         >
           <Headphones className="w-3.5 h-3.5" />
-          <span>Ambient Soundscapes</span>
+          <span>Ambient Soundscapes ({soundscapeCatalog.length})</span>
+        </button>
+        <button
+          onClick={() => setMediaType('video')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            mediaType === 'video'
+              ? 'bg-amber-500/25 text-amber-300 border border-amber-400/30'
+              : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <Tv className="w-3.5 h-3.5" />
+          <span>YouTube Player</span>
         </button>
       </div>
 
-      {/* Embedded Video Screen or PiP Remote Controller */}
-      {mediaType === 'video' ? (
+      {/* Built-in Ambient Soundscapes (Synthesized offline audio) */}
+      {mediaType === 'soundscapes' ? (
+        <div className="space-y-3">
+          {/* Active Soundscape Status & Volume Banner */}
+          <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2.5 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  {media.ambientSound !== 'none' && !media.isMuted ? (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+                    </>
+                  ) : (
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-neutral-600" />
+                  )}
+                </span>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white block truncate">
+                    {activeSoundObj ? activeSoundObj.label : 'No Soundscape Playing'}
+                  </span>
+                  <span className="text-[10px] text-neutral-400">
+                    {media.ambientSound !== 'none' ? 'Royalty-Free Audio • Seamless Loop' : 'Select a sound to begin'}
+                  </span>
+                </div>
+              </div>
+
+              {media.ambientSound !== 'none' && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => onUpdateMedia({ ambientSound: 'none' })}
+                    className="px-2 py-1 rounded-lg bg-white/10 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-300 text-[10px] font-semibold border border-white/10 transition-all"
+                    title="Stop Ambient Sound"
+                  >
+                    Stop
+                  </button>
+                  <button
+                    onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
+                    className={`p-1.5 rounded-lg border transition-all ${
+                      media.isMuted
+                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+                        : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                    }`}
+                    title={media.isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {media.isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Volume Control */}
+            {media.ambientSound !== 'none' && (
+              <div className="pt-2 border-t border-white/10 flex items-center gap-2">
+                <span className="text-[10px] text-neutral-400 font-mono w-16">
+                  Vol {media.isMuted ? 0 : media.ambientSoundVolume}%
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={media.isMuted ? 0 : media.ambientSoundVolume}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    onUpdateMedia({ ambientSoundVolume: val, isMuted: val === 0 });
+                  }}
+                  className="w-full accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Search & Category Filter Pills */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl focus-within:border-amber-400/50">
+              <Search className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+              <input
+                type="text"
+                placeholder="Search sounds (e.g. rain, train, coffee, binaural)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent text-xs text-white placeholder-neutral-500 focus:outline-none"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-[10px] text-neutral-400 hover:text-white"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+              {categories.map((cat) => {
+                const isCatActive = activeCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all ${
+                      isCatActive
+                        ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40 font-semibold'
+                        : 'bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-neutral-200 border border-transparent'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Soundscapes Grid */}
+          <div className="grid grid-cols-2 gap-2">
+            {filteredSoundscapes.map((item) => {
+              const Icon = item.icon;
+              const isPlaying = media.ambientSound === item.id && !media.isMuted;
+              return (
+                <button
+                  key={item.id}
+                  id={`soundscape-btn-${item.id}`}
+                  onClick={() => handleSelectSoundscape(item.id)}
+                  className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all relative overflow-hidden group ${
+                    isPlaying
+                      ? 'bg-amber-500/20 border-amber-400 ring-1 ring-amber-400/40 shadow-lg'
+                      : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-1.5">
+                    <div
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        isPlaying
+                          ? 'bg-amber-400 text-neutral-950'
+                          : 'bg-white/10 text-neutral-300 group-hover:text-white group-hover:bg-white/15'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    {isPlaying ? (
+                      <div className="flex items-end gap-0.5 h-3">
+                        <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_100ms] h-3" />
+                        <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_300ms] h-2" />
+                        <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_200ms] h-2.5" />
+                      </div>
+                    ) : (
+                      <span className="text-[9px] font-mono text-neutral-500 uppercase">
+                        {item.category}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs font-bold truncate w-full ${isPlaying ? 'text-amber-200' : 'text-white'}`}>
+                    {item.label}
+                  </span>
+                  <span className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">
+                    {item.desc}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {filteredSoundscapes.length === 0 && (
+            <div className="text-center py-6 text-neutral-500 text-xs">
+              No soundscapes found matching &quot;{searchQuery}&quot;
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Video Mode */
         <div className="space-y-3">
           {inFloatingPip ? (
             /* Dedicated Always-on-Top Floating PiP Media Controller */
@@ -270,7 +520,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
               <div className="flex items-center justify-between gap-3 bg-white/5 p-2.5 rounded-xl border border-white/10">
                 <div className="min-w-0 flex-1">
                   <span className="text-xs font-bold text-white block truncate">
-                    {media.currentSource.title || 'Ambient Study Track'}
+                    {media.currentSource.title || 'Ambient Video Track'}
                   </span>
                   <span className="text-[10px] text-neutral-400 font-mono">
                     {media.isMuted ? 'Muted' : `Volume: ${media.volume}%`}
@@ -363,7 +613,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
             </div>
           )}
 
-          {/* Quick Player Bar: Only show in Standard Mode (since PiP has dedicated controller) */}
+          {/* Quick Player Bar: Only show in Standard Mode */}
           {!inFloatingPip && (
             <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 backdrop-blur-md">
               <div className="flex items-center justify-between gap-2">
@@ -373,7 +623,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                   </span>
                   <span className="text-xs font-semibold text-white truncate">
-                    {media.currentSource.title || 'Tokyo Lofi Study Beats'}
+                    {media.currentSource.title || 'Ambient Track'}
                   </span>
                 </div>
 
@@ -504,69 +754,6 @@ export const MediaTab: React.FC<MediaTabProps> = ({
               </div>
             </div>
           )}
-        </div>
-      ) : (
-        /* Built-in Ambient Soundscapes (Synthesized offline audio) */
-        <div className="space-y-3">
-          <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-white">Built-in Soundscapes</span>
-              <span className="text-[10px] font-mono text-amber-300">100% Reliable Offline Audio</span>
-            </div>
-            <p className="text-[11px] text-neutral-400">
-              Synthesized harmonic background audio for deep concentration, free from ads or playback interruptions.
-            </p>
-
-            {/* Volume Control for Ambient Sounds */}
-            {media.ambientSound !== 'none' && (
-              <div className="pt-2 border-t border-white/10 flex items-center gap-2">
-                <span className="text-[10px] text-neutral-400 font-mono w-14">
-                  Vol {media.ambientSoundVolume}%
-                </span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={media.ambientSoundVolume}
-                  onChange={(e) => onUpdateMedia({ ambientSoundVolume: parseInt(e.target.value) })}
-                  className="w-full accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            {soundscapeList.map((item) => {
-              const Icon = item.icon;
-              const isPlaying = media.ambientSound === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleSelectSoundscape(item.id)}
-                  className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all ${
-                    isPlaying
-                      ? 'bg-amber-500/20 border-amber-400 ring-1 ring-amber-400/40 shadow-lg'
-                      : 'bg-white/5 hover:bg-white/10 border-white/10'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full mb-1.5">
-                    <div className={`p-1.5 rounded-lg ${isPlaying ? 'bg-amber-400 text-neutral-950' : 'bg-white/10 text-white'}`}>
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    {isPlaying && (
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                    )}
-                  </div>
-                  <span className={`text-xs font-bold ${isPlaying ? 'text-amber-200' : 'text-white'}`}>
-                    {item.label}
-                  </span>
-                  <span className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">
-                    {item.desc}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </div>
       )}
     </div>

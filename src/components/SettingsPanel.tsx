@@ -1131,7 +1131,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
                     {/* Category Filter Pills */}
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                      {['All', 'Lofi', 'Rain & Nature', 'Space & Sci-Fi', 'Cozy', 'Atmospheric'].map((cat) => (
+                      {['All', 'City', 'Coastal', 'Europe'].map((cat) => (
                         <button
                           key={cat}
                           onClick={() => setVideoCategory(cat)}

@@ -20,7 +20,7 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
 }) => {
   // 1. If Video Background is active
   if (mode === 'video' && videoBackgroundId) {
-    const embedUrl = `https://www.youtube-nocookie.com/embed/${videoBackgroundId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoBackgroundId}&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1&enablejsapi=1&vq=hd1080`;
+    const embedUrl = `https://www.youtube.com/embed/${videoBackgroundId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoBackgroundId}&playsinline=1&rel=0&enablejsapi=1`;
 
     return (
       <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
@@ -28,7 +28,7 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
           <iframe
             src={embedUrl}
             title="Video Background"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[100vw] h-[56.25vw] min-w-[177.78vh] min-h-screen object-cover border-0 select-none"
           />
         </div>

@@ -32,8 +32,8 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
     gainMaster.connect(ctx.destination);
 
     if (type === 'bowl') {
-      // Tibetan Singing Bowl: multi-layered fundamental + rich warm harmonics
-      const frequencies = [261.63, 523.25, 784.88, 1046.5]; // C4, C5, G5, C6
+      // Tibetan Singing Bowl
+      const frequencies = [261.63, 523.25, 784.88, 1046.5];
       const weights = [0.6, 0.3, 0.15, 0.08];
 
       frequencies.forEach((freq, idx) => {
@@ -53,7 +53,7 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
         osc.stop(now + 3.2);
       });
     } else if (type === 'marimba') {
-      // Marimba: Two sweet warm notes (E5 -> A5)
+      // Marimba notes (E5 -> A5)
       const notes = [
         { freq: 659.25, time: 0 },
         { freq: 880.0, time: 0.16 },
@@ -76,7 +76,7 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
         osc.stop(now + time + 1.3);
       });
     } else if (type === 'digital') {
-      // Digital Focus Ping: 3 brief ascending gentle clicks/tones (C6, E6, G6)
+      // Digital Focus Ping
       const arpeggio = [1046.5, 1318.5, 1567.98];
       arpeggio.forEach((freq, i) => {
         const osc = ctx.createOscillator();
@@ -95,8 +95,8 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
         osc.stop(now + i * 0.09 + 0.4);
       });
     } else {
-      // Bell (Default crystal meditation bell)
-      const freqs = [587.33, 1174.66, 1760.0]; // D5, D6, A6
+      // Bell
+      const freqs = [587.33, 1174.66, 1760.0];
       freqs.forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -115,22 +115,54 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
       });
     }
   } catch (err) {
-    console.warn('Audio playback not permitted yet or failed:', err);
+    console.warn('Audio chime playback failed:', err);
   }
 }
 
-// Global ambient noise generator state
-interface ActiveAmbientNodes {
+// Map of royalty-free, high-quality, loopable ambient audio tracks (CC0 / Public Domain)
+const AMBIENT_AUDIO_URLS: Partial<Record<BuiltInAmbientSound, string>> = {
+  light_rain: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/light-rain.mp3',
+  heavy_rain: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/heavy-rain.mp3',
+  rain_on_tent: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/rain-on-tent.mp3',
+  thunderstorm: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/thunder.mp3',
+  waves: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/waves.mp3',
+  waterfall: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/waterfall.mp3',
+  river: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/river.mp3',
+  birds: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/birds.mp3',
+  fireplace: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/campfire.mp3',
+  campfire: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/campfire.mp3',
+  summer_night: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/crickets.mp3',
+  wind: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/nature/wind-in-trees.mp3',
+  street_cafe: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/places/cafe.mp3',
+  japanese_library: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/places/library.mp3',
+  commuter_train: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/transport/inside-a-train.mp3',
+  wind_chimes: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/things/wind-chimes.mp3',
+  keyboard: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/things/keyboard.mp3',
+  record_player: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/things/vinyl-effect.mp3',
+  clock: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/things/clock.mp3',
+  cat_purr: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/cat-purring.mp3',
+  room_fan: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/things/ceiling-fan.mp3',
+  whales: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/whale.mp3',
+  underwater: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/places/underwater.mp3',
+  // Aliases
+  rain: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/light-rain.mp3',
+  forest: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/birds.mp3',
+};
+
+// Global audio track state
+let activeAudioElement: HTMLAudioElement | null = null;
+let currentPlayingSound: BuiltInAmbientSound = 'none';
+
+// Global Web Audio synth state for noise and binaural frequencies
+interface ActiveSynthState {
   masterGain: GainNode;
   sources: (AudioNode | { stop: () => void })[];
+  timers: number[];
   type: BuiltInAmbientSound;
 }
 
-let activeAmbient: ActiveAmbientNodes | null = null;
+let activeSynth: ActiveSynthState | null = null;
 
-/**
- * Creates noise buffer (White/Pink)
- */
 function createNoiseBuffer(ctx: AudioContext, type: 'white' | 'pink' | 'brown'): AudioBuffer {
   const bufferSize = ctx.sampleRate * 4;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
@@ -154,7 +186,7 @@ function createNoiseBuffer(ctx: AudioContext, type: 'white' | 'pink' | 'brown'):
       b6 = white * 0.115926;
     }
   } else {
-    // Brown noise (warm rumble)
+    // Brown noise
     let lastOut = 0.0;
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
@@ -163,193 +195,268 @@ function createNoiseBuffer(ctx: AudioContext, type: 'white' | 'pink' | 'brown'):
       data[i] *= 3.5;
     }
   }
-
   return buffer;
 }
 
+function stopCurrentAudio() {
+  if (activeAudioElement) {
+    try {
+      activeAudioElement.pause();
+      activeAudioElement.src = '';
+      activeAudioElement.load();
+    } catch {
+      // Ignored
+    }
+    activeAudioElement = null;
+  }
+
+  if (activeSynth) {
+    activeSynth.timers.forEach((t) => clearInterval(t));
+    activeSynth.sources.forEach((s) => {
+      try {
+        if ('stop' in s && typeof s.stop === 'function') {
+          s.stop();
+        }
+        if ('disconnect' in s && typeof s.disconnect === 'function') {
+          s.disconnect();
+        }
+      } catch {
+        // Ignored
+      }
+    });
+    try {
+      activeSynth.masterGain.disconnect();
+    } catch {
+      // Ignored
+    }
+    activeSynth = null;
+  }
+
+  currentPlayingSound = 'none';
+}
+
 /**
- * Start or update continuous built-in ambient soundscape synthesizer
+ * Plays royalty-free audio tracks (rain, birds, keyboard, cafe, etc.) on seamless repeat,
+ * or synthesizes pure noise colors and binaural brainwave frequencies.
  */
 export function setAmbientSound(sound: BuiltInAmbientSound, volume: number): void {
+  if (sound === 'none' || volume <= 0) {
+    stopCurrentAudio();
+    return;
+  }
+
+  const normalizedVol = Math.max(0, Math.min(1, volume / 100));
+
+  // If already playing this exact sound, simply update the volume
+  if (currentPlayingSound === sound) {
+    if (activeAudioElement) {
+      activeAudioElement.volume = normalizedVol;
+    }
+    if (activeSynth) {
+      const ctx = getAudioContext();
+      if (ctx) {
+        activeSynth.masterGain.gain.setValueAtTime(normalizedVol, ctx.currentTime);
+      }
+    }
+    return;
+  }
+
+  // Stop previous sound
+  stopCurrentAudio();
+
+  const audioUrl = AMBIENT_AUDIO_URLS[sound];
+
+  // 1. If we have a dedicated high-quality audio recording
+  if (audioUrl) {
+    try {
+      const audio = new Audio();
+      audio.src = audioUrl;
+      audio.crossOrigin = 'anonymous';
+      audio.loop = true;
+      audio.volume = normalizedVol;
+      audio.preload = 'auto';
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Ambient track auto-play paused or blocked until user gesture:', err);
+        });
+      }
+
+      activeAudioElement = audio;
+      currentPlayingSound = sound;
+      return;
+    } catch (err) {
+      console.warn('Failed to load audio track, falling back to Web Audio:', err);
+    }
+  }
+
+  // 2. Synthesized Web Audio for pure noises and binaural beats
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  if (sound === 'none' || volume <= 0) {
-    if (activeAmbient) {
-      try {
-        activeAmbient.masterGain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.2);
-        const toClean = activeAmbient;
-        setTimeout(() => {
-          toClean.sources.forEach((s) => {
-            if ('stop' in s && typeof s.stop === 'function') s.stop();
-            if ('disconnect' in s && typeof s.disconnect === 'function') (s as AudioNode).disconnect();
-          });
-        }, 300);
-      } catch {
-        // ignore
-      }
-      activeAmbient = null;
-    }
-    return;
-  }
-
-  const volLevel = Math.max(0, Math.min(1, volume / 100));
-
-  // If already playing this ambient type, just adjust volume smoothly
-  if (activeAmbient && activeAmbient.type === sound) {
-    activeAmbient.masterGain.gain.setTargetAtTime(volLevel, ctx.currentTime, 0.1);
-    return;
-  }
-
-  // Stop previous
-  if (activeAmbient) {
-    try {
-      activeAmbient.sources.forEach((s) => {
-        if ('stop' in s && typeof s.stop === 'function') s.stop();
-      });
-    } catch {
-      // ignore
-    }
-    activeAmbient = null;
-  }
-
   const masterGain = ctx.createGain();
-  masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
-  masterGain.gain.setTargetAtTime(volLevel, ctx.currentTime, 0.3);
+  masterGain.gain.setValueAtTime(normalizedVol, ctx.currentTime);
   masterGain.connect(ctx.destination);
 
   const sourcesList: (AudioNode | { stop: () => void })[] = [];
+  const timersList: number[] = [];
 
-  if (sound === 'rain') {
-    // Rain: Pink noise through bandpass + lowpass filters + subtle crackle
-    const pinkBuf = createNoiseBuffer(ctx, 'pink');
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = pinkBuf;
-    noiseSource.loop = true;
+  const addNoise = (type: 'white' | 'pink' | 'brown') => {
+    const src = ctx.createBufferSource();
+    src.buffer = createNoiseBuffer(ctx, type);
+    src.loop = true;
+    sourcesList.push(src);
+    return src;
+  };
 
-    const filter1 = ctx.createBiquadFilter();
-    filter1.type = 'lowpass';
-    filter1.frequency.setValueAtTime(1200, ctx.currentTime);
-
-    const filter2 = ctx.createBiquadFilter();
-    filter2.type = 'highpass';
-    filter2.frequency.setValueAtTime(250, ctx.currentTime);
-
-    noiseSource.connect(filter1);
-    filter1.connect(filter2);
-    filter2.connect(masterGain);
-
-    noiseSource.start();
-    sourcesList.push(noiseSource);
-  } else if (sound === 'waves') {
-    // Ocean Waves: Brown noise modulated with very slow LFO
-    const brownBuf = createNoiseBuffer(ctx, 'brown');
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = brownBuf;
-    noiseSource.loop = true;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(450, ctx.currentTime);
-
-    const waveGain = ctx.createGain();
-    waveGain.gain.setValueAtTime(0.4, ctx.currentTime);
-
-    // LFO for wave swells (0.1 Hz)
-    const lfo = ctx.createOscillator();
-    lfo.frequency.setValueAtTime(0.12, ctx.currentTime);
-    const lfoGain = ctx.createGain();
-    lfoGain.gain.setValueAtTime(0.3, ctx.currentTime);
-
-    lfo.connect(lfoGain);
-    lfoGain.connect(waveGain.gain);
-
-    noiseSource.connect(filter);
-    filter.connect(waveGain);
-    waveGain.connect(masterGain);
-
-    noiseSource.start();
-    lfo.start();
-    sourcesList.push(noiseSource, lfo);
-  } else if (sound === 'binaural') {
-    // 432Hz Alpha Waves (Binaural Beats: Left 432Hz, Right 442Hz = 10Hz Alpha Focus)
-    const oscLeft = ctx.createOscillator();
-    oscLeft.type = 'sine';
-    oscLeft.frequency.setValueAtTime(216, ctx.currentTime);
-
-    const oscRight = ctx.createOscillator();
-    oscRight.type = 'sine';
-    oscRight.frequency.setValueAtTime(226, ctx.currentTime); // 10Hz beat
-
-    const pannerLeft = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-    const pannerRight = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-
-    if (pannerLeft && pannerRight) {
-      pannerLeft.pan.setValueAtTime(-0.8, ctx.currentTime);
-      pannerRight.pan.setValueAtTime(0.8, ctx.currentTime);
-      oscLeft.connect(pannerLeft);
-      pannerLeft.connect(masterGain);
-      oscRight.connect(pannerRight);
-      pannerRight.connect(masterGain);
-    } else {
-      oscLeft.connect(masterGain);
-      oscRight.connect(masterGain);
+  const createPanner = (pan: number) => {
+    if (ctx.createStereoPanner) {
+      const panner = ctx.createStereoPanner();
+      panner.pan.setValueAtTime(pan, ctx.currentTime);
+      return panner;
     }
+    return null;
+  };
 
-    oscLeft.start();
-    oscRight.start();
-    sourcesList.push(oscLeft, oscRight);
-  } else if (sound === 'forest') {
-    // Forest Breeze & Soft Atmosphere
-    const pinkBuf = createNoiseBuffer(ctx, 'pink');
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = pinkBuf;
-    noiseSource.loop = true;
+  if (sound === 'whitenoise') {
+    const white = addNoise('white');
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(3800, ctx.currentTime);
+    white.connect(lp);
+    lp.connect(masterGain);
+    white.start();
+  } else if (sound === 'pinknoise') {
+    const pink = addNoise('pink');
+    pink.connect(masterGain);
+    pink.start();
+  } else if (sound === 'brownnoise') {
+    const brown = addNoise('brown');
+    brown.connect(masterGain);
+    brown.start();
+  } else if (sound === 'binaural_gamma') {
+    // 40Hz Gamma beat (Peak cognition)
+    const left = ctx.createOscillator();
+    const right = ctx.createOscillator();
+    left.type = 'sine';
+    right.type = 'sine';
+    left.frequency.setValueAtTime(200, ctx.currentTime);
+    right.frequency.setValueAtTime(240, ctx.currentTime);
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(600, ctx.currentTime);
-    filter.Q.setValueAtTime(0.8, ctx.currentTime);
+    const panL = createPanner(-0.85);
+    const panR = createPanner(0.85);
+    if (panL && panR) {
+      left.connect(panL);
+      panL.connect(masterGain);
+      right.connect(panR);
+      panR.connect(masterGain);
+    } else {
+      left.connect(masterGain);
+      right.connect(masterGain);
+    }
+    left.start();
+    right.start();
+    sourcesList.push(left, right);
+  } else if (sound === 'binaural_beta') {
+    // 20Hz Beta beat (High alertness)
+    const left = ctx.createOscillator();
+    const right = ctx.createOscillator();
+    left.type = 'sine';
+    right.type = 'sine';
+    left.frequency.setValueAtTime(200, ctx.currentTime);
+    right.frequency.setValueAtTime(220, ctx.currentTime);
 
-    noiseSource.connect(filter);
-    filter.connect(masterGain);
-    noiseSource.start();
-    sourcesList.push(noiseSource);
-  } else if (sound === 'fireplace') {
-    // Fireplace: Low rumble + crackle
-    const brownBuf = createNoiseBuffer(ctx, 'brown');
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = brownBuf;
-    noiseSource.loop = true;
+    const panL = createPanner(-0.85);
+    const panR = createPanner(0.85);
+    if (panL && panR) {
+      left.connect(panL);
+      panL.connect(masterGain);
+      right.connect(panR);
+      panR.connect(masterGain);
+    } else {
+      left.connect(masterGain);
+      right.connect(masterGain);
+    }
+    left.start();
+    right.start();
+    sourcesList.push(left, right);
+  } else if (sound === 'binaural_alpha' || sound === 'binaural') {
+    // 10Hz Alpha beat (Relaxed flow state)
+    const left = ctx.createOscillator();
+    const right = ctx.createOscillator();
+    left.type = 'sine';
+    right.type = 'sine';
+    left.frequency.setValueAtTime(216, ctx.currentTime);
+    right.frequency.setValueAtTime(226, ctx.currentTime);
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(300, ctx.currentTime);
+    const panL = createPanner(-0.85);
+    const panR = createPanner(0.85);
+    if (panL && panR) {
+      left.connect(panL);
+      panL.connect(masterGain);
+      right.connect(panR);
+      panR.connect(masterGain);
+    } else {
+      left.connect(masterGain);
+      right.connect(masterGain);
+    }
+    left.start();
+    right.start();
+    sourcesList.push(left, right);
+  } else if (sound === 'binaural_theta') {
+    // 6Hz Theta beat (Deep meditation)
+    const left = ctx.createOscillator();
+    const right = ctx.createOscillator();
+    left.type = 'sine';
+    right.type = 'sine';
+    left.frequency.setValueAtTime(200, ctx.currentTime);
+    right.frequency.setValueAtTime(206, ctx.currentTime);
 
-    noiseSource.connect(filter);
-    filter.connect(masterGain);
-    noiseSource.start();
-    sourcesList.push(noiseSource);
-  } else {
-    // White Noise
-    const whiteBuf = createNoiseBuffer(ctx, 'white');
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = whiteBuf;
-    noiseSource.loop = true;
+    const panL = createPanner(-0.85);
+    const panR = createPanner(0.85);
+    if (panL && panR) {
+      left.connect(panL);
+      panL.connect(masterGain);
+      right.connect(panR);
+      panR.connect(masterGain);
+    } else {
+      left.connect(masterGain);
+      right.connect(masterGain);
+    }
+    left.start();
+    right.start();
+    sourcesList.push(left, right);
+  } else if (sound === 'binaural_delta') {
+    // 2.5Hz Delta beat (Restorative sleep)
+    const left = ctx.createOscillator();
+    const right = ctx.createOscillator();
+    left.type = 'sine';
+    right.type = 'sine';
+    left.frequency.setValueAtTime(150, ctx.currentTime);
+    right.frequency.setValueAtTime(152.5, ctx.currentTime);
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(3500, ctx.currentTime);
-
-    noiseSource.connect(filter);
-    filter.connect(masterGain);
-    noiseSource.start();
-    sourcesList.push(noiseSource);
+    const panL = createPanner(-0.85);
+    const panR = createPanner(0.85);
+    if (panL && panR) {
+      left.connect(panL);
+      panL.connect(masterGain);
+      right.connect(panR);
+      panR.connect(masterGain);
+    } else {
+      left.connect(masterGain);
+      right.connect(masterGain);
+    }
+    left.start();
+    right.start();
+    sourcesList.push(left, right);
   }
 
-  activeAmbient = {
+  activeSynth = {
     masterGain,
     sources: sourcesList,
+    timers: timersList,
     type: sound,
   };
+  currentPlayingSound = sound;
 }

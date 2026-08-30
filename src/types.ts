@@ -1,6 +1,58 @@
 export type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
 export type AlarmSound = 'bell' | 'marimba' | 'bowl' | 'digital';
-export type BuiltInAmbientSound = 'none' | 'rain' | 'forest' | 'waves' | 'binaural' | 'whitenoise' | 'fireplace';
+export type BuiltInAmbientSound =
+  | 'none'
+  // Rain & Water
+  | 'light_rain'
+  | 'heavy_rain'
+  | 'rain_on_tent'
+  | 'thunderstorm'
+  | 'waves'
+  | 'waterfall'
+  | 'river'
+  | 'underwater'
+  | 'whales'
+  // Nature
+  | 'birds'
+  | 'summer_night'
+  | 'wind'
+  // Places & Travel
+  | 'street_cafe'
+  | 'japanese_library'
+  | 'commuter_train'
+  // Cozy & Home
+  | 'fireplace'
+  | 'wind_chimes'
+  | 'keyboard'
+  | 'record_player'
+  | 'clock'
+  | 'cat_purr'
+  | 'room_fan'
+  // Pure Noises
+  | 'whitenoise'
+  | 'pinknoise'
+  | 'brownnoise'
+  // Binaural Beats
+  | 'binaural_gamma'
+  | 'binaural_beta'
+  | 'binaural_alpha'
+  | 'binaural_theta'
+  | 'binaural_delta'
+  // Legacy aliases
+  | 'campfire'
+  | 'rain'
+  | 'forest'
+  | 'binaural'
+  | 'deep_sea'
+  | 'air_conditioner'
+  | 'central_park'
+  | 'countryside'
+  | 'office'
+  | 'airport'
+  | 'home_kitchen'
+  | 'bowling_alley'
+  | 'outer_space'
+  | 'nyc_morning';
 
 export interface PomodoroSettings {
   workDuration: number; // in minutes
@@ -44,7 +96,7 @@ export interface Task {
 export interface AmbientSource {
   id: string;
   title: string;
-  category: 'Lofi' | 'Rain & Nature' | 'Space & Sci-Fi' | 'Cozy' | 'Atmospheric';
+  category: string;
   videoId: string | null;
   listId: string | null;
   description: string;
