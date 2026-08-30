@@ -107,10 +107,16 @@ export interface ThemeOption {
   description?: string;
 }
 
+export type BackgroundMode = 'theme' | 'video' | 'custom';
+
 export interface AppearanceSettings {
+  backgroundMode: BackgroundMode;
   activeTheme: BackgroundThemeId;
   customBackgroundUrl: string | null;
   customBackgroundOverlay: number; // 0 to 100
+  videoBackgroundId: string | null; // e.g. YouTube video ID
+  videoBackgroundTitle?: string | null;
+  videoMuted: boolean;
 }
 
 export type WidgetSizePreset = 'compact' | 'standard' | 'expanded' | 'full';

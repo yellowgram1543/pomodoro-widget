@@ -467,7 +467,6 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                 <MediaTab
                   media={media}
                   onUpdateMedia={onUpdateMedia}
-                  onSelectPreset={onSelectPreset}
                   inFloatingPip={inFloatingPip}
                   onDockBack={inFloatingPip ? handleClosePip : undefined}
                 />

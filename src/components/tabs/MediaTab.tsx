@@ -2,13 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Volume2,
   VolumeX,
-  Plus,
   Radio,
   Play,
   Pause,
   SkipForward,
   Trash2,
-  Sparkles,
   Link2,
   ListPlus,
   Tv,
@@ -20,14 +18,13 @@ import {
   Wind,
   ExternalLink,
 } from 'lucide-react';
-import { MediaSettings, PlaylistItem, AmbientSource, BuiltInAmbientSound } from '../../types';
-import { extractYouTubeSource, AMBIENT_PRESETS } from '../../utils/youtube';
+import { MediaSettings, PlaylistItem, BuiltInAmbientSound } from '../../types';
+import { extractYouTubeSource } from '../../utils/youtube';
 import { setAmbientSound, getAudioContext } from '../../utils/audio';
 
 interface MediaTabProps {
   media: MediaSettings;
   onUpdateMedia: (newMedia: Partial<MediaSettings>) => void;
-  onSelectPreset: (preset: AmbientSource) => void;
   inFloatingPip?: boolean;
   onDockBack?: () => void;
 }
@@ -35,14 +32,12 @@ interface MediaTabProps {
 export const MediaTab: React.FC<MediaTabProps> = ({
   media,
   onUpdateMedia,
-  onSelectPreset,
   inFloatingPip = false,
   onDockBack,
 }) => {
   const [customUrl, setCustomUrl] = useState('');
   const [customTitle, setCustomTitle] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [mediaType, setMediaType] = useState<'video' | 'soundscapes'>('video');
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -199,12 +194,6 @@ export const MediaTab: React.FC<MediaTabProps> = ({
     { id: 'fireplace', label: 'Crackling Fire', desc: 'Cozy fireplace warmth', icon: Flame },
     { id: 'whitenoise', label: 'White Noise', desc: 'Smooth focus frequency mask', icon: Wind },
   ];
-
-  const categories = ['All', 'Lofi', 'Rain & Nature', 'Space & Sci-Fi', 'Cozy', 'Atmospheric'];
-  const filteredPresets =
-    selectedCategory === 'All'
-      ? AMBIENT_PRESETS
-      : AMBIENT_PRESETS.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="flex flex-col w-full space-y-3.5 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
@@ -515,67 +504,6 @@ export const MediaTab: React.FC<MediaTabProps> = ({
               </div>
             </div>
           )}
-
-          {/* Curated Presets Library */}
-          <div className="space-y-2 pt-2 border-t border-white/10">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                Curated Focus Presets
-              </span>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] whitespace-nowrap transition-all ${
-                    selectedCategory === cat
-                      ? 'bg-amber-400 text-neutral-950 font-bold'
-                      : 'bg-white/5 hover:bg-white/10 text-neutral-400'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Presets Grid */}
-            <div className="grid grid-cols-2 gap-2">
-              {filteredPresets.map((preset) => {
-                const isCurrent = media.currentSource.videoId === preset.videoId;
-                return (
-                  <div
-                    key={preset.id}
-                    onClick={() => {
-                      onSelectPreset(preset);
-                      onUpdateMedia({ isMuted: false, isPlaying: true });
-                    }}
-                    className={`group relative overflow-hidden rounded-xl border p-2 cursor-pointer transition-all flex flex-col justify-end h-20 ${
-                      isCurrent
-                        ? 'border-amber-400 ring-1 ring-amber-400/50 shadow-md'
-                        : 'border-white/10 hover:border-white/30 bg-neutral-900/60'
-                    }`}
-                  >
-                    <div
-                      className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity group-hover:scale-105 duration-500"
-                      style={{ backgroundImage: `url(${preset.thumbnail})` }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent" />
-
-                    <div className="relative z-10 flex flex-col">
-                      <span className="text-[9px] font-mono text-amber-300 font-semibold">{preset.tag}</span>
-                      <span className="text-[11px] font-bold text-white leading-tight truncate">
-                        {preset.title}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
       ) : (
         /* Built-in Ambient Soundscapes (Synthesized offline audio) */

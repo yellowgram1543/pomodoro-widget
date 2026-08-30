@@ -1,19 +1,51 @@
 import React from 'react';
-import { BackgroundThemeId } from '../types';
+import { BackgroundThemeId, BackgroundMode } from '../types';
 
 interface AmbientBackgroundProps {
+  mode?: BackgroundMode;
   theme?: BackgroundThemeId;
   customBackgroundUrl?: string | null;
   customOverlay?: number; // 0 to 100
+  videoBackgroundId?: string | null;
+  videoMuted?: boolean;
 }
 
 export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
+  mode = 'theme',
   theme = 'defaultDark',
   customBackgroundUrl = null,
   customOverlay = 0,
+  videoBackgroundId = null,
+  videoMuted = true,
 }) => {
-  // If user has an active custom background uploaded
-  if (customBackgroundUrl) {
+  // 1. If Video Background is active
+  if (mode === 'video' && videoBackgroundId) {
+    const embedUrl = `https://www.youtube-nocookie.com/embed/${videoBackgroundId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoBackgroundId}&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1&enablejsapi=1&vq=hd1080`;
+
+    return (
+      <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
+          <iframe
+            src={embedUrl}
+            title="Video Background"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[100vw] h-[56.25vw] min-w-[177.78vh] min-h-screen object-cover border-0 select-none"
+          />
+        </div>
+
+        {/* User-controlled dark contrast overlay */}
+        {customOverlay > 0 && (
+          <div
+            className="absolute inset-0 bg-black transition-opacity duration-300 pointer-events-none"
+            style={{ opacity: customOverlay / 100 }}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // 2. If Custom Background Image is active
+  if (mode === 'custom' && customBackgroundUrl) {
     return (
       <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
         <img

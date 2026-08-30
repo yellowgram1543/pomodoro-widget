@@ -36,6 +36,7 @@ import { playChime } from '../utils/audio';
 import { CLOCK_TIMER_STYLES } from '../utils/timerThemes';
 import { POMO_TIMER_STYLES } from '../utils/pomoTimerStyles';
 import { THEME_PRESETS } from '../utils/themePresets';
+import { AMBIENT_PRESETS, extractYouTubeSource } from '../utils/youtube';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -74,16 +75,43 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   pomoTimerStyle = 'default',
   onUpdatePomoTimerStyle,
   appearanceSettings = {
+    backgroundMode: 'theme',
     activeTheme: 'defaultDark',
     customBackgroundUrl: null,
     customBackgroundOverlay: 0,
+    videoBackgroundId: null,
+    videoBackgroundTitle: null,
+    videoMuted: true,
   },
   onUpdateAppearance,
 }) => {
   const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory);
   const [isDragOver, setIsDragOver] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [videoCategory, setVideoCategory] = useState<string>('All');
+  const [customVideoUrl, setCustomVideoUrl] = useState<string>('');
+  const [videoSavedSuccess, setVideoSavedSuccess] = useState<boolean>(false);
+  const [videoInputError, setVideoInputError] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleSaveVideoUrl = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!customVideoUrl.trim()) return;
+    const { videoId } = extractYouTubeSource(customVideoUrl);
+    if (!videoId) {
+      setVideoInputError('Please enter a valid YouTube video URL or 11-char ID.');
+      return;
+    }
+    setVideoInputError(null);
+    onUpdateAppearance?.({
+      backgroundMode: 'video',
+      videoBackgroundId: videoId,
+      videoBackgroundTitle: 'Custom Video Background',
+      customBackgroundUrl: null,
+    });
+    setVideoSavedSuccess(true);
+    setTimeout(() => setVideoSavedSuccess(false), 2000);
+  };
 
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -933,7 +961,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <span>Appearance & Atmosphere</span>
                   </h3>
                   <p className="text-xs text-neutral-400 mt-0.5">
-                    Customize background themes, upload custom wallpapers, and configure overlay tints.
+                    Customize background themes, ambient video backdrops, custom wallpapers, and overlay tints.
                   </p>
                 </div>
 
@@ -943,9 +971,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
                       Themes
                     </span>
-                    {appearanceSettings.customBackgroundUrl && (
+                    {appearanceSettings.backgroundMode === 'video' && appearanceSettings.videoBackgroundId && (
                       <span className="text-[11px] text-amber-400/90 font-mono">
-                        (Custom wallpaper currently active)
+                        (Video background active)
+                      </span>
+                    )}
+                    {appearanceSettings.backgroundMode === 'custom' && appearanceSettings.customBackgroundUrl && (
+                      <span className="text-[11px] text-emerald-400/90 font-mono">
+                        (Custom wallpaper active)
                       </span>
                     )}
                   </div>
@@ -953,6 +986,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 pt-1">
                     {THEME_PRESETS.map((theme) => {
                       const isSelected =
+                        appearanceSettings.backgroundMode === 'theme' &&
                         !appearanceSettings.customBackgroundUrl &&
                         appearanceSettings.activeTheme === theme.id;
 
@@ -962,8 +996,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           id={`btn-theme-${theme.id}`}
                           onClick={() => {
                             onUpdateAppearance?.({
+                              backgroundMode: 'theme',
                               activeTheme: theme.id,
-                              customBackgroundUrl: null, // switch to selected preset
+                              customBackgroundUrl: null,
                             });
                           }}
                           className={`flex flex-col items-center group text-center cursor-pointer transition-all ${
@@ -1005,8 +1040,167 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
 
+                {/* VIDEO BACKGROUND MODULE */}
+                <div className="pt-3 space-y-4 border-t border-white/10">
+                  <div>
+                    <h4 className="text-base font-bold text-white tracking-tight">
+                      Video Background
+                    </h4>
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      Paste YouTube URL below, adjust the opacity above.
+                    </p>
+                  </div>
+
+                  {/* YouTube URL Input & Save Button */}
+                  <form onSubmit={handleSaveVideoUrl} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        value={customVideoUrl}
+                        onChange={(e) => {
+                          setCustomVideoUrl(e.target.value);
+                          if (videoInputError) setVideoInputError(null);
+                        }}
+                        className="flex-1 bg-neutral-900/90 border border-neutral-700 focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!customVideoUrl.trim()}
+                        className="px-5 py-2.5 bg-[#8b5cf6] hover:bg-[#7c3aed] active:scale-95 disabled:opacity-40 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-1.5"
+                      >
+                        {videoSavedSuccess ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-white" />
+                            <span>Saved</span>
+                          </>
+                        ) : (
+                          <span>Save</span>
+                        )}
+                      </button>
+                    </div>
+
+                    {videoInputError && (
+                      <p className="text-[11px] text-rose-400">{videoInputError}</p>
+                    )}
+                  </form>
+
+                  {/* Video Active Status & Controls */}
+                  {appearanceSettings.backgroundMode === 'video' && appearanceSettings.videoBackgroundId && (
+                    <div className="p-3 bg-neutral-900/80 border border-amber-400/30 rounded-xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="text-xs font-semibold text-amber-200 truncate">
+                          Active: {appearanceSettings.videoBackgroundTitle || 'Video Background'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-neutral-400 flex items-center gap-1.5"
+                          title="Video backgrounds are always muted for focus"
+                        >
+                          <VolumeX className="w-3.5 h-3.5 text-neutral-400" />
+                          <span>Muted</span>
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onUpdateAppearance?.({
+                              backgroundMode: 'theme',
+                              videoBackgroundId: null,
+                            });
+                          }}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700 transition-all"
+                        >
+                          Turn Off
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CURATED FOCUS PRESETS (VIDEO BACKDROPS) */}
+                  <div className="space-y-2.5 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        Curated Focus Presets
+                      </span>
+                    </div>
+
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                      {['All', 'Lofi', 'Rain & Nature', 'Space & Sci-Fi', 'Cozy', 'Atmospheric'].map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setVideoCategory(cat)}
+                          className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-all ${
+                            videoCategory === cat
+                              ? 'bg-amber-400 text-neutral-950 font-bold shadow-sm'
+                              : 'bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-neutral-200'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Presets Grid */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-1">
+                      {(videoCategory === 'All'
+                        ? AMBIENT_PRESETS
+                        : AMBIENT_PRESETS.filter((p) => p.category === videoCategory)
+                      ).map((preset) => {
+                        const isCurrentVideo =
+                          appearanceSettings.backgroundMode === 'video' &&
+                          appearanceSettings.videoBackgroundId === preset.videoId;
+
+                        return (
+                          <div
+                            key={preset.id}
+                            id={`btn-video-preset-${preset.id}`}
+                            onClick={() => {
+                              onUpdateAppearance?.({
+                                backgroundMode: 'video',
+                                videoBackgroundId: preset.videoId,
+                                videoBackgroundTitle: preset.title,
+                                customBackgroundUrl: null,
+                              });
+                            }}
+                            className={`group relative overflow-hidden rounded-2xl border p-3 cursor-pointer transition-all flex flex-col justify-end h-24 ${
+                              isCurrentVideo
+                                ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-xl'
+                                : 'border-white/10 hover:border-white/30 bg-neutral-900/70'
+                            }`}
+                          >
+                            <div
+                              className="absolute inset-0 bg-cover bg-center opacity-45 group-hover:opacity-65 transition-all group-hover:scale-105 duration-500"
+                              style={{ backgroundImage: `url(${preset.thumbnail})` }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/75 to-transparent" />
+
+                            <div className="relative z-10 flex flex-col">
+                              <span className="text-[10px] font-mono text-amber-300 font-semibold">{preset.tag}</span>
+                              <span className="text-xs font-bold text-white leading-tight truncate mt-0.5">
+                                {preset.title}
+                              </span>
+                            </div>
+
+                            {isCurrentVideo && (
+                              <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-amber-400 text-neutral-950 flex items-center justify-center shadow-lg z-10">
+                                <Check className="w-3 h-3 stroke-[3]" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
                 {/* CUSTOM BACKGROUND MODULE */}
-                <div className="pt-3 space-y-3">
+                <div className="pt-3 space-y-3 border-t border-white/10">
                   <h4 className="text-base font-bold text-white tracking-tight">
                     Custom Background
                   </h4>
@@ -1027,7 +1221,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       className={`relative rounded-2xl border-2 border-dashed transition-all p-5 flex flex-col items-center justify-center text-center cursor-pointer min-h-[145px] overflow-hidden ${
                         isDragOver
                           ? 'border-indigo-400 bg-indigo-500/20'
-                          : appearanceSettings.customBackgroundUrl
+                          : appearanceSettings.backgroundMode === 'custom' && appearanceSettings.customBackgroundUrl
                           ? 'border-emerald-500/50 bg-neutral-900/80 hover:border-emerald-400'
                           : 'border-neutral-700 bg-neutral-900/50 hover:border-neutral-500 hover:bg-neutral-900/80'
                       }`}
@@ -1040,7 +1234,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         onChange={handleFileInputChange}
                       />
 
-                      {appearanceSettings.customBackgroundUrl ? (
+                      {appearanceSettings.backgroundMode === 'custom' && appearanceSettings.customBackgroundUrl ? (
                         <>
                           <img
                             src={appearanceSettings.customBackgroundUrl}
@@ -1078,6 +1272,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           type="button"
                           onClick={() => {
                             if (appearanceSettings.customBackgroundUrl) {
+                              onUpdateAppearance?.({
+                                backgroundMode: 'custom',
+                              });
                               setSavedSuccess(true);
                               setTimeout(() => setSavedSuccess(false), 2000);
                             } else {
@@ -1100,6 +1297,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           type="button"
                           onClick={() => {
                             onUpdateAppearance?.({
+                              backgroundMode: 'theme',
                               customBackgroundUrl: null,
                             });
                           }}

@@ -28,9 +28,13 @@ import { TopBar } from './components/TopBar';
 import { SettingsPanel } from './components/SettingsPanel';
 
 const INITIAL_APPEARANCE_SETTINGS: AppearanceSettings = {
+  backgroundMode: 'theme',
   activeTheme: 'defaultDark',
   customBackgroundUrl: null,
   customBackgroundOverlay: 0,
+  videoBackgroundId: null,
+  videoBackgroundTitle: null,
+  videoMuted: true,
 };
 
 const INITIAL_POMO_SETTINGS: PomodoroSettings = {
@@ -407,6 +411,13 @@ export default function App() {
       },
       isPlaying: true,
     }));
+    if (appearanceSettings.backgroundMode === 'video') {
+      setAppearanceSettings((prev) => ({
+        ...prev,
+        videoBackgroundId: preset.videoId,
+        videoBackgroundTitle: preset.title,
+      }));
+    }
   };
 
   const handleUpdatePomoState = (newState: Partial<PomodoroState>) => {
@@ -429,9 +440,12 @@ export default function App() {
     <div id="ambient-dashboard-root" className="relative w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 select-none">
       {/* Background: Modern Extension Desktop Canvas */}
       <AmbientBackground
+        mode={appearanceSettings.backgroundMode}
         theme={appearanceSettings.activeTheme}
         customBackgroundUrl={appearanceSettings.customBackgroundUrl}
         customOverlay={appearanceSettings.customBackgroundOverlay}
+        videoBackgroundId={appearanceSettings.videoBackgroundId}
+        videoMuted={appearanceSettings.videoMuted}
       />
 
       {/* Top Controls Header Bar */}
