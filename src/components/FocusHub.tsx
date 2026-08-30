@@ -166,20 +166,29 @@ export const FocusHub: React.FC<FocusHubProps> = ({
     try {
       let win: Window | null = null;
 
-      // 1. Try modern Document Picture-in-Picture API (Chrome, Edge, Brave, Opera)
-      const docPip = (window as unknown as { documentPictureInPicture?: { requestWindow: (opts: { width: number; height: number }) => Promise<Window> } }).documentPictureInPicture;
+      // 1. Try modern Document Picture-in-Picture API if in top-level window
+      const isTopLevel = window === window.top;
+      const docPip = isTopLevel
+        ? (window as unknown as { documentPictureInPicture?: { requestWindow: (opts: { width: number; height: number }) => Promise<Window> } }).documentPictureInPicture
+        : undefined;
 
       if (docPip && typeof docPip.requestWindow === 'function') {
-        win = await docPip.requestWindow({
-          width: Math.max(380, widgetWidth),
-          height: isMinimized ? 220 : 640,
-        });
-      } else {
-        // 2. Fallback: Standalone popup window
+        try {
+          win = await docPip.requestWindow({
+            width: Math.max(380, widgetWidth),
+            height: isMinimized ? 220 : 640,
+          });
+        } catch (pipErr) {
+          console.warn('Document PiP requestWindow failed, attempting popup window fallback...', pipErr);
+        }
+      }
+
+      // 2. Fallback: Standalone popup window (works in both iframe preview & popup mode)
+      if (!win) {
         win = window.open(
           '',
           'AmbientFocusPopout',
-          `width=${Math.max(380, widgetWidth)},height=${isMinimized ? 220 : 640},left=200,top=120,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no`
+          `width=${Math.max(400, widgetWidth)},height=${isMinimized ? 240 : 650},left=200,top=120,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no`
         );
       }
 
