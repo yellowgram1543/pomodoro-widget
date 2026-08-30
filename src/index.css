@@ -62,3 +62,57 @@
     letter-spacing: -0.02em;
   }
 }
+
+/* Mechanical 3D Flip Clock Page Flip Keyframes */
+@keyframes flipTopCard {
+  0% {
+    transform: perspective(350px) rotateX(0deg);
+  }
+  100% {
+    transform: perspective(350px) rotateX(-90deg);
+  }
+}
+
+@keyframes flipBottomCard {
+  0% {
+    transform: perspective(350px) rotateX(90deg);
+  }
+  100% {
+    transform: perspective(350px) rotateX(0deg);
+  }
+}
+
+@keyframes flipShadowDarken {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes flipShadowLighten {
+  0% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-flip-top {
+  animation: flipTopCard 0.26s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+
+.animate-flip-bottom {
+  animation: flipBottomCard 0.26s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.25s forwards;
+  transform: perspective(350px) rotateX(90deg);
+}
+
+.animate-flip-shadow-top {
+  animation: flipShadowDarken 0.26s ease-in forwards;
+}
+
+.animate-flip-shadow-bottom {
+  animation: flipShadowLighten 0.26s ease-out 0.25s forwards;
+}

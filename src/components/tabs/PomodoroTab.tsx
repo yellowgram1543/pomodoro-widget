@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PomodoroSettings, PomodoroState, SettingsCategory, PomodoroTimerStyle } from '../../types';
@@ -154,21 +154,33 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
     switch (timerStyle) {
       case 'flipClock':
         return (
-          <div className="flex items-center justify-center gap-2 sm:gap-2.5 my-2">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 my-3">
             {/* Minutes Digits */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               <FlipDigit digit={mStr[0]} />
               <FlipDigit digit={mStr[1]} />
             </div>
 
-            {/* Pulsing Colon */}
-            <div className="flex flex-col gap-2 px-1">
-              <span className={`w-2 h-2 rounded-full ${state.isRunning ? 'bg-amber-400 animate-pulse' : 'bg-white/40'}`} />
-              <span className={`w-2 h-2 rounded-full ${state.isRunning ? 'bg-amber-400 animate-pulse' : 'bg-white/40'}`} />
+            {/* Pulsing Mechanical Colon */}
+            <div className="flex flex-col gap-2.5 px-0.5 sm:px-1">
+              <span
+                className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${
+                  state.isRunning
+                    ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] scale-110'
+                    : 'bg-white/30'
+                }`}
+              />
+              <span
+                className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${
+                  state.isRunning
+                    ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] scale-110'
+                    : 'bg-white/30'
+                }`}
+              />
             </div>
 
             {/* Seconds Digits */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               <FlipDigit digit={sStr[0]} />
               <FlipDigit digit={sStr[1]} />
             </div>
@@ -200,33 +212,38 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
         const offset = circ * (1 - progress);
         return (
           <div className="relative flex flex-col items-center justify-center my-1">
-            <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
-              <svg viewBox="0 0 120 120" className="w-full h-full transform -rotate-90">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r={radius}
-                  stroke="currentColor"
-                  strokeWidth="7"
-                  className="text-white/10"
-                  fill="transparent"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r={radius}
-                  strokeWidth="7"
-                  strokeDasharray={circ}
-                  strokeDashoffset={offset}
-                  strokeLinecap="round"
-                  className={`transition-all duration-500 ease-out fill-transparent stroke-current ${currentTheme.color}`}
-                />
+            <div className="relative w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center">
+              <svg viewBox="0 0 120 120" className="w-full h-full">
+                <g transform="rotate(-90 60 60)">
+                  {/* Background Track Circle */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r={radius}
+                    stroke="currentColor"
+                    strokeWidth="9"
+                    className="text-neutral-800/90"
+                    fill="transparent"
+                  />
+                  {/* Active Dynamic Progress Arc */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r={radius}
+                    strokeWidth="9"
+                    strokeDasharray={circ}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                    className={`transition-all duration-500 ease-out fill-transparent stroke-current ${currentTheme.color}`}
+                  />
+                </g>
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-3xl sm:text-4xl font-mono font-bold text-white tracking-tight drop-shadow-md">
+              {/* Perfectly Centered Overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+                <span className="text-4xl sm:text-5xl font-mono font-black text-white tracking-tight drop-shadow-md tabular-nums leading-none">
                   {formattedTime}
                 </span>
-                <span className="text-[11px] font-mono text-neutral-400 mt-1">
+                <span className="text-xs font-mono font-semibold text-neutral-400 mt-2.5 leading-none">
                   {Math.round(progress * 100)}%
                 </span>
               </div>
@@ -419,22 +436,85 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
   );
 };
 
-// Retro mechanical flip digit card component
-const FlipDigit: React.FC<{ digit: string }> = ({ digit }) => (
-  <div className="relative w-12 sm:w-14 h-16 sm:h-20 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 rounded-xl border border-white/15 shadow-2xl flex flex-col items-center justify-center overflow-hidden">
-    {/* Top half subtle sheen */}
-    <div className="absolute top-0 inset-x-0 h-1/2 bg-white/[0.03] border-b border-black/80 pointer-events-none" />
-    {/* Bottom half shadow */}
-    <div className="absolute bottom-0 inset-x-0 h-1/2 bg-black/20 pointer-events-none" />
-    {/* Center crease seam */}
-    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-neutral-950 shadow-sm pointer-events-none z-10" />
-    {/* Side notches */}
-    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-black rounded-r-sm z-10" />
-    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-black rounded-l-sm z-10" />
-    {/* Digit text */}
-    <span className="font-mono font-black text-3xl sm:text-4xl text-white tracking-tight z-0 select-none drop-shadow-md">
-      {digit}
-    </span>
-  </div>
-);
+// Retro mechanical split-flap flip digit card with authentic 3D page flip animation
+const FlipDigit: React.FC<{ digit: string }> = ({ digit }) => {
+  const [current, setCurrent] = useState(digit);
+  const [previous, setPrevious] = useState(digit);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipKey, setFlipKey] = useState(0);
+
+  useEffect(() => {
+    if (digit !== current) {
+      setPrevious(current);
+      setCurrent(digit);
+      setIsFlipping(true);
+      setFlipKey((prev) => prev + 1);
+
+      const timeout = setTimeout(() => {
+        setIsFlipping(false);
+      }, 550);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [digit, current]);
+
+  return (
+    <div className="relative w-12 sm:w-15 h-16 sm:h-20 bg-neutral-950 rounded-xl shadow-2xl overflow-hidden font-mono font-black text-3xl sm:text-4xl text-white select-none">
+      {/* 1. Static Top Half (Displays incoming/current digit top half) */}
+      <div className="absolute inset-x-0 top-0 h-1/2 overflow-hidden bg-gradient-to-b from-neutral-800 to-neutral-900 rounded-t-xl border-t border-x border-white/15 border-b border-black/90">
+        <div className="absolute inset-x-0 top-0 h-16 sm:h-20 flex items-center justify-center">
+          <span className="tabular-nums leading-none drop-shadow">{current}</span>
+        </div>
+        <div className="absolute inset-0 bg-white/[0.04] pointer-events-none" />
+      </div>
+
+      {/* 2. Static Bottom Half (Displays previous or settled current digit bottom half) */}
+      <div className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden bg-gradient-to-b from-neutral-900 to-neutral-950 rounded-b-xl border-b border-x border-white/15 border-t border-black/90">
+        <div className="absolute inset-x-0 bottom-0 h-16 sm:h-20 flex items-center justify-center">
+          <span className="tabular-nums leading-none drop-shadow">
+            {isFlipping ? previous : current}
+          </span>
+        </div>
+        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+      </div>
+
+      {/* 3. Flipping Top Leaf (Flips down from 0deg to -90deg showing previous top half) */}
+      {isFlipping && (
+        <div
+          key={`flip-top-${flipKey}`}
+          className="absolute inset-x-0 top-0 h-1/2 overflow-hidden bg-gradient-to-b from-neutral-800 to-neutral-900 rounded-t-xl border-t border-x border-white/15 border-b border-black/90 origin-bottom animate-flip-top z-20"
+          style={{
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <div className="absolute inset-x-0 top-0 h-16 sm:h-20 flex items-center justify-center">
+            <span className="tabular-nums leading-none drop-shadow">{previous}</span>
+          </div>
+          <div className="absolute inset-0 bg-black animate-flip-shadow-top pointer-events-none" />
+        </div>
+      )}
+
+      {/* 4. Flipping Bottom Leaf (Flips down from 90deg to 0deg showing current bottom half) */}
+      {isFlipping && (
+        <div
+          key={`flip-bot-${flipKey}`}
+          className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden bg-gradient-to-b from-neutral-900 to-neutral-950 rounded-b-xl border-b border-x border-white/15 border-t border-black/90 origin-top animate-flip-bottom z-20"
+          style={{
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <div className="absolute inset-x-0 bottom-0 h-16 sm:h-20 flex items-center justify-center">
+            <span className="tabular-nums leading-none drop-shadow">{current}</span>
+          </div>
+          <div className="absolute inset-0 bg-black animate-flip-shadow-bottom pointer-events-none" />
+        </div>
+      )}
+
+      {/* 5. Center Split Crease & Side Mechanical Grooves */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-black shadow-md z-30 pointer-events-none" />
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-2.5 bg-neutral-950 border-r border-white/10 rounded-r-sm z-30 pointer-events-none" />
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-2.5 bg-neutral-950 border-l border-white/10 rounded-l-sm z-30 pointer-events-none" />
+    </div>
+  );
+};
 

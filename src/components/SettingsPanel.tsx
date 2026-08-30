@@ -155,22 +155,26 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         );
       case 'gauge':
         return (
-          <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
-            <svg viewBox="0 0 36 36" className="w-8 h-8 transform -rotate-90">
-              <circle cx="18" cy="18" r="14" fill="none" stroke="#262626" strokeWidth="3.5" />
-              <circle
-                cx="18"
-                cy="18"
-                r="14"
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="3.5"
-                strokeDasharray={2 * Math.PI * 14}
-                strokeDashoffset={2 * Math.PI * 14 * 0.35}
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-1">
+            <div className="relative w-9 h-9 flex items-center justify-center">
+              <svg viewBox="0 0 36 36" className="w-full h-full">
+                <g transform="rotate(-90 18 18)">
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#262626" strokeWidth="3.5" />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="3.5"
+                    strokeDasharray={2 * Math.PI * 14}
+                    strokeDashoffset={2 * Math.PI * 14 * 0.35}
+                    strokeLinecap="round"
+                  />
+                </g>
+              </svg>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-white leading-none">25:00</span>
           </div>
         );
       case 'dotMatrix':
