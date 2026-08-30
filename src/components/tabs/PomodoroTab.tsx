@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, SkipForward, Settings2, Sparkles } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PomodoroSettings, PomodoroState, SettingsCategory } from '../../types';
 import { playChime } from '../../utils/audio';
@@ -22,16 +22,6 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
   const minutes = Math.floor(state.timeLeft / 60);
   const seconds = state.timeLeft % 60;
   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-  // Calculate current max duration for progress ring
-  const currentTotalSeconds =
-    state.mode === 'work'
-      ? settings.workDuration * 60
-      : state.mode === 'shortBreak'
-      ? settings.shortBreakDuration * 60
-      : settings.longBreakDuration * 60;
-
-  const progress = Math.max(0, Math.min(1, (currentTotalSeconds - state.timeLeft) / currentTotalSeconds));
 
   const togglePlay = () => {
     onUpdateState({ isRunning: !state.isRunning });
@@ -118,34 +108,24 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
     work: {
       label: 'Focus Session',
       color: 'text-amber-400',
-      stroke: 'stroke-amber-400',
-      bgGlow: 'from-amber-500/10 to-orange-500/5',
       badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     },
     shortBreak: {
-      label: 'Short Break',
+      label: 'Short Rest',
       color: 'text-emerald-400',
-      stroke: 'stroke-emerald-400',
-      bgGlow: 'from-emerald-500/10 to-teal-500/5',
       badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
     },
     longBreak: {
       label: 'Long Rest',
       color: 'text-sky-400',
-      stroke: 'stroke-sky-400',
-      bgGlow: 'from-sky-500/10 to-indigo-500/5',
       badge: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
     },
   };
 
   const currentTheme = modeThemes[state.mode];
 
-  const radius = 80;
-  const circumference = 2 * Math.PI * radius; // ~502.65
-  const strokeDashoffset = circumference * (1 - progress);
-
   return (
-    <div className="flex flex-col items-center justify-between w-full space-y-3.5">
+    <div className="flex flex-col items-center justify-between w-full space-y-4 py-1">
       {/* Mode Selector Chips */}
       <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
         <button
@@ -183,68 +163,39 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
         </button>
       </div>
 
-      {/* Main Countdown Progress Circular Stage - Perfectly Centered */}
-      <div className="relative flex items-center justify-center my-1">
-        <svg
-          viewBox="0 0 200 200"
-          className="w-48 h-48 sm:w-52 sm:h-52 transform -rotate-90"
-        >
-          {/* Background track */}
-          <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="6"
-            className="text-white/10"
-            fill="transparent"
-          />
-          {/* Progress circle */}
-          <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            strokeWidth="6"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className={`transition-all duration-700 ease-out fill-transparent ${currentTheme.stroke}`}
-          />
-        </svg>
-
-        {/* Center Time & Status Display */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-          <span className={`px-2.5 py-0.5 mb-2 text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase rounded-full border ${currentTheme.badge}`}>
-            {currentTheme.label}
-          </span>
-          <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
-            {formattedTime}
-          </div>
-
-          {/* Cycle dots */}
-          <div className="flex items-center gap-1.5 mt-2.5">
-            {Array.from({ length: settings.cyclesBeforeLongBreak }).map((_, idx) => {
-              const isFilled = idx < state.currentCycle;
-              const isCurrent = idx === state.currentCycle - 1 && state.mode === 'work';
-              return (
-                <div
-                  key={idx}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    isCurrent
-                      ? 'bg-amber-400 ring-2 ring-amber-400/40 scale-125 animate-pulse'
-                      : isFilled
-                      ? 'bg-amber-400'
-                      : 'bg-white/20'
-                  }`}
-                  title={`Round ${idx + 1} of ${settings.cyclesBeforeLongBreak}`}
-                />
-              );
-            })}
-          </div>
-          <span className="text-[10px] text-neutral-400 mt-1 font-mono">
-            Cycle {state.currentCycle} / {settings.cyclesBeforeLongBreak}
-          </span>
+      {/* Main Countdown Display without circle */}
+      <div className="flex flex-col items-center justify-center my-3 sm:my-5 text-center select-none">
+        <span className={`px-3 py-0.5 mb-3 text-[11px] font-semibold tracking-wider uppercase rounded-full border ${currentTheme.badge}`}>
+          {currentTheme.label}
+        </span>
+        
+        <div className="text-6xl sm:text-7xl font-timer-default tracking-tight text-white drop-shadow-md">
+          {formattedTime}
         </div>
+
+        {/* Cycle indicator dots */}
+        <div className="flex items-center gap-2 mt-4">
+          {Array.from({ length: settings.cyclesBeforeLongBreak }).map((_, idx) => {
+            const isFilled = idx < state.currentCycle;
+            const isCurrent = idx === state.currentCycle - 1 && state.mode === 'work';
+            return (
+              <div
+                key={idx}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  isCurrent
+                    ? 'bg-amber-400 ring-2 ring-amber-400/40 scale-125 animate-pulse'
+                    : isFilled
+                    ? 'bg-amber-400'
+                    : 'bg-white/20'
+                }`}
+                title={`Round ${idx + 1} of ${settings.cyclesBeforeLongBreak}`}
+              />
+            );
+          })}
+        </div>
+        <span className="text-[11px] text-neutral-400 mt-1.5 font-mono">
+          Cycle {state.currentCycle} / {settings.cyclesBeforeLongBreak}
+        </span>
       </div>
 
       {/* Primary Action Controls */}
@@ -291,7 +242,7 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
       </div>
 
       {/* Stats row */}
-      <div className="flex items-center justify-between w-full px-3 py-2 text-xs bg-white/[0.03] border border-white/5 rounded-lg text-neutral-400 font-mono">
+      <div className="flex items-center justify-between w-full px-3.5 py-2 text-xs bg-white/[0.03] border border-white/5 rounded-xl text-neutral-400 font-mono">
         <span className="flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>Sessions Completed:</span>
@@ -304,3 +255,4 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
     </div>
   );
 };
+

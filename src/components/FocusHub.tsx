@@ -30,6 +30,7 @@ import {
   TaskPriority,
   WidgetSizePreset,
   SettingsCategory,
+  ClockTimerStyle,
 } from '../types';
 import { PomodoroTab } from './tabs/PomodoroTab';
 import { TaskTimerTab } from './tabs/TaskTimerTab';
@@ -54,6 +55,7 @@ interface FocusHubProps {
   onUpdateMedia: (m: Partial<MediaSettings>) => void;
   onSelectPreset: (preset: AmbientSource) => void;
   onOpenSettings?: (cat: SettingsCategory) => void;
+  clockTimerStyle?: ClockTimerStyle;
 }
 
 export const FocusHub: React.FC<FocusHubProps> = ({
@@ -74,6 +76,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
   onUpdateMedia,
   onSelectPreset,
   onOpenSettings,
+  clockTimerStyle = 'default',
 }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [widgetWidth, setWidgetWidth] = useState<number>(440);
@@ -439,6 +442,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
               {activeTab === 'timer' && (
                 <TaskTimerTab
                   timer={taskTimer}
+                  timerStyle={clockTimerStyle}
                   onUpdateTimer={onUpdateTaskTimer}
                   onOpenSettings={onOpenSettings}
                 />

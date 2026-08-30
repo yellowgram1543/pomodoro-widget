@@ -16,6 +16,7 @@ import {
   AmbientSource,
   TaskPriority,
   SettingsCategory,
+  ClockTimerStyle,
 } from './types';
 import { AMBIENT_PRESETS } from './utils/youtube';
 import { playChime } from './utils/audio';
@@ -166,6 +167,16 @@ export default function App() {
     }
   });
 
+  // 5. Clock & Timer Textual Typography Style
+  const [clockTimerStyle, setClockTimerStyle] = useState<ClockTimerStyle>(() => {
+    try {
+      const saved = localStorage.getItem('ambient_clock_timer_style');
+      return (saved as ClockTimerStyle) || 'default';
+    } catch {
+      return 'default';
+    }
+  });
+
   // Keep localStorage synchronized
   useEffect(() => {
     localStorage.setItem('ambient_pomo_settings', JSON.stringify(pomoSettings));
@@ -182,6 +193,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ambient_task_timer', JSON.stringify(taskTimer));
   }, [taskTimer]);
+
+  useEffect(() => {
+    localStorage.setItem('ambient_clock_timer_style', clockTimerStyle);
+  }, [clockTimerStyle]);
 
   // Pomodoro Timer Engine Loop
   useEffect(() => {
@@ -409,6 +424,7 @@ export default function App() {
           onUpdateMedia={handleUpdateMedia}
           onSelectPreset={handleSelectPreset}
           onOpenSettings={handleOpenSettings}
+          clockTimerStyle={clockTimerStyle}
         />
       )}
 
@@ -429,9 +445,9 @@ export default function App() {
         <div className="fixed bottom-4 right-6 z-40 flex items-center gap-2 pointer-events-auto">
           <button
             id="btn-bottom-right-settings"
-            onClick={() => handleOpenSettings('pomodoro')}
+            onClick={() => handleOpenSettings('appearance')}
             className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-300 hover:text-white transition-all shadow-lg active:scale-95"
-            title="Focus Hub Settings"
+            title="Focus Hub Settings & Themes"
           >
             <SettingsIcon className="w-4 h-4" />
           </button>
@@ -451,6 +467,8 @@ export default function App() {
         onUpdateTaskTimer={handleUpdateTaskTimer}
         media={media}
         onUpdateMedia={handleUpdateMedia}
+        clockTimerStyle={clockTimerStyle}
+        onUpdateClockTimerStyle={setClockTimerStyle}
       />
 
       {/* Keyboard Shortcut Hints Footer Bar */}

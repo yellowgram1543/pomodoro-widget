@@ -29,4 +29,36 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Timer & Clock Text Styles */
+  .font-timer-default {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .font-timer-minimal {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .font-timer-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .font-timer-handwritten {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .font-timer-minimal-light {
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 200;
+    letter-spacing: 0.06em;
+  }
+  .font-timer-serif-condensed {
+    font-family: 'Bodoni Moda', 'Playfair Display', serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
 }

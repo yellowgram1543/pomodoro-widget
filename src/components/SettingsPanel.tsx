@@ -23,8 +23,10 @@ import {
   MediaSettings,
   SettingsCategory,
   AlarmSound,
+  ClockTimerStyle,
 } from '../types';
 import { playChime } from '../utils/audio';
+import { CLOCK_TIMER_STYLES } from '../utils/timerThemes';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -38,6 +40,8 @@ interface SettingsPanelProps {
   onUpdateTaskTimer: (newTimer: Partial<TaskTimerState>) => void;
   media: MediaSettings;
   onUpdateMedia: (newMedia: Partial<MediaSettings>) => void;
+  clockTimerStyle?: ClockTimerStyle;
+  onUpdateClockTimerStyle?: (style: ClockTimerStyle) => void;
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -52,6 +56,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onUpdateTaskTimer,
   media,
   onUpdateMedia,
+  clockTimerStyle = 'default',
+  onUpdateClockTimerStyle,
 }) => {
   const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory);
 
@@ -347,7 +353,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
             )}
 
-            {/* 2. TIMER SETTINGS */}
+            {/* 2. TIMER SETTINGS (Includes Target Duration & Timer Typography Appearance) */}
             {activeCategory === 'timer' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div>
@@ -356,8 +362,78 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <span>Task Countdown Timer Settings</span>
                   </h3>
                   <p className="text-xs text-neutral-400 mt-0.5">
-                    Set default target durations and quick intervals for individual tasks.
+                    Customize typography appearance, default target durations, and quick intervals for individual tasks.
                   </p>
+                </div>
+
+                {/* Timer Typography & Clock Style Gallery (Exclusively for Timer) */}
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-white block">
+                        Timer Style & Typography
+                      </span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 rounded-full font-mono">
+                        ⚡ TIMER ONLY
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-neutral-400">
+                      Active: <strong className="text-cyan-300 capitalize">{clockTimerStyle}</strong>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {CLOCK_TIMER_STYLES.map((style) => {
+                      const isSelected = clockTimerStyle === style.id;
+                      return (
+                        <div
+                          key={style.id}
+                          id={`timer-theme-card-${style.id}`}
+                          onClick={() => onUpdateClockTimerStyle?.(style.id)}
+                          className={`group relative rounded-2xl p-2 cursor-pointer transition-all border flex flex-col items-center ${
+                            isSelected
+                              ? 'bg-neutral-900 border-cyan-400 shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-400/50'
+                              : 'bg-neutral-900/60 border-white/10 hover:border-white/25 hover:bg-neutral-900/90'
+                          }`}
+                        >
+                          {/* Miniature Desktop Thumbnail Preview */}
+                          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 flex flex-col items-center justify-center p-2 border border-white/5 shadow-inner">
+                            {/* Subtle Ambient Background Gradient simulation */}
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15),transparent_70%)] pointer-events-none" />
+
+                            {/* Top small logo / branding */}
+                            <div className="absolute top-1.5 flex items-center gap-1 opacity-70">
+                              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                              <span className="text-[8px] font-medium text-neutral-300 tracking-wider">flocus</span>
+                            </div>
+
+                            {/* Displayed Time in the exact font theme */}
+                            <div
+                              className={`text-2xl sm:text-3xl text-white tracking-tight drop-shadow-md z-10 transition-transform group-hover:scale-105 ${style.className}`}
+                            >
+                              {style.previewText}
+                            </div>
+
+                            {/* Selection Checkmark */}
+                            {isSelected && (
+                              <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full bg-cyan-400 text-neutral-950 flex items-center justify-center shadow-md">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Theme Name Label */}
+                          <span
+                            className={`mt-2 text-xs font-semibold text-center transition-colors ${
+                              isSelected ? 'text-cyan-300 font-bold' : 'text-neutral-300 group-hover:text-white'
+                            }`}
+                          >
+                            {style.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Default Target Duration (Hours, Minutes, Seconds) */}
@@ -562,6 +638,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </p>
                 </div>
 
+                {/* Focus Theme Atmosphere */}
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
                     Focus Theme Atmosphere

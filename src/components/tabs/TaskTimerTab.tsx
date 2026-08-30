@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, Plus, Clock, Target } from 'lucide-react';
-import { TaskTimerState, SettingsCategory } from '../../types';
+import React from 'react';
+import { Play, Pause, RotateCcw, Plus, Target } from 'lucide-react';
+import { TaskTimerState, SettingsCategory, ClockTimerStyle } from '../../types';
 import { playChime } from '../../utils/audio';
+import { getTimerFontClass } from '../../utils/timerThemes';
 
 interface TaskTimerTabProps {
   timer: TaskTimerState;
+  timerStyle?: ClockTimerStyle;
   onUpdateTimer: (newTimer: Partial<TaskTimerState>) => void;
   onOpenSettings?: (cat: SettingsCategory) => void;
 }
 
-export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer, onOpenSettings }) => {
+export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
+  timer,
+  timerStyle = 'default',
+  onUpdateTimer,
+  onOpenSettings,
+}) => {
   // Format HH:MM:SS
   const h = Math.floor(timer.timeLeft / 3600);
   const m = Math.floor((timer.timeLeft % 3600) / 60);
@@ -60,12 +67,8 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
     });
   };
 
-  const radius = 80;
-  const circumference = 2 * Math.PI * radius; // ~502.65
-  const strokeDashoffset = circumference * (1 - progress);
-
   return (
-    <div className="flex flex-col items-center justify-between w-full space-y-3.5">
+    <div className="flex flex-col items-center justify-between w-full space-y-4 py-1">
       {/* Task Objective Header Input */}
       <div className="w-full relative">
         <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl focus-within:border-cyan-400/50 transition-colors">
@@ -81,52 +84,21 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
         </div>
       </div>
 
-      {/* Progress & Countdown Circle Display - Perfectly Centered */}
-      <div className="relative flex items-center justify-center my-1">
-        <svg
-          viewBox="0 0 200 200"
-          className="w-48 h-48 sm:w-52 sm:h-52 transform -rotate-90"
-        >
-          <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="6"
-            className="text-white/10"
-            fill="transparent"
-          />
-          <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            strokeWidth="6"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="stroke-cyan-400 transition-all duration-700 ease-out fill-transparent"
-          />
-        </svg>
-
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-          <button
-            onClick={() => onOpenSettings?.('timer')}
-            className="pointer-events-auto px-2.5 py-0.5 mb-2 text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-all"
-            title="Click to configure target duration in settings"
-          >
-            {timer.isCompleted ? 'Target Achieved' : 'Custom Task Timer'}
-          </button>
-
-          <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
-            {formattedDisplay}
-          </div>
-
-          <div className="text-[11px] text-neutral-400 mt-2 font-mono flex items-center gap-1.5">
-            <span>{Math.round(progress * 100)}%</span>
-            <span className="text-neutral-600">•</span>
-            <span>Target: {Math.round(timer.duration / 60)}m</span>
-          </div>
+      {/* Main Countdown Display without circle, using custom typography theme */}
+      <div className="flex flex-col items-center justify-center my-3 sm:my-5 text-center select-none">
+        <div className={`text-6xl sm:text-7xl tracking-tight text-white drop-shadow-md transition-all ${getTimerFontClass(timerStyle)}`}>
+          {formattedDisplay}
         </div>
+
+        <button
+          onClick={() => onOpenSettings?.('timer')}
+          className="text-xs text-neutral-400 hover:text-cyan-300 mt-3 font-mono flex items-center gap-2 transition-colors cursor-pointer group"
+          title="Click to configure timer duration and typography styles"
+        >
+          <span className="group-hover:underline">{Math.round(progress * 100)}% Done</span>
+          <span className="text-neutral-600">•</span>
+          <span className="group-hover:underline">Target: {Math.round(timer.duration / 60)}m</span>
+        </button>
       </div>
 
       {/* Quick Extension Adjustments (+5m, +15m, +30m, -5m) */}
