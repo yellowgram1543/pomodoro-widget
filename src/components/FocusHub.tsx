@@ -200,6 +200,20 @@ export const FocusHub: React.FC<FocusHubProps> = ({
       pipWindowRef.current = win;
       win.document.title = '⚡ Ambient Focus Hub (Always on Top)';
 
+      // Inject referrer and base policy to allow YouTube embeds to work without Error 153
+      const metaReferrer = win.document.createElement('meta');
+      metaReferrer.name = 'referrer';
+      metaReferrer.content = 'strict-origin-when-cross-origin';
+      win.document.head.appendChild(metaReferrer);
+
+      try {
+        const baseTag = win.document.createElement('base');
+        baseTag.href = window.location.href;
+        win.document.head.appendChild(baseTag);
+      } catch {
+        // ignore
+      }
+
       copyStylesToWindow(win);
 
       win.document.body.className =
@@ -438,6 +452,8 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                   media={media}
                   onUpdateMedia={onUpdateMedia}
                   onSelectPreset={onSelectPreset}
+                  inFloatingPip={inFloatingPip}
+                  onDockBack={inFloatingPip ? handleClosePip : undefined}
                 />
               )}
             </div>
@@ -474,7 +490,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
   if (isPipActive && pipContainer) {
     return (
       <>
-        {/* Placeholder Dock in the main page with a Re-Dock button */}
+        {/* Placeholder Dock in the main page with a Re-Dock button and Background Audio Player */}
         <div
           ref={containerRef}
           className="fixed inset-0 pointer-events-none z-30 flex items-center justify-center p-4"
@@ -489,9 +505,39 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                 Focus Hub is Floating Always on Top
               </h3>
               <p className="text-xs text-neutral-400 max-w-xs mx-auto">
-                Your widget is hovering in a native Picture-in-Picture window over all your browser tabs, documents, and desktop apps.
+                Your widget is hovering in a native Picture-in-Picture window. YouTube audio and Pomodoro timers remain synchronized.
               </p>
             </div>
+
+            {/* Background Media Streamer: Keeps YouTube audio running in the main tab */}
+            {(media.currentSource.videoId || media.currentSource.listId) && (
+              <div className="relative rounded-2xl overflow-hidden bg-neutral-950 border border-white/10 p-2 flex items-center gap-3 text-left">
+                <div className="w-16 h-12 rounded-lg bg-neutral-800 overflow-hidden shrink-0 relative">
+                  <iframe
+                    title="Main Tab Ambient Audio Stream"
+                    src={
+                      media.currentSource.listId && !media.currentSource.videoId
+                        ? `https://www.youtube.com/embed/videoseries?list=${media.currentSource.listId}&autoplay=1&mute=${
+                            media.isMuted ? 1 : 0
+                          }&controls=0&loop=1&playsinline=1`
+                        : `https://www.youtube.com/embed/${media.currentSource.videoId}?autoplay=1&mute=${
+                            media.isMuted ? 1 : 0
+                          }&controls=0&loop=1&playlist=${media.currentSource.videoId}&playsinline=1`
+                    }
+                    className="w-full h-full object-cover scale-150 pointer-events-none opacity-80"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wide block">
+                    {media.isPlaying ? 'Active Audio Stream' : 'Stream Paused'}
+                  </span>
+                  <span className="text-xs font-semibold text-white truncate block">
+                    {media.currentSource.title || 'Ambient Focus Track'}
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="pt-2 flex items-center justify-center gap-3">
               <button
