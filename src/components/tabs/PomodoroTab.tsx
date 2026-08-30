@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, SkipForward, Settings2, Sparkles, Volume2, Check } from 'lucide-react';
+import React from 'react';
+import { Play, Pause, RotateCcw, SkipForward, Settings2, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PomodoroSettings, PomodoroState, AlarmSound } from '../../types';
+import { PomodoroSettings, PomodoroState, SettingsCategory } from '../../types';
 import { playChime } from '../../utils/audio';
 
 interface PomodoroTabProps {
@@ -9,16 +9,15 @@ interface PomodoroTabProps {
   settings: PomodoroSettings;
   onUpdateState: (newState: Partial<PomodoroState>) => void;
   onUpdateSettings: (newSettings: Partial<PomodoroSettings>) => void;
+  onOpenSettings?: (cat: SettingsCategory) => void;
 }
 
 export const PomodoroTab: React.FC<PomodoroTabProps> = ({
   state,
   settings,
   onUpdateState,
-  onUpdateSettings,
+  onOpenSettings,
 }) => {
-  const [showSettings, setShowSettings] = useState(false);
-
   // Format time MM:SS
   const minutes = Math.floor(state.timeLeft / 60);
   const seconds = state.timeLeft % 60;
@@ -113,10 +112,6 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
       timeLeft: nextSeconds,
       isRunning: false,
     });
-  };
-
-  const testSound = (sound: AlarmSound) => {
-    playChime(sound, settings.soundVolume);
   };
 
   const modeThemes = {
@@ -266,7 +261,7 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
         <button
           id="btn-pomo-toggle-play"
           onClick={togglePlay}
-          className={`flex items-center justify-center gap-2 px-7 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg active:scale-95 ${
+          className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg active:scale-95 ${
             state.isRunning
               ? 'bg-amber-500 hover:bg-amber-400 text-neutral-950 shadow-amber-500/25'
               : 'bg-white hover:bg-neutral-100 text-neutral-950 shadow-white/20'
@@ -293,19 +288,6 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
         >
           <SkipForward className="w-4 h-4" />
         </button>
-
-        <button
-          id="btn-pomo-settings"
-          onClick={() => setShowSettings(!showSettings)}
-          className={`p-3 border rounded-xl transition-all ${
-            showSettings
-              ? 'bg-white/20 text-white border-white/30'
-              : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border-white/10'
-          }`}
-          title="Pomodoro Settings"
-        >
-          <Settings2 className="w-4 h-4" />
-        </button>
       </div>
 
       {/* Stats row */}
@@ -319,136 +301,6 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
           Focus: {state.totalCompletedSessions * settings.workDuration}m
         </span>
       </div>
-
-      {/* Interval Customization Settings Drawer / Modal */}
-      {showSettings && (
-        <div className="w-full p-4 space-y-4 bg-neutral-900/90 border border-white/15 rounded-xl backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-              Pomodoro Customization
-            </h4>
-            <button
-              onClick={() => setShowSettings(false)}
-              className="text-xs text-neutral-400 hover:text-white"
-            >
-              Done
-            </button>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div>
-              <label className="block text-[11px] text-neutral-400 mb-1">Focus (min)</label>
-              <input
-                type="number"
-                min="1"
-                max="120"
-                value={settings.workDuration}
-                onChange={(e) => {
-                  const val = Math.max(1, parseInt(e.target.value) || 25);
-                  onUpdateSettings({ workDuration: val });
-                  if (state.mode === 'work' && !state.isRunning) {
-                    onUpdateState({ timeLeft: val * 60 });
-                  }
-                }}
-                className="w-full px-2.5 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white font-mono text-center focus:outline-none focus:border-amber-400"
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] text-neutral-400 mb-1">Short (min)</label>
-              <input
-                type="number"
-                min="1"
-                max="60"
-                value={settings.shortBreakDuration}
-                onChange={(e) => {
-                  const val = Math.max(1, parseInt(e.target.value) || 5);
-                  onUpdateSettings({ shortBreakDuration: val });
-                  if (state.mode === 'shortBreak' && !state.isRunning) {
-                    onUpdateState({ timeLeft: val * 60 });
-                  }
-                }}
-                className="w-full px-2.5 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white font-mono text-center focus:outline-none focus:border-emerald-400"
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] text-neutral-400 mb-1">Long (min)</label>
-              <input
-                type="number"
-                min="1"
-                max="90"
-                value={settings.longBreakDuration}
-                onChange={(e) => {
-                  const val = Math.max(1, parseInt(e.target.value) || 15);
-                  onUpdateSettings({ longBreakDuration: val });
-                  if (state.mode === 'longBreak' && !state.isRunning) {
-                    onUpdateState({ timeLeft: val * 60 });
-                  }
-                }}
-                className="w-full px-2.5 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white font-mono text-center focus:outline-none focus:border-sky-400"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2 border-t border-white/10 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-300">Cycles before long rest</span>
-              <select
-                value={settings.cyclesBeforeLongBreak}
-                onChange={(e) => onUpdateSettings({ cyclesBeforeLongBreak: parseInt(e.target.value) || 4 })}
-                className="bg-neutral-800 border border-white/10 rounded-lg px-2 py-1 text-white text-xs focus:outline-none"
-              >
-                <option value={2}>2 cycles</option>
-                <option value={3}>3 cycles</option>
-                <option value={4}>4 cycles</option>
-                <option value={5}>5 cycles</option>
-                <option value={6}>6 cycles</option>
-              </select>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-300">Chime Alert Sound</span>
-              <div className="flex items-center gap-1.5">
-                {(['bell', 'marimba', 'bowl', 'digital'] as AlarmSound[]).map((sound) => (
-                  <button
-                    key={sound}
-                    onClick={() => {
-                      onUpdateSettings({ alarmSound: sound });
-                      testSound(sound);
-                    }}
-                    className={`px-2 py-1 rounded text-[11px] capitalize transition-all ${
-                      settings.alarmSound === sound
-                        ? 'bg-amber-400 text-neutral-950 font-semibold'
-                        : 'bg-neutral-800 text-neutral-300 hover:text-white'
-                    }`}
-                  >
-                    {sound}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-300">Auto-start Breaks</span>
-              <input
-                type="checkbox"
-                checked={settings.autoStartBreaks}
-                onChange={(e) => onUpdateSettings({ autoStartBreaks: e.target.checked })}
-                className="accent-amber-400 w-4 h-4 rounded"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-300">Auto-start Pomodoros</span>
-              <input
-                type="checkbox"
-                checked={settings.autoStartPomodoros}
-                onChange={(e) => onUpdateSettings({ autoStartPomodoros: e.target.checked })}
-                className="accent-amber-400 w-4 h-4 rounded"
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

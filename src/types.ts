@@ -79,6 +79,8 @@ export interface MediaSettings {
 
 export type TabType = 'pomodoro' | 'timer' | 'tasks' | 'media';
 
+export type SettingsCategory = 'pomodoro' | 'timer' | 'sound' | 'appearance' | 'shortcuts';
+
 export type WidgetSizePreset = 'compact' | 'standard' | 'expanded' | 'full';
 
 export interface WidgetDimensions {

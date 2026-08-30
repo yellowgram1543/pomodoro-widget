@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
+import { Settings as SettingsIcon } from 'lucide-react';
 import {
   PomodoroState,
   PomodoroSettings,
@@ -14,12 +15,14 @@ import {
   TabType,
   AmbientSource,
   TaskPriority,
+  SettingsCategory,
 } from './types';
 import { AMBIENT_PRESETS } from './utils/youtube';
 import { playChime } from './utils/audio';
 import { AmbientBackground } from './components/AmbientBackground';
 import { FocusHub } from './components/FocusHub';
 import { TopBar } from './components/TopBar';
+import { SettingsPanel } from './components/SettingsPanel';
 
 const INITIAL_POMO_SETTINGS: PomodoroSettings = {
   workDuration: 25,
@@ -93,6 +96,13 @@ export default function App() {
   // Tab State
   const [activeTab, setActiveTab] = useState<TabType>('pomodoro');
   const [isZenMode, setIsZenMode] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsCategory, setSettingsCategory] = useState<SettingsCategory>('pomodoro');
+
+  const handleOpenSettings = (cat: SettingsCategory = 'pomodoro') => {
+    setSettingsCategory(cat);
+    setIsSettingsOpen(true);
+  };
 
   // 1. Pomodoro State & Settings
   const [pomoSettings, setPomoSettings] = useState<PomodoroSettings>(() => {
@@ -375,6 +385,7 @@ export default function App() {
           setIsZenMode={setIsZenMode}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          onOpenSettings={handleOpenSettings}
         />
       )}
 
@@ -397,6 +408,7 @@ export default function App() {
           media={media}
           onUpdateMedia={handleUpdateMedia}
           onSelectPreset={handleSelectPreset}
+          onOpenSettings={handleOpenSettings}
         />
       )}
 
@@ -412,9 +424,38 @@ export default function App() {
         </div>
       )}
 
+      {/* Floating Bottom-Right Settings Button */}
+      {!isZenMode && (
+        <div className="fixed bottom-4 right-6 z-40 flex items-center gap-2 pointer-events-auto">
+          <button
+            id="btn-bottom-right-settings"
+            onClick={() => handleOpenSettings('pomodoro')}
+            className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-300 hover:text-white transition-all shadow-lg active:scale-95"
+            title="Focus Hub Settings"
+          >
+            <SettingsIcon className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Slide-over Two-Part Settings Drawer */}
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        initialCategory={settingsCategory}
+        pomoSettings={pomoSettings}
+        onUpdatePomoSettings={handleUpdatePomoSettings}
+        pomoState={pomoState}
+        onUpdatePomoState={handleUpdatePomoState}
+        taskTimer={taskTimer}
+        onUpdateTaskTimer={handleUpdateTaskTimer}
+        media={media}
+        onUpdateMedia={handleUpdateMedia}
+      />
+
       {/* Keyboard Shortcut Hints Footer Bar */}
       {!isZenMode && (
-        <footer className="fixed bottom-3 left-6 right-6 z-10 hidden md:flex items-center justify-between text-[11px] text-neutral-400/80 pointer-events-none">
+        <footer className="fixed bottom-3 left-6 right-20 z-10 hidden md:flex items-center justify-between text-[11px] text-neutral-400/80 pointer-events-none">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/15 rounded text-[10px] font-mono text-neutral-300">Space</kbd>

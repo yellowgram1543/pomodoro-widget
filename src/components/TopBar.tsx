@@ -9,8 +9,9 @@ import {
   Radio,
   Clock,
   Layers,
+  Settings,
 } from 'lucide-react';
-import { MediaSettings, AmbientSource, TabType } from '../types';
+import { MediaSettings, AmbientSource, TabType, SettingsCategory } from '../types';
 import { AMBIENT_PRESETS } from '../utils/youtube';
 
 interface TopBarProps {
@@ -21,6 +22,7 @@ interface TopBarProps {
   setIsZenMode: (v: boolean) => void;
   activeTab: TabType;
   setActiveTab: (t: TabType) => void;
+  onOpenSettings?: (cat: SettingsCategory) => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -31,6 +33,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   setIsZenMode,
   activeTab,
   setActiveTab,
+  onOpenSettings,
 }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -117,7 +120,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Mute, Zen Mode, Fullscreen */}
+      {/* Right Controls: Mute, Zen Mode, Fullscreen, Settings */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <button
           id="btn-topbar-mute-toggle"
@@ -130,6 +133,15 @@ export const TopBar: React.FC<TopBarProps> = ({
           title={media.isMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
         >
           {media.isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        </button>
+
+        <button
+          id="btn-topbar-settings"
+          onClick={() => onOpenSettings?.('pomodoro')}
+          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-200 hover:text-white transition-all shadow-lg"
+          title="Settings & Preferences"
+        >
+          <Settings className="w-4 h-4" />
         </button>
 
         <button

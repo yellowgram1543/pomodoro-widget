@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, Plus, Clock, Target, CheckCircle2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { TaskTimerState } from '../../types';
+import { Play, Pause, RotateCcw, Plus, Clock, Target } from 'lucide-react';
+import { TaskTimerState, SettingsCategory } from '../../types';
 import { playChime } from '../../utils/audio';
 
 interface TaskTimerTabProps {
   timer: TaskTimerState;
   onUpdateTimer: (newTimer: Partial<TaskTimerState>) => void;
+  onOpenSettings?: (cat: SettingsCategory) => void;
 }
 
-export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer }) => {
-  const [hoursInput, setHoursInput] = useState(Math.floor(timer.duration / 3600));
-  const [minutesInput, setMinutesInput] = useState(Math.floor((timer.duration % 3600) / 60));
-  const [secondsInput, setSecondsInput] = useState(timer.duration % 60);
-  const [isEditingDuration, setIsEditingDuration] = useState(false);
-
+export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer, onOpenSettings }) => {
   // Format HH:MM:SS
   const h = Math.floor(timer.timeLeft / 3600);
   const m = Math.floor((timer.timeLeft % 3600) / 60);
@@ -64,26 +59,6 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
       isCompleted: false,
     });
   };
-
-  const applyCustomDuration = () => {
-    const totalSecs = (Number(hoursInput) || 0) * 3600 + (Number(minutesInput) || 0) * 60 + (Number(secondsInput) || 0);
-    const safeSecs = Math.max(10, totalSecs);
-    onUpdateTimer({
-      duration: safeSecs,
-      timeLeft: safeSecs,
-      isRunning: false,
-      isCompleted: false,
-    });
-    setIsEditingDuration(false);
-  };
-
-  const quickPresets = [
-    { label: '15m Sprint', seconds: 15 * 60 },
-    { label: '30m Focus', seconds: 30 * 60 },
-    { label: '45m Deep Work', seconds: 45 * 60 },
-    { label: '60m Block', seconds: 60 * 60 },
-    { label: '90m Master', seconds: 90 * 60 },
-  ];
 
   const radius = 80;
   const circumference = 2 * Math.PI * radius; // ~502.65
@@ -135,11 +110,11 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           <button
-            onClick={() => setIsEditingDuration(!isEditingDuration)}
+            onClick={() => onOpenSettings?.('timer')}
             className="pointer-events-auto px-2.5 py-0.5 mb-2 text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-all"
-            title="Click to change target duration"
+            title="Click to configure target duration in settings"
           >
-            {timer.isCompleted ? 'Target Achieved' : isEditingDuration ? 'Set Time' : 'Custom Task Timer'}
+            {timer.isCompleted ? 'Target Achieved' : 'Custom Task Timer'}
           </button>
 
           <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
@@ -192,11 +167,11 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
       </div>
 
       {/* Main Play / Pause Controls */}
-      <div className="flex items-center justify-center gap-2.5 w-full">
+      <div className="flex items-center justify-center gap-3 w-full">
         <button
           id="btn-task-timer-reset"
           onClick={handleReset}
-          className="p-2.5 sm:p-3 text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+          className="p-3 text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
           title="Reset timer to allocated target"
         >
           <RotateCcw className="w-4 h-4" />
@@ -205,7 +180,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
         <button
           id="btn-task-timer-toggle-play"
           onClick={toggleTimer}
-          className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all shadow-lg active:scale-95 ${
+          className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg active:scale-95 ${
             timer.isRunning
               ? 'bg-cyan-400 hover:bg-cyan-300 text-neutral-950 shadow-cyan-400/25'
               : 'bg-white hover:bg-neutral-100 text-neutral-950 shadow-white/20'
@@ -228,105 +203,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({ timer, onUpdateTimer
             </>
           )}
         </button>
-
-        <button
-          id="btn-task-timer-edit-time"
-          onClick={() => setIsEditingDuration(!isEditingDuration)}
-          className={`p-2.5 sm:p-3 border rounded-xl transition-all ${
-            isEditingDuration
-              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40'
-              : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border-white/10'
-          }`}
-          title="Setup target duration"
-        >
-          <Clock className="w-4 h-4" />
-        </button>
       </div>
-
-      {/* Custom Target Setup Modal/Drawer */}
-      {isEditingDuration && (
-        <div className="w-full p-4 space-y-3 bg-neutral-900/90 border border-white/15 rounded-xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-              Set Target Duration (HH:MM:SS)
-            </span>
-            <button
-              onClick={() => setIsEditingDuration(false)}
-              className="text-xs text-neutral-400 hover:text-white"
-            >
-              Cancel
-            </button>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 font-mono">
-            <div className="flex flex-col items-center">
-              <label className="text-[10px] text-neutral-400 mb-1">Hours</label>
-              <input
-                type="number"
-                min="0"
-                max="24"
-                value={hoursInput}
-                onChange={(e) => setHoursInput(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-16 px-2 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white text-center text-sm focus:outline-none focus:border-cyan-400"
-              />
-            </div>
-            <span className="text-neutral-500 text-lg mt-4">:</span>
-            <div className="flex flex-col items-center">
-              <label className="text-[10px] text-neutral-400 mb-1">Minutes</label>
-              <input
-                type="number"
-                min="0"
-                max="59"
-                value={minutesInput}
-                onChange={(e) => setMinutesInput(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                className="w-16 px-2 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white text-center text-sm focus:outline-none focus:border-cyan-400"
-              />
-            </div>
-            <span className="text-neutral-500 text-lg mt-4">:</span>
-            <div className="flex flex-col items-center">
-              <label className="text-[10px] text-neutral-400 mb-1">Seconds</label>
-              <input
-                type="number"
-                min="0"
-                max="59"
-                value={secondsInput}
-                onChange={(e) => setSecondsInput(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                className="w-16 px-2 py-1.5 bg-neutral-800 border border-white/10 rounded-lg text-white text-center text-sm focus:outline-none focus:border-cyan-400"
-              />
-            </div>
-          </div>
-
-          {/* Quick presets row */}
-          <div className="pt-2 border-t border-white/10">
-            <span className="block text-[10px] text-neutral-400 mb-1.5">Preset Intervals:</span>
-            <div className="flex flex-wrap gap-1.5">
-              {quickPresets.map((p) => (
-                <button
-                  key={p.label}
-                  onClick={() => {
-                    const hP = Math.floor(p.seconds / 3600);
-                    const mP = Math.floor((p.seconds % 3600) / 60);
-                    const sP = p.seconds % 60;
-                    setHoursInput(hP);
-                    setMinutesInput(mP);
-                    setSecondsInput(sP);
-                  }}
-                  className="px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[11px] text-neutral-300"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button
-            onClick={applyCustomDuration}
-            className="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-neutral-950 font-semibold text-xs rounded-lg transition-colors mt-2"
-          >
-            Apply Target Duration
-          </button>
-        </div>
-      )}
     </div>
   );
 };
