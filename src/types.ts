@@ -85,6 +85,34 @@ export type ClockTimerStyle = 'default' | 'minimal' | 'serif' | 'handwritten' | 
 
 export type PomodoroTimerStyle = 'default' | 'flipClock' | 'progressBar' | 'gauge' | 'dotMatrix' | 'pie';
 
+export type BackgroundThemeId =
+  | 'defaultDark'
+  | 'rainbowFlare'
+  | 'darkFlare'
+  | 'heatMap'
+  | 'darkPurpleHeart'
+  | 'flocusViolet'
+  | 'pastelLofi'
+  | 'sakura'
+  | 'lightPurpleHeart'
+  | 'grainyGradient'
+  | 'cyberpunk'
+  | 'zenEmerald'
+  | 'sunsetGlow';
+
+export interface ThemeOption {
+  id: BackgroundThemeId;
+  name: string;
+  previewClass: string;
+  description?: string;
+}
+
+export interface AppearanceSettings {
+  activeTheme: BackgroundThemeId;
+  customBackgroundUrl: string | null;
+  customBackgroundOverlay: number; // 0 to 100
+}
+
 export type WidgetSizePreset = 'compact' | 'standard' | 'expanded' | 'full';
 
 export interface WidgetDimensions {

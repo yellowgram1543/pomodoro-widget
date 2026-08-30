@@ -18,6 +18,7 @@ import {
   SettingsCategory,
   ClockTimerStyle,
   PomodoroTimerStyle,
+  AppearanceSettings,
 } from './types';
 import { AMBIENT_PRESETS } from './utils/youtube';
 import { playChime } from './utils/audio';
@@ -25,6 +26,12 @@ import { AmbientBackground } from './components/AmbientBackground';
 import { FocusHub } from './components/FocusHub';
 import { TopBar } from './components/TopBar';
 import { SettingsPanel } from './components/SettingsPanel';
+
+const INITIAL_APPEARANCE_SETTINGS: AppearanceSettings = {
+  activeTheme: 'defaultDark',
+  customBackgroundUrl: null,
+  customBackgroundOverlay: 0,
+};
 
 const INITIAL_POMO_SETTINGS: PomodoroSettings = {
   workDuration: 25,
@@ -188,7 +195,25 @@ export default function App() {
     }
   });
 
+  // 7. Appearance & Atmosphere Settings
+  const [appearanceSettings, setAppearanceSettings] = useState<AppearanceSettings>(() => {
+    try {
+      const saved = localStorage.getItem('ambient_appearance_settings');
+      return saved ? { ...INITIAL_APPEARANCE_SETTINGS, ...JSON.parse(saved) } : INITIAL_APPEARANCE_SETTINGS;
+    } catch {
+      return INITIAL_APPEARANCE_SETTINGS;
+    }
+  });
+
+  const handleUpdateAppearance = (newAppearance: Partial<AppearanceSettings>) => {
+    setAppearanceSettings((prev) => ({ ...prev, ...newAppearance }));
+  };
+
   // Keep localStorage synchronized
+  useEffect(() => {
+    localStorage.setItem('ambient_appearance_settings', JSON.stringify(appearanceSettings));
+  }, [appearanceSettings]);
+
   useEffect(() => {
     localStorage.setItem('ambient_pomo_settings', JSON.stringify(pomoSettings));
   }, [pomoSettings]);
@@ -403,7 +428,11 @@ export default function App() {
   return (
     <div id="ambient-dashboard-root" className="relative w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 select-none">
       {/* Background: Modern Extension Desktop Canvas */}
-      <AmbientBackground />
+      <AmbientBackground
+        theme={appearanceSettings.activeTheme}
+        customBackgroundUrl={appearanceSettings.customBackgroundUrl}
+        customOverlay={appearanceSettings.customBackgroundOverlay}
+      />
 
       {/* Top Controls Header Bar */}
       {!isZenMode && (
@@ -487,6 +516,8 @@ export default function App() {
         onUpdateClockTimerStyle={setClockTimerStyle}
         pomoTimerStyle={pomoTimerStyle}
         onUpdatePomoTimerStyle={setPomoTimerStyle}
+        appearanceSettings={appearanceSettings}
+        onUpdateAppearance={handleUpdateAppearance}
       />
 
       {/* Keyboard Shortcut Hints Footer Bar */}

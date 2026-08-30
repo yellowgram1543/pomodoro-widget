@@ -15,6 +15,10 @@ import {
   Sliders,
   Flame,
   Info,
+  Upload,
+  Image as ImageIcon,
+  Trash2,
+  Save,
 } from 'lucide-react';
 import {
   PomodoroSettings,
@@ -25,10 +29,13 @@ import {
   AlarmSound,
   ClockTimerStyle,
   PomodoroTimerStyle,
+  AppearanceSettings,
+  BackgroundThemeId,
 } from '../types';
 import { playChime } from '../utils/audio';
 import { CLOCK_TIMER_STYLES } from '../utils/timerThemes';
 import { POMO_TIMER_STYLES } from '../utils/pomoTimerStyles';
+import { THEME_PRESETS } from '../utils/themePresets';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -46,6 +53,8 @@ interface SettingsPanelProps {
   onUpdateClockTimerStyle?: (style: ClockTimerStyle) => void;
   pomoTimerStyle?: PomodoroTimerStyle;
   onUpdatePomoTimerStyle?: (style: PomodoroTimerStyle) => void;
+  appearanceSettings?: AppearanceSettings;
+  onUpdateAppearance?: (newAppearance: Partial<AppearanceSettings>) => void;
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -64,8 +73,146 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onUpdateClockTimerStyle,
   pomoTimerStyle = 'default',
   onUpdatePomoTimerStyle,
+  appearanceSettings = {
+    activeTheme: 'defaultDark',
+    customBackgroundUrl: null,
+    customBackgroundOverlay: 0,
+  },
+  onUpdateAppearance,
 }) => {
   const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processUploadedFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      processUploadedFile(e.target.files[0]);
+    }
+  };
+
+  const processUploadedFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size exceeds 5MB limit.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        onUpdateAppearance?.({
+          customBackgroundUrl: dataUrl,
+        });
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 2500);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const renderThemeCardVisual = (themeId: BackgroundThemeId) => {
+    switch (themeId) {
+      case 'rainbowFlare':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-cyan-300 via-pink-300 to-yellow-200">
+            <div className="absolute -top-4 -left-4 w-16 h-16 bg-cyan-400/60 rounded-full blur-lg" />
+            <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-pink-400/70 rounded-full blur-lg" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-yellow-300/50 rounded-full blur-md" />
+          </div>
+        );
+      case 'darkFlare':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-neutral-950">
+            <div className="absolute top-2 right-2 w-20 h-20 bg-rose-600/50 rounded-full blur-xl" />
+            <div className="absolute bottom-1 left-2 w-16 h-16 bg-amber-500/40 rounded-full blur-lg" />
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        );
+      case 'heatMap':
+        return (
+          <div
+            className="w-full h-full relative overflow-hidden bg-neutral-950"
+            style={{
+              background:
+                'radial-gradient(ellipse at 80% 20%, #facc15 0%, #f97316 30%, #ec4899 60%, #3b82f6 90%, #000 100%)',
+            }}
+          />
+        );
+      case 'darkPurpleHeart':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-neutral-950 flex items-center justify-center">
+            <svg viewBox="0 0 100 100" className="w-12 h-12 text-fuchsia-500 fill-current filter blur-[2px] drop-shadow-[0_0_12px_rgba(217,70,239,0.9)]">
+              <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
+            </svg>
+          </div>
+        );
+      case 'flocusViolet':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-violet-400/40 rounded-full blur-md" />
+          </div>
+        );
+      case 'pastelLofi':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-sky-200 via-indigo-200 to-blue-200">
+            <div className="absolute top-1 left-2 w-12 h-12 bg-cyan-300/60 rounded-full blur-md" />
+            <div className="absolute bottom-1 right-2 w-12 h-12 bg-purple-300/60 rounded-full blur-md" />
+          </div>
+        );
+      case 'sakura':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-rose-200 via-pink-300 to-rose-300">
+            <div className="absolute top-1 right-1 w-14 h-14 bg-pink-400/50 rounded-full blur-md" />
+          </div>
+        );
+      case 'lightPurpleHeart':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-purple-200 via-fuchsia-200 to-indigo-100 flex items-center justify-center">
+            <svg viewBox="0 0 100 100" className="w-12 h-12 text-fuchsia-400 fill-current filter blur-[2px] drop-shadow-[0_0_10px_rgba(217,70,239,0.8)]">
+              <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
+            </svg>
+          </div>
+        );
+      case 'grainyGradient':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-blue-700 via-rose-600 to-amber-400">
+            <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:4px_4px]" />
+          </div>
+        );
+      case 'cyberpunk':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-neutral-950">
+            <div className="absolute top-1 left-1 w-12 h-12 bg-cyan-500/50 rounded-full blur-md" />
+            <div className="absolute bottom-1 right-1 w-12 h-12 bg-fuchsia-600/50 rounded-full blur-md" />
+          </div>
+        );
+      case 'zenEmerald':
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-emerald-950 via-teal-950 to-neutral-950">
+            <div className="absolute top-2 left-2 w-14 h-14 bg-emerald-600/40 rounded-full blur-md" />
+          </div>
+        );
+      case 'defaultDark':
+      default:
+        return (
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-neutral-950 via-slate-950 to-neutral-900 flex items-center justify-center">
+            <div className="w-12 h-12 bg-amber-500/10 rounded-full blur-md" />
+          </div>
+        );
+    }
+  };
 
   // Sync initialCategory if opened from a specific button
   React.useEffect(() => {
@@ -220,9 +367,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-      {/* Backdrop */}
+      {/* Subtle Backdrop so user can clearly preview background theme changes live */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/35 backdrop-blur-[1px] transition-opacity"
         onClick={onClose}
       />
 
@@ -776,43 +923,227 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
             )}
 
-            {/* 4. APPEARANCE */}
+            {/* 4. APPEARANCE & THEMES */}
             {activeCategory === 'appearance' && (
               <div className="space-y-6 animate-in fade-in duration-200">
+                {/* Section Header */}
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <Palette className="w-4 h-4 text-amber-400" />
                     <span>Appearance & Atmosphere</span>
                   </h3>
                   <p className="text-xs text-neutral-400 mt-0.5">
-                    Adjust background atmosphere, overlays, and glassmorphic styling.
+                    Customize background themes, upload custom wallpapers, and configure overlay tints.
                   </p>
                 </div>
 
-                {/* Focus Theme Atmosphere */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
-                    Focus Theme Atmosphere
-                  </span>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {[
-                      { name: 'Warm Amber & Sunset', glow: 'from-amber-500/20 to-orange-500/10' },
-                      { name: 'Cyber Cyan Glow', glow: 'from-cyan-500/20 to-blue-500/10' },
-                      { name: 'Zen Emerald Forest', glow: 'from-emerald-500/20 to-teal-500/10' },
-                      { name: 'Deep Midnight Twilight', glow: 'from-purple-500/20 to-indigo-500/10' },
-                    ].map((theme, i) => (
-                      <div
-                        key={theme.name}
-                        className={`p-3 rounded-xl border border-white/10 bg-gradient-to-br ${theme.glow} text-xs font-semibold text-white flex items-center justify-between cursor-pointer hover:border-white/30 transition-all`}
-                      >
-                        <span>{theme.name}</span>
-                        {i === 0 && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                    ))}
+                {/* THEME PRESET GALLERY */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                      Themes
+                    </span>
+                    {appearanceSettings.customBackgroundUrl && (
+                      <span className="text-[11px] text-amber-400/90 font-mono">
+                        (Custom wallpaper currently active)
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 pt-1">
+                    {THEME_PRESETS.map((theme) => {
+                      const isSelected =
+                        !appearanceSettings.customBackgroundUrl &&
+                        appearanceSettings.activeTheme === theme.id;
+
+                      return (
+                        <button
+                          key={theme.id}
+                          id={`btn-theme-${theme.id}`}
+                          onClick={() => {
+                            onUpdateAppearance?.({
+                              activeTheme: theme.id,
+                              customBackgroundUrl: null, // switch to selected preset
+                            });
+                          }}
+                          className={`flex flex-col items-center group text-center cursor-pointer transition-all ${
+                            isSelected ? 'scale-[1.02]' : 'hover:scale-[1.01]'
+                          }`}
+                        >
+                          {/* Card Preview Container */}
+                          <div
+                            className={`w-full aspect-[16/10] rounded-2xl relative overflow-hidden transition-all shadow-md ${
+                              isSelected
+                                ? 'border-2 border-white ring-2 ring-white/20 shadow-xl'
+                                : 'border border-white/10 group-hover:border-white/25'
+                            }`}
+                          >
+                            {/* Inner Visual */}
+                            {renderThemeCardVisual(theme.id)}
+
+                            {/* Active Checkmark Pill on Bottom Right */}
+                            {isSelected && (
+                              <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-white text-black flex items-center justify-center shadow-lg z-10">
+                                <Check className="w-3 h-3 stroke-[3]" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Theme Label */}
+                          <span
+                            className={`mt-2 text-xs tracking-wide transition-colors ${
+                              isSelected
+                                ? 'text-white font-bold'
+                                : 'text-neutral-300 group-hover:text-white'
+                            }`}
+                          >
+                            {theme.name}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                {/* CUSTOM BACKGROUND MODULE */}
+                <div className="pt-3 space-y-3">
+                  <h4 className="text-base font-bold text-white tracking-tight">
+                    Custom Background
+                  </h4>
+                  <p className="text-xs text-neutral-400">
+                    Upload your own theme image. All uploads must follow our guidelines.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                    {/* Left: Drag & Drop Dropzone Box */}
+                    <div
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragOver(true);
+                      }}
+                      onDragLeave={() => setIsDragOver(false)}
+                      onDrop={handleFileDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`relative rounded-2xl border-2 border-dashed transition-all p-5 flex flex-col items-center justify-center text-center cursor-pointer min-h-[145px] overflow-hidden ${
+                        isDragOver
+                          ? 'border-indigo-400 bg-indigo-500/20'
+                          : appearanceSettings.customBackgroundUrl
+                          ? 'border-emerald-500/50 bg-neutral-900/80 hover:border-emerald-400'
+                          : 'border-neutral-700 bg-neutral-900/50 hover:border-neutral-500 hover:bg-neutral-900/80'
+                      }`}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/heic,image/*"
+                        className="hidden"
+                        onChange={handleFileInputChange}
+                      />
+
+                      {appearanceSettings.customBackgroundUrl ? (
+                        <>
+                          <img
+                            src={appearanceSettings.customBackgroundUrl}
+                            alt="Custom uploaded wallpaper"
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 pointer-events-none"
+                          />
+                          <div className="absolute inset-0 bg-black/40" />
+                          <div className="relative z-10 flex flex-col items-center gap-1">
+                            <span className="px-2.5 py-1 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold flex items-center gap-1 backdrop-blur-md">
+                              <Check className="w-3 h-3" /> Image Applied
+                            </span>
+                            <span className="text-[11px] text-neutral-200 mt-1 font-medium">
+                              Click or drop to replace
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center space-y-1">
+                          <p className="text-xs text-neutral-200">
+                            Drop file here or{' '}
+                            <span className="underline font-bold text-white">browse</span>
+                          </p>
+                          <p className="text-[11px] text-neutral-400">
+                            JPG, PNG, WEBP, HEIC (max 5MB, min 800px)
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right: Controls (Save upload, Remove image, Overlay slider) */}
+                    <div className="flex flex-col justify-between space-y-4">
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (appearanceSettings.customBackgroundUrl) {
+                              setSavedSuccess(true);
+                              setTimeout(() => setSavedSuccess(false), 2000);
+                            } else {
+                              fileInputRef.current?.click();
+                            }
+                          }}
+                          className="flex-1 px-4 py-2.5 bg-[#5850ec] hover:bg-[#4f46e5] active:scale-95 text-white font-semibold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-1.5"
+                        >
+                          {savedSuccess ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-300" />
+                              <span>Saved!</span>
+                            </>
+                          ) : (
+                            <span>Save upload</span>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onUpdateAppearance?.({
+                              customBackgroundUrl: null,
+                            });
+                          }}
+                          disabled={!appearanceSettings.customBackgroundUrl}
+                          className={`flex-1 px-4 py-2.5 font-semibold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 ${
+                            appearanceSettings.customBackgroundUrl
+                              ? 'bg-[#991b1b] hover:bg-[#7f1d1d] active:scale-95 text-rose-100 cursor-pointer'
+                              : 'bg-neutral-800 text-neutral-500 cursor-not-allowed opacity-60'
+                          }`}
+                        >
+                          <span>Remove image</span>
+                        </button>
+                      </div>
+
+                      {/* Overlay Slider (0% - 100%) */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-bold text-white">Overlay</label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={appearanceSettings.customBackgroundOverlay}
+                            onChange={(e) => {
+                              const val = Math.max(0, Math.min(100, parseInt(e.target.value) || 0));
+                              onUpdateAppearance?.({
+                                customBackgroundOverlay: val,
+                              });
+                            }}
+                            className="flex-1 accent-indigo-400 h-2 bg-neutral-800 rounded-lg cursor-pointer"
+                          />
+                          <div className="px-3 py-1.5 bg-black/80 border border-white/20 rounded-lg text-xs font-mono font-bold text-white min-w-[50px] text-center shadow-inner">
+                            {appearanceSettings.customBackgroundOverlay}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Zen Mode Shortcut Tip */}
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 mt-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
                     Zen & Fullscreen Mode
                   </span>

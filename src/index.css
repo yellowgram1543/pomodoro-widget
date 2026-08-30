@@ -116,3 +116,52 @@
 .animate-flip-shadow-bottom {
   animation: flipShadowLighten 0.26s ease-out 0.25s forwards;
 }
+
+/* Atmospheric Theme Background Keyframes */
+@keyframes fluidGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gentleAuraPulse {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08) translate(10px, -15px);
+    opacity: 1;
+  }
+}
+
+@keyframes floatingHeartGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 0 45px rgba(217, 70, 239, 0.7));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.06);
+    filter: drop-shadow(0 0 75px rgba(244, 63, 94, 0.9));
+  }
+}
+
+.animate-fluid-flow {
+  background-size: 300% 300%;
+  animation: fluidGradientFlow 18s ease infinite;
+}
+
+.animate-aura-pulse {
+  animation: gentleAuraPulse 12s ease-in-out infinite;
+}
+
+.animate-heart-pulse {
+  animation: floatingHeartGlow 7s ease-in-out infinite;
+}
+
