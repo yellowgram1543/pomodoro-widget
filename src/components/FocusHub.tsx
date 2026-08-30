@@ -486,69 +486,111 @@ export const FocusHub: React.FC<FocusHubProps> = ({
     );
   };
 
+  // Ref for the main tab's video iframe to control playback from PiP
+  const mainIframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Sync play/pause, volume, and mute to the main tab YouTube iframe via postMessage
+  useEffect(() => {
+    if (!mainIframeRef.current?.contentWindow) return;
+    try {
+      const target = mainIframeRef.current.contentWindow;
+      const cmd = media.isPlaying ? 'playVideo' : 'pauseVideo';
+      target.postMessage(JSON.stringify({ event: 'command', func: cmd, args: [] }), '*');
+
+      if (media.isMuted) {
+        target.postMessage(JSON.stringify({ event: 'command', func: 'mute', args: [] }), '*');
+      } else {
+        target.postMessage(JSON.stringify({ event: 'command', func: 'unMute', args: [] }), '*');
+        target.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [media.volume] }), '*');
+      }
+    } catch (e) {
+      console.warn('YouTube postMessage dispatch error:', e);
+    }
+  }, [media.isPlaying, media.isMuted, media.volume]);
+
   // If PiP is currently active, portal the widget into the floating Always-on-Top window!
   if (isPipActive && pipContainer) {
+    const { videoId, listId } = media.currentSource;
+    let mainEmbedUrl = '';
+    if (listId && !videoId) {
+      mainEmbedUrl = `https://www.youtube.com/embed/videoseries?list=${listId}&autoplay=${
+        media.isPlaying ? 1 : 0
+      }&mute=${media.isMuted ? 1 : 0}&controls=1&loop=1&enablejsapi=1&playsinline=1`;
+    } else if (videoId) {
+      const loopParam = listId ? `&list=${listId}` : `&playlist=${videoId}`;
+      mainEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${
+        media.isPlaying ? 1 : 0
+      }&mute=${media.isMuted ? 1 : 0}&controls=1&loop=1${loopParam}&enablejsapi=1&playsinline=1`;
+    }
+
     return (
       <>
-        {/* Placeholder Dock in the main page with a Re-Dock button and Background Audio Player */}
+        {/* Main Window Cinema Canvas: Big Ambient Video Player + Top Dock Button */}
         <div
           ref={containerRef}
-          className="fixed inset-0 pointer-events-none z-30 flex items-center justify-center p-4"
+          className="fixed inset-0 pointer-events-none z-20 flex flex-col items-center justify-between p-6 pt-20 pb-12"
         >
-          <div className="pointer-events-auto max-w-md w-full p-6 rounded-3xl bg-neutral-900/90 border border-amber-400/40 backdrop-blur-2xl shadow-2xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-400 animate-pulse">
-              <PictureInPicture2 className="w-6 h-6" />
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-white">
-                Focus Hub is Floating Always on Top
-              </h3>
-              <p className="text-xs text-neutral-400 max-w-xs mx-auto">
-                Your widget is hovering in a native Picture-in-Picture window. YouTube audio and Pomodoro timers remain synchronized.
-              </p>
-            </div>
-
-            {/* Background Media Streamer: Keeps YouTube audio running in the main tab */}
-            {(media.currentSource.videoId || media.currentSource.listId) && (
-              <div className="relative rounded-2xl overflow-hidden bg-neutral-950 border border-white/10 p-2 flex items-center gap-3 text-left">
-                <div className="w-16 h-12 rounded-lg bg-neutral-800 overflow-hidden shrink-0 relative">
-                  <iframe
-                    title="Main Tab Ambient Audio Stream"
-                    src={
-                      media.currentSource.listId && !media.currentSource.videoId
-                        ? `https://www.youtube.com/embed/videoseries?list=${media.currentSource.listId}&autoplay=1&mute=${
-                            media.isMuted ? 1 : 0
-                          }&controls=0&loop=1&playsinline=1`
-                        : `https://www.youtube.com/embed/${media.currentSource.videoId}?autoplay=1&mute=${
-                            media.isMuted ? 1 : 0
-                          }&controls=0&loop=1&playlist=${media.currentSource.videoId}&playsinline=1`
-                    }
-                    className="w-full h-full object-cover scale-150 pointer-events-none opacity-80"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wide block">
-                    {media.isPlaying ? 'Active Audio Stream' : 'Stream Paused'}
-                  </span>
-                  <span className="text-xs font-semibold text-white truncate block">
-                    {media.currentSource.title || 'Ambient Focus Track'}
-                  </span>
-                </div>
+          {/* Top Dock Back Here Header Action */}
+          <div className="pointer-events-auto w-full max-w-5xl flex items-center justify-between px-5 py-3 rounded-2xl bg-neutral-900/90 border border-amber-400/40 backdrop-blur-2xl shadow-2xl animate-in fade-in slide-in-from-top-3 duration-200">
+            <div className="flex items-center gap-3 text-left">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400">
+                <PictureInPicture2 className="w-4 h-4 animate-pulse" />
               </div>
-            )}
-
-            <div className="pt-2 flex items-center justify-center gap-3">
-              <button
-                id="btn-redock-pip"
-                onClick={handleClosePip}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95"
-              >
-                <ArrowDownLeft className="w-4 h-4" />
-                <span>Dock Back Here</span>
-              </button>
+              <div>
+                <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Focus Hub is Floating Always on Top</span>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 font-mono text-[10px] uppercase">
+                    PiP Active
+                  </span>
+                </h4>
+                <p className="text-[11px] text-neutral-400">
+                  Full Pomodoro timers and tasks are hovering over your desktop apps.
+                </p>
+              </div>
             </div>
+
+            <button
+              id="btn-redock-pip-top"
+              onClick={handleClosePip}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/25 transition-all active:scale-95 hover:shadow-amber-500/40"
+            >
+              <ArrowDownLeft className="w-4 h-4" />
+              <span>Dock Back Here</span>
+            </button>
+          </div>
+
+          {/* Large Cinema Ambient Video Player */}
+          <div className="pointer-events-auto w-full max-w-5xl flex-1 flex flex-col justify-center items-center my-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative w-full aspect-video max-h-[70vh] rounded-3xl overflow-hidden bg-neutral-950 border border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.85)] ring-1 ring-amber-400/20">
+              {mainEmbedUrl ? (
+                <iframe
+                  ref={mainIframeRef}
+                  key={mainEmbedUrl}
+                  title="Main Tab Cinema Ambient Video Player"
+                  src={mainEmbedUrl}
+                  className="w-full h-full object-cover"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-neutral-500 space-y-2">
+                  <Radio className="w-12 h-12 text-neutral-600 stroke-1 animate-pulse" />
+                  <span className="text-sm font-medium">Select an Ambient Preset to play</span>
+                </div>
+              )}
+
+              {/* Status Overlay in Video Header */}
+              <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-950/80 backdrop-blur-md border border-white/10 text-xs font-semibold text-white pointer-events-none">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="truncate max-w-xs">{media.currentSource.title || 'Ambient Focus Stream'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Space / Subtle Hint */}
+          <div className="pointer-events-none text-center text-neutral-500 text-xs font-mono">
+            {media.isPlaying ? '▶ Ambient Stream Playing' : '⏸ Stream Paused'} | Volume: {media.isMuted ? 'Muted' : `${media.volume}%`}
           </div>
         </div>
 

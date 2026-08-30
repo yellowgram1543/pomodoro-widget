@@ -48,17 +48,17 @@ export const MediaTab: React.FC<MediaTabProps> = ({
 
   const { videoId, listId } = media.currentSource;
 
-  // Build clean embed URL for YouTube. In Document PiP, origin parameters shouldn't contain encoded characters that trip up the internal parser.
+  // Build clean embed URL for YouTube with enablejsapi=1 for full remote postMessage synchronization
   let embedUrl = '';
   if (listId && !videoId) {
-    embedUrl = `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&autoplay=1&mute=${
-      media.isMuted ? 1 : 0
-    }&controls=1&loop=1&playsinline=1`;
+    embedUrl = `https://www.youtube.com/embed/videoseries?list=${listId}&autoplay=${
+      media.isPlaying ? 1 : 0
+    }&mute=${media.isMuted ? 1 : 0}&controls=1&loop=1&enablejsapi=1&playsinline=1`;
   } else if (videoId) {
     const loopParam = listId ? `&list=${listId}` : `&playlist=${videoId}`;
-    embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=${
-      media.isMuted ? 1 : 0
-    }&controls=1&loop=1${loopParam}&playsinline=1`;
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=${
+      media.isPlaying ? 1 : 0
+    }&mute=${media.isMuted ? 1 : 0}&controls=1&loop=1${loopParam}&enablejsapi=1&playsinline=1`;
   }
 
   // Handle postMessage commands for video volume and mute
