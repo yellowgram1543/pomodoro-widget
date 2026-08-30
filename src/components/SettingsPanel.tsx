@@ -24,9 +24,11 @@ import {
   SettingsCategory,
   AlarmSound,
   ClockTimerStyle,
+  PomodoroTimerStyle,
 } from '../types';
 import { playChime } from '../utils/audio';
 import { CLOCK_TIMER_STYLES } from '../utils/timerThemes';
+import { POMO_TIMER_STYLES } from '../utils/pomoTimerStyles';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -42,6 +44,8 @@ interface SettingsPanelProps {
   onUpdateMedia: (newMedia: Partial<MediaSettings>) => void;
   clockTimerStyle?: ClockTimerStyle;
   onUpdateClockTimerStyle?: (style: ClockTimerStyle) => void;
+  pomoTimerStyle?: PomodoroTimerStyle;
+  onUpdatePomoTimerStyle?: (style: PomodoroTimerStyle) => void;
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -58,6 +62,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onUpdateMedia,
   clockTimerStyle = 'default',
   onUpdateClockTimerStyle,
+  pomoTimerStyle = 'default',
+  onUpdatePomoTimerStyle,
 }) => {
   const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory);
 
@@ -111,7 +117,93 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     if (!pomoState.isRunning) {
       onUpdatePomoState({ timeLeft: 25 * 60, mode: 'work', currentCycle: 1 });
     }
+    onUpdatePomoTimerStyle?.('default');
     applyCustomTimerDuration(0, 25, 0);
+  };
+
+  const renderPomoStylePreview = (styleId: PomodoroTimerStyle) => {
+    switch (styleId) {
+      case 'default':
+        return (
+          <div className="flex items-center justify-center w-full h-full">
+            <span className="font-mono font-bold text-xl sm:text-2xl text-white tracking-tight">
+              25:00
+            </span>
+          </div>
+        );
+      case 'flipClock':
+        return (
+          <div className="flex items-center justify-center gap-2 w-full h-full">
+            <div className="relative w-8 h-10 bg-neutral-800/90 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden shadow">
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-black" />
+              <span className="font-mono font-black text-base text-white">2</span>
+            </div>
+            <div className="relative w-8 h-10 bg-neutral-800/90 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden shadow">
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-black" />
+              <span className="font-mono font-black text-base text-white">5</span>
+            </div>
+          </div>
+        );
+      case 'progressBar':
+        return (
+          <div className="flex flex-col items-center justify-center w-full h-full px-4 space-y-2">
+            <span className="text-[11px] font-mono font-bold text-white tracking-tight">25:00</span>
+            <div className="w-full h-2.5 bg-neutral-800 rounded-full overflow-hidden flex p-0.5 border border-white/10">
+              <div className="w-[65%] h-full bg-white rounded-full" />
+            </div>
+          </div>
+        );
+      case 'gauge':
+        return (
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
+            <svg viewBox="0 0 36 36" className="w-8 h-8 transform -rotate-90">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#262626" strokeWidth="3.5" />
+              <circle
+                cx="18"
+                cy="18"
+                r="14"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="3.5"
+                strokeDasharray={2 * Math.PI * 14}
+                strokeDashoffset={2 * Math.PI * 14 * 0.35}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+          </div>
+        );
+      case 'dotMatrix':
+        return (
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
+            <div className="grid grid-cols-6 gap-1.5">
+              {Array.from({ length: 18 }).map((_, i) => {
+                const col = i % 6;
+                const isLit = col < 4;
+                return (
+                  <div
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full ${isLit ? 'bg-white' : 'bg-neutral-800'}`}
+                  />
+                );
+              })}
+            </div>
+            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+          </div>
+        );
+      case 'pie':
+        return (
+          <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
+            <div
+              className="w-7 h-7 rounded-full border border-neutral-700 shadow-sm"
+              style={{
+                background: 'conic-gradient(#ffffff 240deg, #262626 0deg)',
+              }}
+            />
+            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+          </div>
+        );
+    }
   };
 
   const navCategories: { id: SettingsCategory; label: string; icon: React.FC<{ className?: string }> }[] = [
@@ -282,6 +374,61 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       />
                     </div>
                     <span className="text-[10px] text-neutral-500 block">Default: 15 mins</span>
+                  </div>
+                </div>
+
+                {/* 1.B. TIMER STYLE (Appearance Gallery for Pomodoro) */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-base font-bold text-white tracking-tight">
+                      Timer Style
+                    </h4>
+                    <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-600/30 text-purple-300 border border-purple-400/40 rounded-full font-mono flex items-center gap-1">
+                      <span className="text-amber-400">⚡</span> PLUS
+                    </span>
+                    <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 rounded-full font-mono">
+                      NEW
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-400">
+                    Choose how the time remaining is displayed.
+                  </p>
+
+                  {/* 6 Miniature Style Cards Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                    {POMO_TIMER_STYLES.map((style) => {
+                      const isSelected = pomoTimerStyle === style.id;
+                      return (
+                        <button
+                          key={style.id}
+                          id={`btn-pomo-style-${style.id}`}
+                          onClick={() => onUpdatePomoTimerStyle?.(style.id)}
+                          className={`flex flex-col items-center group text-left cursor-pointer transition-all ${
+                            isSelected ? 'scale-[1.02]' : 'hover:scale-[1.01]'
+                          }`}
+                        >
+                          {/* Card Frame */}
+                          <div
+                            className={`w-full aspect-[16/11] rounded-2xl flex flex-col items-center justify-center p-3 transition-all relative overflow-hidden ${
+                              isSelected
+                                ? 'bg-neutral-900 border-2 border-white shadow-xl shadow-white/5'
+                                : 'bg-neutral-900/60 hover:bg-neutral-900/90 border border-white/10 hover:border-white/25'
+                            }`}
+                          >
+                            {renderPomoStylePreview(style.id)}
+                          </div>
+
+                          {/* Label under card */}
+                          <span
+                            className={`mt-2 text-xs tracking-wide transition-colors ${
+                              isSelected ? 'text-white font-bold' : 'text-neutral-400 group-hover:text-neutral-200'
+                            }`}
+                          >
+                            {style.label}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 

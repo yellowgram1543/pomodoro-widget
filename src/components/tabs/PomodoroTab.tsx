@@ -1,12 +1,13 @@
 import React from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PomodoroSettings, PomodoroState, SettingsCategory } from '../../types';
+import { PomodoroSettings, PomodoroState, SettingsCategory, PomodoroTimerStyle } from '../../types';
 import { playChime } from '../../utils/audio';
 
 interface PomodoroTabProps {
   state: PomodoroState;
   settings: PomodoroSettings;
+  timerStyle?: PomodoroTimerStyle;
   onUpdateState: (newState: Partial<PomodoroState>) => void;
   onUpdateSettings: (newSettings: Partial<PomodoroSettings>) => void;
   onOpenSettings?: (cat: SettingsCategory) => void;
@@ -15,13 +16,28 @@ interface PomodoroTabProps {
 export const PomodoroTab: React.FC<PomodoroTabProps> = ({
   state,
   settings,
+  timerStyle = 'default',
   onUpdateState,
   onOpenSettings,
 }) => {
   // Format time MM:SS
   const minutes = Math.floor(state.timeLeft / 60);
   const seconds = state.timeLeft % 60;
-  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const mStr = String(minutes).padStart(2, '0');
+  const sStr = String(seconds).padStart(2, '0');
+  const formattedTime = `${mStr}:${sStr}`;
+
+  const currentTotalSeconds =
+    state.mode === 'work'
+      ? settings.workDuration * 60
+      : state.mode === 'shortBreak'
+      ? settings.shortBreakDuration * 60
+      : settings.longBreakDuration * 60;
+
+  const progress = Math.max(
+    0,
+    Math.min(1, (currentTotalSeconds - state.timeLeft) / Math.max(1, currentTotalSeconds))
+  );
 
   const togglePlay = () => {
     onUpdateState({ isRunning: !state.isRunning });
@@ -109,20 +125,165 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
       label: 'Focus Session',
       color: 'text-amber-400',
       badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+      fillColor: '#fbbf24',
+      bgBar: 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]',
+      dotLit: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] scale-110',
     },
     shortBreak: {
       label: 'Short Rest',
       color: 'text-emerald-400',
       badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+      fillColor: '#34d399',
+      bgBar: 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.6)]',
+      dotLit: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] scale-110',
     },
     longBreak: {
       label: 'Long Rest',
       color: 'text-sky-400',
       badge: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+      fillColor: '#38bdf8',
+      bgBar: 'bg-gradient-to-r from-sky-500 to-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.6)]',
+      dotLit: 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)] scale-110',
     },
   };
 
   const currentTheme = modeThemes[state.mode];
+
+  // Render the chosen timer visual style
+  const renderTimerDisplay = () => {
+    switch (timerStyle) {
+      case 'flipClock':
+        return (
+          <div className="flex items-center justify-center gap-2 sm:gap-2.5 my-2">
+            {/* Minutes Digits */}
+            <div className="flex items-center gap-1">
+              <FlipDigit digit={mStr[0]} />
+              <FlipDigit digit={mStr[1]} />
+            </div>
+
+            {/* Pulsing Colon */}
+            <div className="flex flex-col gap-2 px-1">
+              <span className={`w-2 h-2 rounded-full ${state.isRunning ? 'bg-amber-400 animate-pulse' : 'bg-white/40'}`} />
+              <span className={`w-2 h-2 rounded-full ${state.isRunning ? 'bg-amber-400 animate-pulse' : 'bg-white/40'}`} />
+            </div>
+
+            {/* Seconds Digits */}
+            <div className="flex items-center gap-1">
+              <FlipDigit digit={sStr[0]} />
+              <FlipDigit digit={sStr[1]} />
+            </div>
+          </div>
+        );
+
+      case 'progressBar':
+        return (
+          <div className="flex flex-col items-center justify-center w-full max-w-xs space-y-3.5 my-2">
+            <div className="text-6xl sm:text-7xl font-timer-default tracking-tight text-white drop-shadow-md">
+              {formattedTime}
+            </div>
+            <div className="w-full h-3.5 bg-neutral-900 rounded-full overflow-hidden p-0.5 border border-white/15 shadow-inner">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ease-out ${currentTheme.bgBar}`}
+                style={{ width: `${Math.max(3, Math.min(100, progress * 100))}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between w-full text-[11px] font-mono text-neutral-400 px-1">
+              <span>{Math.round(progress * 100)}% elapsed</span>
+              <span>{Math.ceil(state.timeLeft / 60)}m left</span>
+            </div>
+          </div>
+        );
+
+      case 'gauge':
+        const radius = 46;
+        const circ = 2 * Math.PI * radius;
+        const offset = circ * (1 - progress);
+        return (
+          <div className="relative flex flex-col items-center justify-center my-1">
+            <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+              <svg viewBox="0 0 120 120" className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={radius}
+                  stroke="currentColor"
+                  strokeWidth="7"
+                  className="text-white/10"
+                  fill="transparent"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r={radius}
+                  strokeWidth="7"
+                  strokeDasharray={circ}
+                  strokeDashoffset={offset}
+                  strokeLinecap="round"
+                  className={`transition-all duration-500 ease-out fill-transparent stroke-current ${currentTheme.color}`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span className="text-3xl sm:text-4xl font-mono font-bold text-white tracking-tight drop-shadow-md">
+                  {formattedTime}
+                </span>
+                <span className="text-[11px] font-mono text-neutral-400 mt-1">
+                  {Math.round(progress * 100)}%
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'dotMatrix':
+        const totalDots = 30; // 3 rows x 10 cols
+        const activeCount = Math.round(progress * totalDots);
+        return (
+          <div className="flex flex-col items-center justify-center space-y-3.5 my-2">
+            <div className="grid grid-cols-10 gap-2 p-3 bg-neutral-900/80 border border-white/10 rounded-2xl shadow-inner backdrop-blur-md">
+              {Array.from({ length: totalDots }).map((_, idx) => {
+                const isLit = idx < activeCount;
+                return (
+                  <div
+                    key={idx}
+                    className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
+                      isLit ? currentTheme.dotLit : 'bg-white/15'
+                    }`}
+                  />
+                );
+              })}
+            </div>
+            <div className="text-5xl sm:text-6xl font-mono font-bold tracking-tight text-white drop-shadow-md">
+              {formattedTime}
+            </div>
+          </div>
+        );
+
+      case 'pie':
+        return (
+          <div className="flex flex-col items-center justify-center space-y-3 my-2">
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 border-2 border-white/15 bg-neutral-900/90 shadow-xl flex items-center justify-center">
+              <div
+                className="w-full h-full rounded-full transition-all duration-500"
+                style={{
+                  background: `conic-gradient(${currentTheme.fillColor} ${progress * 360}deg, rgba(255,255,255,0.12) 0deg)`,
+                }}
+              />
+            </div>
+            <div className="text-4xl sm:text-5xl font-mono font-bold tracking-tight text-white drop-shadow-md">
+              {formattedTime}
+            </div>
+          </div>
+        );
+
+      case 'default':
+      default:
+        return (
+          <div className="text-6xl sm:text-7xl font-timer-default tracking-tight text-white drop-shadow-md my-2">
+            {formattedTime}
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-between w-full space-y-4 py-1">
@@ -163,18 +324,20 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
         </button>
       </div>
 
-      {/* Main Countdown Display without circle */}
-      <div className="flex flex-col items-center justify-center my-3 sm:my-5 text-center select-none">
-        <span className={`px-3 py-0.5 mb-3 text-[11px] font-semibold tracking-wider uppercase rounded-full border ${currentTheme.badge}`}>
+      {/* Main Countdown Display using active timerStyle */}
+      <div className="flex flex-col items-center justify-center my-2 sm:my-3 text-center select-none w-full">
+        <button
+          onClick={() => onOpenSettings?.('pomodoro')}
+          className={`px-3 py-0.5 mb-2 text-[11px] font-semibold tracking-wider uppercase rounded-full border ${currentTheme.badge} hover:opacity-80 transition-opacity cursor-pointer`}
+          title="Click to customize Pomodoro intervals and style"
+        >
           {currentTheme.label}
-        </span>
-        
-        <div className="text-6xl sm:text-7xl font-timer-default tracking-tight text-white drop-shadow-md">
-          {formattedTime}
-        </div>
+        </button>
+
+        {renderTimerDisplay()}
 
         {/* Cycle indicator dots */}
-        <div className="flex items-center gap-2 mt-4">
+        <div className="flex items-center gap-2 mt-3">
           {Array.from({ length: settings.cyclesBeforeLongBreak }).map((_, idx) => {
             const isFilled = idx < state.currentCycle;
             const isCurrent = idx === state.currentCycle - 1 && state.mode === 'work';
@@ -255,4 +418,23 @@ export const PomodoroTab: React.FC<PomodoroTabProps> = ({
     </div>
   );
 };
+
+// Retro mechanical flip digit card component
+const FlipDigit: React.FC<{ digit: string }> = ({ digit }) => (
+  <div className="relative w-12 sm:w-14 h-16 sm:h-20 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 rounded-xl border border-white/15 shadow-2xl flex flex-col items-center justify-center overflow-hidden">
+    {/* Top half subtle sheen */}
+    <div className="absolute top-0 inset-x-0 h-1/2 bg-white/[0.03] border-b border-black/80 pointer-events-none" />
+    {/* Bottom half shadow */}
+    <div className="absolute bottom-0 inset-x-0 h-1/2 bg-black/20 pointer-events-none" />
+    {/* Center crease seam */}
+    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-neutral-950 shadow-sm pointer-events-none z-10" />
+    {/* Side notches */}
+    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-black rounded-r-sm z-10" />
+    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-black rounded-l-sm z-10" />
+    {/* Digit text */}
+    <span className="font-mono font-black text-3xl sm:text-4xl text-white tracking-tight z-0 select-none drop-shadow-md">
+      {digit}
+    </span>
+  </div>
+);
 

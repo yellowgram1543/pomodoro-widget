@@ -17,6 +17,7 @@ import {
   TaskPriority,
   SettingsCategory,
   ClockTimerStyle,
+  PomodoroTimerStyle,
 } from './types';
 import { AMBIENT_PRESETS } from './utils/youtube';
 import { playChime } from './utils/audio';
@@ -177,6 +178,16 @@ export default function App() {
     }
   });
 
+  // 6. Pomodoro Timer Style (Default, Flip Clock, Progress Bar, Gauge, Dot Matrix, Pie)
+  const [pomoTimerStyle, setPomoTimerStyle] = useState<PomodoroTimerStyle>(() => {
+    try {
+      const saved = localStorage.getItem('ambient_pomo_timer_style');
+      return (saved as PomodoroTimerStyle) || 'default';
+    } catch {
+      return 'default';
+    }
+  });
+
   // Keep localStorage synchronized
   useEffect(() => {
     localStorage.setItem('ambient_pomo_settings', JSON.stringify(pomoSettings));
@@ -197,6 +208,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ambient_clock_timer_style', clockTimerStyle);
   }, [clockTimerStyle]);
+
+  useEffect(() => {
+    localStorage.setItem('ambient_pomo_timer_style', pomoTimerStyle);
+  }, [pomoTimerStyle]);
 
   // Pomodoro Timer Engine Loop
   useEffect(() => {
@@ -425,6 +440,7 @@ export default function App() {
           onSelectPreset={handleSelectPreset}
           onOpenSettings={handleOpenSettings}
           clockTimerStyle={clockTimerStyle}
+          pomoTimerStyle={pomoTimerStyle}
         />
       )}
 
@@ -469,6 +485,8 @@ export default function App() {
         onUpdateMedia={handleUpdateMedia}
         clockTimerStyle={clockTimerStyle}
         onUpdateClockTimerStyle={setClockTimerStyle}
+        pomoTimerStyle={pomoTimerStyle}
+        onUpdatePomoTimerStyle={setPomoTimerStyle}
       />
 
       {/* Keyboard Shortcut Hints Footer Bar */}

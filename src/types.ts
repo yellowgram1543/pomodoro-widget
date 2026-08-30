@@ -83,6 +83,8 @@ export type SettingsCategory = 'pomodoro' | 'timer' | 'sound' | 'appearance' | '
 
 export type ClockTimerStyle = 'default' | 'minimal' | 'serif' | 'handwritten' | 'minimalLight' | 'serifCondensed';
 
+export type PomodoroTimerStyle = 'default' | 'flipClock' | 'progressBar' | 'gauge' | 'dotMatrix' | 'pie';
+
 export type WidgetSizePreset = 'compact' | 'standard' | 'expanded' | 'full';
 
 export interface WidgetDimensions {
