@@ -4,11 +4,8 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  Sparkles,
+  BookOpen,
   EyeOff,
-  Radio,
-  Clock,
-  Layers,
   Settings,
   Music2,
 } from 'lucide-react';
@@ -67,35 +64,35 @@ export const TopBar: React.FC<TopBarProps> = ({
   return (
     <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4 pointer-events-none">
       {/* App Branding & Current Clock */}
-      <div className="flex items-center gap-4 pointer-events-auto">
-        <div className="flex items-center gap-2.5 px-3 py-1.5 bg-neutral-950/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg">
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
-          <span className="text-xs font-bold tracking-tight text-white font-sans">
-            Ambient Focus
+      <div className="flex items-center gap-3.5 pointer-events-auto">
+        <div className="flex items-center gap-2.5 px-3.5 py-2 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl shadow-[0_2px_8px_rgba(40,30,20,0.06)]">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#C84B31]" />
+          <span className="text-xs font-bold tracking-tight text-[#211F1C] font-heading">
+            Manga Focus
           </span>
-          <span className="text-neutral-500 text-xs">|</span>
-          <span className="text-xs font-mono font-medium text-neutral-300">
+          <span className="text-[#CFC5B6] text-xs">/</span>
+          <span className="text-xs font-mono font-medium text-[#5C564C]">
             {currentTime}
           </span>
         </div>
 
-        {/* Quick Atmosphere Selector Pill */}
+        {/* Quick Atmosphere Selector */}
         <div className="relative">
           <button
             id="btn-topbar-atmosphere"
             onClick={() => setShowPresetMenu(!showPresetMenu)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-2xl text-xs text-neutral-200 transition-all shadow-lg"
+            className="flex items-center gap-1.5 px-3 py-2 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl text-xs font-medium text-[#211F1C] transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <BookOpen className="w-3.5 h-3.5 text-[#C84B31]" />
             <span className="truncate max-w-[140px]">
               {truncateTitle(media.currentSource.title || 'Ambience', 50)}
             </span>
           </button>
 
           {showPresetMenu && (
-            <div className="absolute top-10 left-0 w-64 p-2 bg-neutral-950/90 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                Quick Ambience Switcher
+            <div className="absolute top-11 left-0 w-64 p-2 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl shadow-[0_12px_28px_rgba(40,30,20,0.12)] space-y-1 z-30">
+              <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#8F877A]">
+                Library Ambience Switcher
               </div>
               <div className="max-h-56 overflow-y-auto space-y-1 custom-scrollbar">
                 {AMBIENT_PRESETS.map((preset) => (
@@ -105,14 +102,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                       onSelectPreset(preset);
                       setShowPresetMenu(false);
                     }}
-                    className={`w-full flex items-center justify-between p-2 rounded-xl text-left text-xs transition-all ${
+                    className={`w-full flex items-center justify-between p-2 rounded-lg text-left text-xs transition-all ${
                       media.currentSource.videoId === preset.videoId
-                        ? 'bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30'
-                        : 'hover:bg-white/10 text-neutral-300'
+                        ? 'bg-[#F0EAE1] text-[#C84B31] font-bold border border-[#E2DBD0]'
+                        : 'hover:bg-[#F0EAE1] text-[#5C564C]'
                     }`}
                   >
                     <span className="truncate">{truncateTitle(preset.title, 50)}</span>
-                    <span className="text-[10px] text-neutral-500 font-mono">
+                    <span className="text-[10px] text-[#8F877A] font-mono">
                       {preset.tag}
                     </span>
                   </button>
@@ -123,13 +120,13 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Music, Settings, Mute, Zen Mode, Fullscreen */}
+      {/* Right Controls */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <button
           id="btn-topbar-music"
           onClick={() => onOpenMusic?.()}
-          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-amber-300 hover:text-amber-200 transition-all shadow-lg hover:border-amber-500/30"
-          title="Music & Ambient Soundscapes"
+          className="p-2 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl text-[#211F1C] hover:text-[#C84B31] transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)]"
+          title="Soundscapes & Audio Mixer"
         >
           <Music2 className="w-4 h-4" />
         </button>
@@ -137,8 +134,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         <button
           id="btn-topbar-settings"
           onClick={() => onOpenSettings?.('pomodoro')}
-          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-200 hover:text-white transition-all shadow-lg"
-          title="Settings & Preferences"
+          className="p-2 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl text-[#211F1C] hover:text-[#C84B31] transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)]"
+          title="Settings & Themes"
         >
           <Settings className="w-4 h-4" />
         </button>
@@ -146,12 +143,12 @@ export const TopBar: React.FC<TopBarProps> = ({
         <button
           id="btn-topbar-mute-toggle"
           onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
-          className={`p-2 rounded-xl backdrop-blur-xl border transition-all shadow-lg ${
+          className={`p-2 rounded-xl border transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)] ${
             media.isMuted
-              ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-              : 'bg-neutral-950/60 hover:bg-neutral-900/80 text-neutral-200 border-white/10'
+              ? 'bg-[#FBEBE8] text-[#C84B31] border-[#F2C2BA]'
+              : 'bg-[#FCFAF6] hover:bg-[#F0EAE1] text-[#211F1C] border-[#E2DBD0]'
           }`}
-          title={media.isMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
+          title={media.isMuted ? 'Unmute Sound' : 'Mute Sound'}
         >
           {media.isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
@@ -159,12 +156,12 @@ export const TopBar: React.FC<TopBarProps> = ({
         <button
           id="btn-topbar-zen-mode"
           onClick={() => setIsZenMode(!isZenMode)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl backdrop-blur-xl border transition-all shadow-lg text-xs font-semibold ${
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)] text-xs font-bold ${
             isZenMode
-              ? 'bg-amber-500 text-neutral-950 border-amber-400'
-              : 'bg-neutral-950/60 hover:bg-neutral-900/80 text-neutral-200 border-white/10'
+              ? 'bg-[#C84B31] text-[#FCFAF6] border-[#C84B31]'
+              : 'bg-[#FCFAF6] hover:bg-[#F0EAE1] text-[#211F1C] border-[#E2DBD0]'
           }`}
-          title="Toggle Zen Mode (Hide floating widgets)"
+          title="Toggle Zen Mode"
         >
           <EyeOff className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Zen Mode</span>
@@ -173,7 +170,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <button
           id="btn-topbar-fullscreen"
           onClick={toggleFullscreen}
-          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-200 transition-all shadow-lg"
+          className="p-2 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl text-[#211F1C] transition-all shadow-[0_2px_8px_rgba(40,30,20,0.06)]"
           title="Toggle Fullscreen"
         >
           {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}

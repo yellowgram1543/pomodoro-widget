@@ -29,7 +29,7 @@ import { MusicModal } from './components/MusicModal';
 
 const INITIAL_APPEARANCE_SETTINGS: AppearanceSettings = {
   backgroundMode: 'theme',
-  activeTheme: 'defaultDark',
+  activeTheme: 'mangaKissaten',
   customBackgroundUrl: null,
   customBackgroundOverlay: 0,
   videoBackgroundId: null,

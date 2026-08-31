@@ -305,16 +305,16 @@ export const MediaTab: React.FC<MediaTabProps> = ({
       <div className="space-y-3">
         {inFloatingPip ? (
           /* Dedicated Always-on-Top Floating PiP Media Controller */
-          <div className="relative w-full rounded-2xl overflow-hidden bg-neutral-950/90 border border-amber-400/30 shadow-xl p-3.5 space-y-3">
-            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+          <div className="relative w-full rounded-2xl overflow-hidden bg-[#FCFAF6] border border-[#E2DBD0] shadow-xl p-3.5 space-y-3">
+            <div className="flex items-center justify-between gap-2 border-b border-[#E2DBD0] pb-2.5">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="flex items-end gap-0.5 h-3.5 px-1 py-0.5 bg-amber-500/20 rounded">
-                  <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_100ms] h-3" />
-                  <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_300ms] h-2" />
-                  <span className="w-0.5 bg-amber-400 rounded-full animate-[bounce_1s_infinite_200ms] h-3.5" />
+                <div className="flex items-end gap-0.5 h-3.5 px-1 py-0.5 bg-[#FBEBE8] rounded">
+                  <span className="w-0.5 bg-[#C84B31] rounded-full animate-[bounce_1s_infinite_100ms] h-3" />
+                  <span className="w-0.5 bg-[#C84B31] rounded-full animate-[bounce_1s_infinite_300ms] h-2" />
+                  <span className="w-0.5 bg-[#C84B31] rounded-full animate-[bounce_1s_infinite_200ms] h-3.5" />
                 </div>
-                <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wide">
-                  Streaming Active
+                <span className="text-[10px] font-mono font-bold text-[#C84B31] uppercase tracking-wide">
+                  Soundtrack Active
                 </span>
               </div>
 
@@ -324,7 +324,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                     href={`https://open.spotify.com/${spotifyType || 'playlist'}/${spotifyId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-1 rounded-md bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] flex items-center gap-1 transition-all"
+                    className="p-1 rounded-md bg-[#EBF2ED] text-[#4A7C59] hover:bg-[#DCEDE0] text-[10px] flex items-center gap-1 transition-all font-medium border border-[#C2D8C9]"
                   >
                     <SpotifyIcon className="w-3 h-3" />
                     <span>Spotify</span>
@@ -334,7 +334,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                     href={`https://www.youtube.com/watch?v=${videoId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-1 rounded-md bg-white/5 hover:bg-white/15 text-neutral-300 hover:text-white text-[10px] flex items-center gap-1 transition-all"
+                    className="p-1 rounded-md bg-[#F0EAE1] hover:bg-[#E8E1D6] text-[#5C564C] hover:text-[#211F1C] text-[10px] flex items-center gap-1 transition-all border border-[#E2DBD0]"
                     title="Open full video in YouTube"
                   >
                     <ExternalLink className="w-3 h-3" />
@@ -345,7 +345,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                 {onDockBack && (
                   <button
                     onClick={onDockBack}
-                    className="p-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] font-semibold flex items-center gap-1 transition-all"
+                    className="p-1 rounded-md bg-[#FBEBE8] hover:bg-[#F7DDD7] text-[#C84B31] text-[10px] font-bold flex items-center gap-1 transition-all border border-[#F2C2BA]"
                   >
                     <span>Dock</span>
                   </button>
@@ -354,12 +354,12 @@ export const MediaTab: React.FC<MediaTabProps> = ({
             </div>
 
             {/* Title & Play/Pause Banner */}
-            <div className="flex items-center justify-between gap-3 bg-white/5 p-2.5 rounded-xl border border-white/10">
+            <div className="flex items-center justify-between gap-3 bg-[#F6F3EB] p-2.5 rounded-xl border border-[#E2DBD0]">
               <div className="min-w-0 flex-1">
-                <span className="text-xs font-bold text-white block truncate">
-                  {truncateTitle(media.currentSource.title || 'Ambient Track', 50)}
+                <span className="text-xs font-bold text-[#211F1C] block truncate">
+                  {truncateTitle(media.currentSource.title || 'Library Atmosphere', 50)}
                 </span>
-                <span className="text-[10px] text-neutral-400 font-mono">
+                <span className="text-[10px] text-[#8F877A] font-mono">
                   {media.isMuted ? 'Muted' : `Volume: ${media.volume}%`}
                 </span>
               </div>
@@ -367,7 +367,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => onUpdateMedia({ isPlaying: !media.isPlaying })}
-                  className="p-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold transition-all active:scale-95 shadow-md shadow-amber-500/20"
+                  className="p-2 rounded-xl bg-[#C84B31] hover:bg-[#B53F27] text-[#FCFAF6] font-bold transition-all active:scale-95 shadow-sm"
                 >
                   {media.isPlaying ? (
                     <Pause className="w-4 h-4 fill-current" />
@@ -380,8 +380,8 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
                   className={`p-2 rounded-xl border transition-all ${
                     media.isMuted
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-                      : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                      ? 'bg-[#FBEBE8] text-[#C84B31] border-[#F2C2BA]'
+                      : 'bg-[#FCFAF6] text-[#5C564C] border-[#E2DBD0] hover:bg-[#F0EAE1]'
                   }`}
                   title={media.isMuted ? 'Unmute' : 'Mute'}
                 >
@@ -395,7 +395,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                 {media.playlist.length > 1 && (
                   <button
                     onClick={handleNextTrack}
-                    className="p-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white transition-all"
+                    className="p-2 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl text-[#5C564C] transition-all"
                   >
                     <SkipForward className="w-4 h-4" />
                   </button>
@@ -405,7 +405,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
 
             {/* Volume Slider */}
             <div className="space-y-1">
-              <div className="flex justify-between text-[10px] text-neutral-400 font-mono">
+              <div className="flex justify-between text-[10px] text-[#8F877A] font-mono">
                 <span>Volume</span>
                 <span>{media.isMuted ? '0%' : `${media.volume}%`}</span>
               </div>
@@ -418,15 +418,15 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   const val = parseInt(e.target.value);
                   onUpdateMedia({ volume: val, isMuted: val === 0 });
                 }}
-                className="w-full accent-amber-400 h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
+                className="w-full accent-[#C84B31] h-1.5 bg-[#E2DBD0] rounded-lg cursor-pointer"
               />
             </div>
           </div>
         ) : (
           /* Active Media Player Box (Standard Mode) */
-          <div className="relative w-full rounded-2xl overflow-hidden bg-neutral-950 border border-white/15 shadow-xl group">
+          <div className="relative w-full rounded-2xl overflow-hidden bg-[#211F1C] border border-[#E2DBD0] shadow-md group">
             {isSpotify && spotifyId ? (
-              <div className="p-2 bg-black">
+              <div className="p-2 bg-[#191414]">
                 <iframe
                   key={`spotify-embed-${spotifyId}`}
                   title="Spotify Player"
@@ -453,9 +453,9 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                 />
               </div>
             ) : (
-              <div className="w-full aspect-video flex flex-col items-center justify-center text-neutral-500 text-xs">
-                <Tv className="w-8 h-8 stroke-1 mb-1 text-neutral-600" />
-                <span>Paste a Spotify playlist or YouTube video link below</span>
+              <div className="w-full aspect-video flex flex-col items-center justify-center text-[#8F877A] text-xs bg-[#F0EAE1]">
+                <Tv className="w-8 h-8 stroke-1 mb-1 text-[#CFC5B6]" />
+                <span>Paste a Spotify playlist or YouTube link below</span>
               </div>
             )}
 
@@ -463,10 +463,10 @@ export const MediaTab: React.FC<MediaTabProps> = ({
             {!isSpotify && media.isMuted && embedUrl && (
               <button
                 onClick={() => onUpdateMedia({ isMuted: false })}
-                className="absolute top-2 right-2 z-10 px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-neutral-950 text-[11px] font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all animate-bounce"
+                className="absolute top-2 right-2 z-10 px-2.5 py-1 bg-[#C84B31] hover:bg-[#B53F27] text-[#FCFAF6] text-[11px] font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all animate-bounce"
               >
                 <Volume2 className="w-3.5 h-3.5" />
-                <span>Tap to Unmute Sound</span>
+                <span>Tap to Unmute Audio</span>
               </button>
             )}
           </div>
@@ -474,15 +474,15 @@ export const MediaTab: React.FC<MediaTabProps> = ({
 
         {/* Quick Player Bar: Only show in Standard Mode */}
         {!inFloatingPip && (
-          <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 backdrop-blur-md">
+          <div className="p-3 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl space-y-2 shadow-sm">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4A7C59] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4A7C59]" />
                 </span>
-                <span className="text-xs font-semibold text-white truncate">
-                  {truncateTitle(media.currentSource.title || 'Ambient Track', 50)}
+                <span className="text-xs font-bold text-[#211F1C] truncate">
+                  {truncateTitle(media.currentSource.title || 'Library Atmosphere', 50)}
                 </span>
               </div>
 
@@ -492,8 +492,8 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
                   className={`p-1.5 rounded-lg border transition-all ${
                     media.isMuted
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-                      : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                      ? 'bg-[#FBEBE8] text-[#C84B31] border-[#F2C2BA]'
+                      : 'bg-[#F0EAE1] text-[#5C564C] border-[#E2DBD0] hover:bg-[#E8E1D6]'
                   }`}
                   title={media.isMuted ? 'Unmute' : 'Mute'}
                 >
@@ -508,7 +508,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   <button
                     id="btn-media-skip-track"
                     onClick={handleNextTrack}
-                    className="p-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all"
+                    className="p-1.5 bg-[#F0EAE1] hover:bg-[#E8E1D6] border border-[#E2DBD0] rounded-lg text-[#5C564C] transition-all"
                     title="Next playlist track"
                   >
                     <SkipForward className="w-3.5 h-3.5" />
@@ -519,7 +519,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
 
             {/* Volume Control */}
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-[10px] text-neutral-400 font-mono w-14">
+              <span className="text-[10px] text-[#8F877A] font-mono w-14">
                 Vol {media.isMuted ? 0 : media.volume}%
               </span>
               <input
@@ -531,7 +531,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   const val = parseInt(e.target.value);
                   onUpdateMedia({ volume: val, isMuted: val === 0 });
                 }}
-                className="w-full accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
+                className="w-full accent-[#C84B31] h-1.5 bg-[#E2DBD0] rounded-lg cursor-pointer"
               />
             </div>
           </div>
@@ -539,12 +539,12 @@ export const MediaTab: React.FC<MediaTabProps> = ({
 
         {/* Custom URL Loader (Spotify & YouTube) */}
         <form onSubmit={handleApplyUrl} className="space-y-2 pt-1">
-          <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#5C564C]">
             Load Spotify Playlist / Track or YouTube Video
           </label>
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl focus-within:border-amber-400/50">
-              <Link2 className="w-4 h-4 text-neutral-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl focus-within:border-[#C84B31] shadow-sm">
+              <Link2 className="w-4 h-4 text-[#8F877A] shrink-0" />
               <input
                 id="custom-media-url-input"
                 type="text"
@@ -554,7 +554,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                   setCustomUrl(e.target.value);
                   if (inputError) setInputError(null);
                 }}
-                className="w-full bg-transparent text-xs text-white placeholder-neutral-500 focus:outline-none"
+                className="w-full bg-transparent text-xs text-[#211F1C] placeholder-[#8F877A] focus:outline-none"
               />
             </div>
 
@@ -564,30 +564,30 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                 placeholder="Optional custom title label"
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white placeholder-neutral-500 focus:outline-none"
+                className="flex-1 bg-[#FCFAF6] border border-[#E2DBD0] rounded-lg px-2.5 py-1 text-xs text-[#211F1C] placeholder-[#8F877A] focus:outline-none shadow-sm"
               />
               <button
                 id="btn-apply-media-url"
                 type="submit"
                 disabled={!customUrl.trim()}
-                className="flex items-center gap-1 px-3 py-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-30 disabled:hover:bg-amber-500 text-neutral-950 font-semibold text-xs rounded-lg transition-all"
+                className="flex items-center gap-1 px-3 py-1 bg-[#C84B31] hover:bg-[#B53F27] disabled:opacity-40 disabled:hover:bg-[#C84B31] text-[#FCFAF6] font-bold text-xs rounded-lg transition-all shadow-sm"
               >
                 <ListPlus className="w-3.5 h-3.5" />
                 <span>Load</span>
               </button>
             </div>
 
-            {inputError && <p className="text-[11px] text-rose-400">{inputError}</p>}
+            {inputError && <p className="text-[11px] text-[#C84B31] font-medium">{inputError}</p>}
           </div>
         </form>
 
         {/* Custom Playlist Queue */}
         {media.playlist.length > 0 && (
           <div className="space-y-1.5 pt-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#5C564C]">
               Saved Media Queue ({media.playlist.length})
             </span>
-            <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
+            <div className="space-y-1 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
               {media.playlist.map((item, idx) => {
                 const isSpotifyItem = item.service === 'spotify' || Boolean(item.spotifyId);
                 const isActive = media.currentIndex === idx;
@@ -597,17 +597,17 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                     onClick={() => handlePlayQueueIndex(idx)}
                     className={`flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-all ${
                       isActive
-                        ? 'bg-amber-500/20 text-amber-200 border border-amber-400/30 font-medium'
-                        : 'bg-white/5 hover:bg-white/10 text-neutral-300 border border-white/5'
+                        ? 'bg-[#FBEBE8] text-[#C84B31] border border-[#F2C2BA] font-bold shadow-sm'
+                        : 'bg-[#FCFAF6] hover:bg-[#F6F3EB] text-[#5C564C] border border-[#E2DBD0]'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {isSpotifyItem ? (
-                        <SpotifyIcon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <SpotifyIcon className="w-3.5 h-3.5 text-[#4A7C59] shrink-0" />
                       ) : (
                         <Radio
                           className={`w-3.5 h-3.5 shrink-0 ${
-                            isActive ? 'text-amber-400' : 'text-neutral-500'
+                            isActive ? 'text-[#C84B31]' : 'text-[#8F877A]'
                           }`}
                         />
                       )}
@@ -615,7 +615,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
                     </div>
                     <button
                       onClick={(e) => handleRemoveQueueItem(item.id, e)}
-                      className="p-1 text-neutral-500 hover:text-rose-400 transition-colors ml-2"
+                      className="p-1 text-[#8F877A] hover:text-[#C84B31] transition-colors ml-2"
                       title="Remove from queue"
                     >
                       <Trash2 className="w-3 h-3" />

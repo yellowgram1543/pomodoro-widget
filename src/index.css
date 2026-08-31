@@ -1,25 +1,48 @@
 @import "tailwindcss";
 
+:root {
+  --bg-paper: #F6F3EB;
+  --surface-page: #FCFAF6;
+  --surface-raised: #F0EAE1;
+  --surface-pressed: #E5DDD2;
+  --ink-primary: #211F1C;
+  --ink-secondary: #5C564C;
+  --ink-muted: #8F877A;
+  --border-book: #E2DBD0;
+  --border-strong: #CFC5B6;
+  --accent-vermilion: #C84B31;
+  --accent-vermilion-hover: #B53F27;
+  --accent-cedar: #8E6F4E;
+  --accent-matcha: #4A7C59;
+  --accent-indigo: #3D5A73;
+}
+
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-paper);
+    color: var(--ink-primary);
   }
 
-  /* Custom scrollbar for glassmorphic widget containers */
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Manga paper custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
+    background: #EFE9DF;
     border-radius: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: #CFC5B6;
     border-radius: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #AFA494;
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -32,32 +55,32 @@
 
   /* Timer & Clock Text Styles */
   .font-timer-default {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
   }
   .font-timer-minimal {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    font-weight: 600;
     letter-spacing: -0.01em;
   }
   .font-timer-serif {
     font-family: 'Playfair Display', Georgia, serif;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
   }
   .font-timer-handwritten {
     font-family: 'Caveat', cursive;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
   }
   .font-timer-minimal-light {
-    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
-    font-weight: 200;
-    letter-spacing: 0.06em;
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.04em;
   }
   .font-timer-serif-condensed {
-    font-family: 'Bodoni Moda', 'Playfair Display', serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
@@ -87,13 +110,13 @@
     opacity: 0;
   }
   100% {
-    opacity: 0.75;
+    opacity: 0.25;
   }
 }
 
 @keyframes flipShadowLighten {
   0% {
-    opacity: 0.75;
+    opacity: 0.25;
   }
   100% {
     opacity: 0;
@@ -117,7 +140,7 @@
   animation: flipShadowLighten 0.26s ease-out 0.25s forwards;
 }
 
-/* Atmospheric Theme Background Keyframes */
+/* Atmosphere Ambient Animations */
 @keyframes fluidGradientFlow {
   0% {
     background-position: 0% 50%;
@@ -136,32 +159,277 @@
     opacity: 0.85;
   }
   50% {
-    transform: scale(1.08) translate(10px, -15px);
-    opacity: 1;
-  }
-}
-
-@keyframes floatingHeartGlow {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 45px rgba(217, 70, 239, 0.7));
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.06);
-    filter: drop-shadow(0 0 75px rgba(244, 63, 94, 0.9));
+    transform: scale(1.05) translate(8px, -10px);
+    opacity: 0.95;
   }
 }
 
 .animate-fluid-flow {
   background-size: 300% 300%;
-  animation: fluidGradientFlow 18s ease infinite;
+  animation: fluidGradientFlow 24s ease infinite;
 }
 
 .animate-aura-pulse {
-  animation: gentleAuraPulse 12s ease-in-out infinite;
+  animation: gentleAuraPulse 16s ease-in-out infinite;
 }
 
-.animate-heart-pulse {
-  animation: floatingHeartGlow 7s ease-in-out infinite;
+/* User Background Pattern 1: Crimson Radial Ripples */
+.pattern-crimson-ripples {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      50% 50% at 100% 0,
+      #ca3f3f 0% 5%,
+      #ffffff 6% 15%,
+      #ca3f3f 16% 25%,
+      #ffffff 26% 35%,
+      #ca3f3f 36% 45%,
+      #ffffff 46% 55%,
+      #ca3f3f 56% 65%,
+      #ffffff 66% 75%,
+      #ca3f3f 76% 85%,
+      #ffffff 86% 95%,
+      #0000 96%
+    ),
+    radial-gradient(
+      50% 50% at 0 100%,
+      #ca3f3f 0% 5%,
+      #ffffff 6% 15%,
+      #ca3f3f 16% 25%,
+      #ffffff 26% 35%,
+      #ca3f3f 36% 45%,
+      #ffffff 46% 55%,
+      #ca3f3f 56% 65%,
+      #ffffff 66% 75%,
+      #ca3f3f 76% 85%,
+      #ffffff 86% 95%,
+      #0000 96%
+    ),
+    radial-gradient(
+      50% 50%,
+      #ca3f3f 0% 5%,
+      #ffffff 6% 15%,
+      #ca3f3f 16% 25%,
+      #ffffff 26% 35%,
+      #ca3f3f 36% 45%,
+      #ffffff 46% 55%,
+      #ca3f3f 56% 65%,
+      #ffffff 66% 75%,
+      #ca3f3f 76% 85%,
+      #ffffff 86% 95%,
+      #0000 96%
+    ),
+    radial-gradient(
+        50% 50%,
+        #ca3f3f 0% 5%,
+        #ffffff 6% 15%,
+        #ca3f3f 16% 25%,
+        #ffffff 26% 35%,
+        #ca3f3f 36% 45%,
+        #ffffff 46% 55%,
+        #ca3f3f 56% 65%,
+        #ffffff 66% 75%,
+        #ca3f3f 76% 85%,
+        #ffffff 86% 95%,
+        #0000 96%
+      )
+      38px 38px;
+  background-size: 76px 76px;
+  background-color: #ca3f3f;
+}
+
+/* User Background Pattern 2: Minimal Drafting Grid */
+.pattern-drafting-grid {
+  width: 100%;
+  height: 100%;
+  --grid-color: #E1E1E1;
+  background-color: #F3F3F3;
+  background-image: linear-gradient(0deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent);
+  background-size: 55px 55px;
+}
+
+/* User Background Pattern 3: Mint & Butter Diamond Tiles */
+.pattern-pastel-diamond {
+  width: 100%;
+  height: 100%;
+  --diamond-color1: rgb(108, 231, 221);
+  --diamond-color2: rgb(250, 255, 178);
+  background-color: var(--diamond-color1);
+  background-image: linear-gradient(45deg, var(--diamond-color2) 25%, transparent 25%, transparent 75%, var(--diamond-color2) 75%, var(--diamond-color2)), 
+                    linear-gradient(45deg, var(--diamond-color2) 25%, var(--diamond-color1) 25%, var(--diamond-color1) 75%, var(--diamond-color2) 75%, var(--diamond-color2));
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
+}
+
+/* User Background Pattern 4: Woven Wheat Fabric */
+@keyframes wheatPatternAni {
+  0% {
+    background-position: 0 0, 0 0, 0 0;
+  }
+  100% {
+    background-position: 80px 80px, 80px 80px, 80px 80px;
+  }
+}
+
+.pattern-wheat-weave {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      45deg,
+      white 12%,
+      transparent 0,
+      transparent 88%,
+      wheat 0
+    ),
+    linear-gradient(135deg, transparent 37%, #753 0, #753 63%, transparent 0),
+    linear-gradient(45deg, transparent 37%, white 0, white 63%, transparent 0)
+      wheat;
+  background-size: 80px 80px;
+  animation: wheatPatternAni 20s linear infinite;
+}
+
+/* User Background Pattern 5: Dynamic Shifting Mosaic Tiles */
+@keyframes dynamicTileShift {
+  0% {
+    background-position:
+      calc(var(--tile-p) * 1) calc(var(--tile-p) * 0),
+      calc(var(--tile-p) * -1) calc(var(--tile-p) * 1),
+      calc(var(--tile-p) * 1) calc(var(--tile-p) * -1),
+      calc(var(--tile-p) * -1) calc(var(--tile-p) * 0);
+  }
+  25% {
+    background-position:
+      calc(var(--tile-p) * 1) calc(var(--tile-p) * 4),
+      calc(var(--tile-p) * -1) calc(var(--tile-p) * 5),
+      calc(var(--tile-p) * 1) calc(var(--tile-p) * 3),
+      calc(var(--tile-p) * -1) calc(var(--tile-p) * 4);
+  }
+  50% {
+    background-position:
+      calc(var(--tile-p) * 3) calc(var(--tile-p) * 8),
+      calc(var(--tile-p) * -3) calc(var(--tile-p) * 9),
+      calc(var(--tile-p) * 2) calc(var(--tile-p) * 7),
+      calc(var(--tile-p) * -2) calc(var(--tile-p) * 8);
+  }
+  75% {
+    background-position:
+      calc(var(--tile-p) * 3) calc(var(--tile-p) * 12),
+      calc(var(--tile-p) * -3) calc(var(--tile-p) * 13),
+      calc(var(--tile-p) * 2) calc(var(--tile-p) * 11),
+      calc(var(--tile-p) * -2) calc(var(--tile-p) * 12);
+  }
+  100% {
+    background-position:
+      calc(var(--tile-p) * 5) calc(var(--tile-p) * 16),
+      calc(var(--tile-p) * -5) calc(var(--tile-p) * 17),
+      calc(var(--tile-p) * 5) calc(var(--tile-p) * 15),
+      calc(var(--tile-p) * -5) calc(var(--tile-p) * 16);
+  }
+}
+
+.pattern-dynamic-tiles {
+  width: 100%;
+  height: 100%;
+  --tile-s: 80px;
+  --tile-p: calc(var(--tile-s) / 2);
+  --tile-c1: #F9A8D4; /* soft rose pink */
+  --tile-c2: #38BDF8; /* soft sky blue */
+  --tile-c3: #FFFFFF;
+
+  background-color: var(--tile-c3);
+  background-image: linear-gradient(45deg, var(--tile-c1) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--tile-c1) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--tile-c2) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--tile-c2) 75%);
+  background-size: var(--tile-s) var(--tile-s);
+  background-position:
+    calc(var(--tile-p) * 1) calc(var(--tile-p) * 0),
+    calc(var(--tile-p) * -1) calc(var(--tile-p) * 1),
+    calc(var(--tile-p) * 1) calc(var(--tile-p) * -1),
+    calc(var(--tile-p) * -1) calc(var(--tile-p) * 0);
+  animation: dynamicTileShift 16s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+
+/* UIverse Pattern 1: bad-snake-37 (mihocsaszilard) - Pastel Sunset Sky */
+.pattern-bad-snake-sunset {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 120%, rgba(254, 215, 170, 0.9) 0%, rgba(251, 146, 60, 0.35) 28%, transparent 60%),
+    radial-gradient(circle at 80% 25%, rgba(253, 164, 175, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 18% 45%, rgba(186, 230, 253, 0.65) 0%, transparent 50%),
+    linear-gradient(180deg, #BAE6FD 0%, #FED7AA 55%, #FECDD3 100%);
+  background-size: 100% 100%;
+}
+
+/* UIverse Pattern 2: modern-skunk-55 (Efrain2112) - Geometric Pine Trees */
+.pattern-modern-skunk-pine {
+  width: 100%;
+  height: 100%;
+  --skunk-c1: #2D5A3C;
+  --skunk-c2: #4A7C59;
+  --skunk-bg: #F4F1EA;
+  background-color: var(--skunk-bg);
+  background-image: 
+    conic-gradient(from 45deg at 50% 50%, var(--skunk-c1) 0deg 90deg, transparent 90deg 360deg),
+    conic-gradient(from 225deg at 50% 50%, var(--skunk-c2) 0deg 90deg, transparent 90deg 360deg),
+    linear-gradient(45deg, transparent 47%, #E2DBD0 48% 52%, transparent 53%);
+  background-size: 48px 48px;
+}
+
+/* UIverse Pattern 3: fluffy-bear-71 (ish7o) - Fluffy Cloud Weave */
+.pattern-fluffy-bear-clouds {
+  width: 100%;
+  height: 100%;
+  background-color: #F8F5EE;
+  background-image:
+    radial-gradient(circle at 0% 50%, rgba(200, 75, 49, 0.09) 18px, transparent 19px),
+    radial-gradient(circle at 100% 50%, rgba(200, 75, 49, 0.09) 18px, transparent 19px),
+    radial-gradient(circle at 50% 0%, rgba(142, 111, 78, 0.09) 18px, transparent 19px),
+    radial-gradient(circle at 50% 100%, rgba(142, 111, 78, 0.09) 18px, transparent 19px),
+    radial-gradient(circle at 50% 50%, #ECE5D8 12px, transparent 13px);
+  background-size: 54px 54px;
+}
+
+/* UIverse Pattern 4: nice-grasshopper-55 (SouravBandyopadhyay) - Sage Matrix Grid */
+.pattern-nice-grasshopper-grid {
+  width: 100%;
+  height: 100%;
+  background-color: #1E2320;
+  background-image:
+    linear-gradient(30deg, #2D3A32 12%, transparent 12.5%, transparent 87%, #2D3A32 87.5%, #2D3A32),
+    linear-gradient(150deg, #2D3A32 12%, transparent 12.5%, transparent 87%, #2D3A32 87.5%, #2D3A32),
+    linear-gradient(30deg, #2D3A32 12%, transparent 12.5%, transparent 87%, #2D3A32 87.5%, #2D3A32),
+    linear-gradient(150deg, #2D3A32 12%, transparent 12.5%, transparent 87%, #2D3A32 87.5%, #2D3A32),
+    linear-gradient(60deg, rgba(74, 124, 89, 0.28) 25%, transparent 25.5%, transparent 75%, rgba(74, 124, 89, 0.28) 75%, rgba(74, 124, 89, 0.28)),
+    linear-gradient(60deg, rgba(74, 124, 89, 0.28) 25%, transparent 25.5%, transparent 75%, rgba(74, 124, 89, 0.28) 75%, rgba(74, 124, 89, 0.28));
+  background-size: 60px 104px;
+  background-position: 0 0, 0 0, 30px 52px, 30px 52px, 0 0, 30px 52px;
+}
+
+/* UIverse Pattern 5: thin-bulldog-22 (AspenBranch) - Topographic Archival Contour */
+.pattern-thin-bulldog-contour {
+  width: 100%;
+  height: 100%;
+  background-color: #F5EFEB;
+  background-image:
+    repeating-radial-gradient(ellipse at 50% 50%, transparent 0, transparent 20px, rgba(142, 111, 78, 0.16) 21px, rgba(142, 111, 78, 0.16) 22px, transparent 23px, transparent 40px),
+    repeating-radial-gradient(ellipse at 20% 80%, transparent 0, transparent 25px, rgba(200, 75, 49, 0.14) 26px, rgba(200, 75, 49, 0.14) 27px, transparent 28px, transparent 50px);
+  background-size: 100% 100%;
+}
+
+/* UIverse Pattern 6: great-fish-97 (Cobp) - Monochrome Geometric Scales */
+.pattern-great-fish-scales {
+  width: 100%;
+  height: 100%;
+  background-color: #181816;
+  background-image:
+    radial-gradient(circle at 100% 150%, #181816 24%, #2C2B27 25%, #2C2B27 28%, #181816 29%, #181816 36%, #2C2B27 37%, #2C2B27 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0 150%, #181816 24%, #2C2B27 25%, #2C2B27 28%, #181816 29%, #181816 36%, #2C2B27 37%, #2C2B27 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50% 100%, #2C2B27 10%, #181816 11%, #181816 23%, #2C2B27 24%, #2C2B27 30%, #181816 31%, #181816 43%, #2C2B27 44%, #2C2B27 50%, #181816 51%, #181816 63%, #2C2B27 64%, #2C2B27 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #2C2B27 5%, #181816 6%, #181816 15%, #2C2B27 16%, #2C2B27 20%, #181816 21%, #181816 30%, #2C2B27 31%, #2C2B27 35%, #181816 36%, #181816 45%, #2C2B27 46%, #2C2B27 50%, transparent 50%, transparent),
+    radial-gradient(circle at 0 50%, #2C2B27 5%, #181816 6%, #181816 15%, #2C2B27 16%, #2C2B27 20%, #181816 21%, #181816 30%, #2C2B27 31%, #2C2B27 35%, #181816 36%, #181816 45%, #2C2B27 46%, #2C2B27 50%, transparent 50%, transparent);
+  background-size: 60px 30px;
 }
 

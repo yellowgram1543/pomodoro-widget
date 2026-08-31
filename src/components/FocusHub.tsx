@@ -208,7 +208,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
       }
 
       pipWindowRef.current = win;
-      win.document.title = '⚡ Ambient Focus Hub (Always on Top)';
+      win.document.title = 'Ambient Focus Hub (Always on Top)';
 
       // Inject referrer and base policy to allow YouTube embeds to work without Error 153
       const metaReferrer = win.document.createElement('meta');
@@ -299,20 +299,20 @@ export const FocusHub: React.FC<FocusHubProps> = ({
     if (activeTab === 'pomodoro') {
       const m = Math.floor(pomoState.timeLeft / 60);
       const s = pomoState.timeLeft % 60;
-      return `${pomoState.mode === 'work' ? '🔥 Focus' : '☕ Rest'} ${String(m).padStart(2, '0')}:${String(
+      return `${pomoState.mode === 'work' ? 'Focus' : 'Rest'} ${String(m).padStart(2, '0')}:${String(
         s
       ).padStart(2, '0')}`;
     }
     if (activeTab === 'timer') {
       const m = Math.floor(taskTimer.timeLeft / 60);
       const s = taskTimer.timeLeft % 60;
-      return `⏱️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
     if (activeTab === 'tasks') {
       const left = tasks.filter((t) => !t.completed).length;
-      return `📋 ${left} Tasks`;
+      return `${left} Tasks`;
     }
-    return `🎵 ${truncateTitle(media.currentSource.title || 'Ambient', 50)}`;
+    return `${truncateTitle(media.currentSource.title || 'Ambient', 50)}`;
   };
 
   // The complete widget inner card structure
@@ -323,29 +323,29 @@ export const FocusHub: React.FC<FocusHubProps> = ({
           width: inFloatingPip ? '100%' : isMinimized ? 330 : widgetWidth,
           maxWidth: inFloatingPip ? '100%' : '96vw',
         }}
-        className={`pointer-events-auto relative rounded-3xl bg-neutral-900/95 border ${
-          inFloatingPip ? 'border-amber-400/40 shadow-2xl w-full' : 'border-white/20'
-        } backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.7)] flex flex-col transition-shadow duration-200 ${
-          isResizing ? 'select-none ring-2 ring-amber-400/50' : ''
+        className={`pointer-events-auto relative rounded-2xl bg-[#FCFAF6] border ${
+          inFloatingPip ? 'border-[#C84B31]/50 shadow-2xl w-full' : 'border-[#E2DBD0]'
+        } shadow-[0_4px_20px_rgba(40,30,20,0.08),0_18px_36px_rgba(40,30,20,0.06)] flex flex-col transition-shadow duration-200 ${
+          isResizing ? 'select-none ring-2 ring-[#C84B31]/40' : ''
         }`}
       >
         {/* Widget Header */}
         <div
-          className={`flex items-center justify-between px-4 py-3 bg-white/[0.04] border-b border-white/10 rounded-t-3xl ${
+          className={`flex items-center justify-between px-4 py-3 bg-[#F6F3EB] border-b border-[#E2DBD0] rounded-t-2xl ${
             inFloatingPip ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
           } select-none`}
         >
-          <div className="flex items-center gap-2 text-neutral-300">
-            {!inFloatingPip && <GripHorizontal className="w-4 h-4 text-amber-400/80" />}
-            <span className="font-bold text-xs tracking-wider uppercase flex items-center gap-1.5 text-white">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              {inFloatingPip ? '⚡ Always On Top PiP' : 'Focus Hub'}
+          <div className="flex items-center gap-2 text-[#5C564C]">
+            {!inFloatingPip && <GripHorizontal className="w-4 h-4 text-[#8E6F4E]" />}
+            <span className="font-bold text-xs tracking-wider uppercase flex items-center gap-1.5 text-[#211F1C] font-heading">
+              <span className="w-2 h-2 rounded-full bg-[#C84B31]" />
+              {inFloatingPip ? 'Always On Top PiP' : 'Study Desk'}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5">
             {isMinimized && (
-              <span className="text-[11px] font-mono font-medium text-amber-300 px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/20">
+              <span className="text-[11px] font-mono font-bold text-[#C84B31] px-2 py-0.5 rounded-md bg-[#F0EAE1] border border-[#E2DBD0]">
                 {getMiniStatus()}
               </span>
             )}
@@ -355,10 +355,10 @@ export const FocusHub: React.FC<FocusHubProps> = ({
               <button
                 id="btn-widget-cycle-size"
                 onClick={cycleSizePreset}
-                className="px-2 py-1 text-[10px] font-mono uppercase bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white rounded-lg transition-all flex items-center gap-1"
+                className="px-2 py-1 text-[10px] font-mono uppercase bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] text-[#5C564C] hover:text-[#211F1C] rounded-lg transition-all flex items-center gap-1"
                 title={`Current width: ${widgetWidth}px. Click to cycle sizes (Compact / Standard / Expanded / Full)`}
               >
-                <Scaling className="w-3 h-3 text-amber-400" />
+                <Scaling className="w-3 h-3 text-[#8E6F4E]" />
                 <span>{sizePreset}</span>
               </button>
             )}
@@ -369,8 +369,8 @@ export const FocusHub: React.FC<FocusHubProps> = ({
               onClick={inFloatingPip ? handleClosePip : handleTogglePip}
               className={`p-1.5 rounded-lg border transition-all flex items-center gap-1 text-xs font-semibold ${
                 inFloatingPip
-                  ? 'bg-amber-500 text-neutral-950 border-amber-400 shadow-md'
-                  : 'bg-white/5 hover:bg-white/15 text-amber-300 border-amber-400/30 hover:border-amber-400'
+                  ? 'bg-[#C84B31] text-[#FCFAF6] border-[#C84B31] shadow-sm'
+                  : 'bg-[#FCFAF6] hover:bg-[#F0EAE1] text-[#211F1C] border-[#E2DBD0] hover:border-[#C84B31]'
               }`}
               title={
                 inFloatingPip
@@ -385,7 +385,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                 </>
               ) : (
                 <>
-                  <PictureInPicture2 className="w-3.5 h-3.5" />
+                  <PictureInPicture2 className="w-3.5 h-3.5 text-[#C84B31]" />
                   <span className="text-[10px] hidden sm:inline">Always on Top</span>
                 </>
               )}
@@ -398,7 +398,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                 e.stopPropagation();
                 setIsMinimized(!isMinimized);
               }}
-              className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+              className="p-1.5 text-[#8F877A] hover:text-[#211F1C] rounded-lg hover:bg-[#F0EAE1] transition-colors"
               title={isMinimized ? 'Expand Widget' : 'Minimize Widget'}
             >
               {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
@@ -407,9 +407,9 @@ export const FocusHub: React.FC<FocusHubProps> = ({
         </div>
 
         {!isMinimized && (
-          <div className="p-4 space-y-3.5 flex-1 flex flex-col min-h-0">
+          <div className="p-4 space-y-3.5 flex-1 flex flex-col min-h-0 bg-[#FCFAF6]">
             {/* 4 Focused Navigation Tabs */}
-            <div className="grid grid-cols-4 gap-1 p-1 bg-white/5 border border-white/10 rounded-2xl shrink-0">
+            <div className="grid grid-cols-4 gap-1 p-1 bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl shrink-0">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -418,13 +418,13 @@ export const FocusHub: React.FC<FocusHubProps> = ({
                     key={tab.id}
                     id={`tab-btn-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-1 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                    className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-1 rounded-lg text-xs font-bold tracking-wide transition-all ${
                       isActive
-                        ? 'bg-white/20 text-white shadow-sm border border-white/25'
-                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
+                        ? 'bg-[#FCFAF6] text-[#C84B31] shadow-[0_1px_4px_rgba(40,30,20,0.06)] border border-[#E2DBD0]'
+                        : 'text-[#6B645A] hover:text-[#211F1C] hover:bg-[#EAE2D7]'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-amber-400' : ''}`} />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#C84B31]' : 'text-[#8F877A]'}`} />
                     <span className="text-[11px]">{tab.label}</span>
                   </button>
                 );
@@ -480,7 +480,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
         {!isMinimized && !inFloatingPip && (
           <div
             onMouseDown={handleResizeMouseDown}
-            className="absolute bottom-1 right-1 w-5 h-5 flex items-center justify-center cursor-se-resize text-neutral-500 hover:text-amber-400 transition-colors z-20 group"
+            className="absolute bottom-1.5 right-1.5 w-5 h-5 flex items-center justify-center cursor-se-resize text-[#8F877A] hover:text-[#C84B31] transition-colors z-20 group"
             title="Drag with mouse to customize widget size"
           >
             <svg
@@ -606,7 +606,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
 
           {/* Bottom Space / Subtle Hint */}
           <div className="pointer-events-none text-center text-neutral-500 text-xs font-mono">
-            {media.isPlaying ? '▶ Ambient Stream Playing' : '⏸ Stream Paused'} | Volume: {media.isMuted ? 'Muted' : `${media.volume}%`}
+            {media.isPlaying ? 'Ambient Stream Playing' : 'Stream Paused'} | Volume: {media.isMuted ? 'Muted' : `${media.volume}%`}
           </div>
         </div>
 

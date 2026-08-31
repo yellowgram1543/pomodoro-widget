@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Check, Trash2, ListTodo, Play, Flame, Sparkles } from 'lucide-react';
+import { Plus, Check, Trash2, ListTodo, Play } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Task, TaskPriority } from '../../types';
 
@@ -65,24 +65,24 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
   const activeCount = tasks.length - completedCount;
 
   const priorityColors = {
-    high: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
-    medium: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    low: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
+    high: 'text-[#C84B31] bg-[#FBEBE8] border-[#F2C2BA]',
+    medium: 'text-[#8E6F4E] bg-[#F4EFEA] border-[#DECFC0]',
+    low: 'text-[#4A7C59] bg-[#EBF2ED] border-[#C2D8C9]',
   };
 
   return (
     <div className="flex flex-col w-full space-y-3.5">
       {/* Task Input Form with Enter to Add */}
       <form onSubmit={handleAddSubmit} className="space-y-2">
-        <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-xl focus-within:border-amber-400/50 transition-all">
+        <div className="flex items-center gap-2 p-1.5 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl focus-within:border-[#C84B31] transition-all shadow-sm">
           <input
             id="task-manager-new-input"
             type="text"
-            placeholder="Add new task... (press Enter)"
+            placeholder="Add new task or chapter note... (press Enter)"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent px-2.5 py-1 text-sm text-white placeholder-neutral-500 focus:outline-none"
+            className="flex-1 bg-transparent px-2.5 py-1 text-sm text-[#211F1C] placeholder-[#8F877A] focus:outline-none"
           />
 
           {/* Priority selector */}
@@ -90,7 +90,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
             id="task-priority-select"
             value={priority}
             onChange={(e) => setPriority(e.target.value as TaskPriority)}
-            className="bg-neutral-800 border border-white/10 text-neutral-300 text-xs rounded-lg px-2 py-1 focus:outline-none"
+            className="bg-[#F0EAE1] border border-[#E2DBD0] text-[#5C564C] font-medium text-xs rounded-lg px-2 py-1 focus:outline-none"
           >
             <option value="high">High</option>
             <option value="medium">Medium</option>
@@ -101,7 +101,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
             id="btn-task-manager-add"
             type="submit"
             disabled={!newTitle.trim()}
-            className="p-1.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-30 disabled:hover:bg-amber-500 text-neutral-950 rounded-lg transition-all"
+            className="p-1.5 bg-[#C84B31] hover:bg-[#B53F27] disabled:opacity-40 disabled:hover:bg-[#C84B31] text-[#FCFAF6] rounded-lg transition-all shadow-sm"
             title="Add task"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -118,8 +118,8 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
               onClick={() => setFilter(mode)}
               className={`px-2.5 py-1 rounded-lg capitalize transition-all ${
                 filter === mode
-                  ? 'bg-white/15 text-white font-medium shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-[#FCFAF6] text-[#211F1C] font-bold border border-[#E2DBD0] shadow-sm'
+                  : 'text-[#6B645A] hover:text-[#211F1C]'
               }`}
             >
               {mode} {mode === 'active' ? `(${activeCount})` : mode === 'completed' ? `(${completedCount})` : `(${tasks.length})`}
@@ -131,7 +131,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
           <button
             id="btn-task-manager-clear-completed"
             onClick={onClearCompleted}
-            className="flex items-center gap-1 text-[11px] text-neutral-400 hover:text-rose-400 transition-colors"
+            className="flex items-center gap-1 text-[11px] text-[#8F877A] hover:text-[#C84B31] transition-colors"
             title="Flush finished items"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -143,8 +143,8 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
       {/* Task List Items Container */}
       <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
         {filteredTasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-neutral-500 space-y-2 text-center">
-            <ListTodo className="w-8 h-8 stroke-1 text-neutral-600" />
+          <div className="flex flex-col items-center justify-center py-8 text-[#8F877A] space-y-2 text-center">
+            <ListTodo className="w-8 h-8 stroke-1 text-[#CFC5B6]" />
             <p className="text-xs">
               {filter === 'completed'
                 ? 'No completed tasks yet.'
@@ -160,8 +160,8 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
                 key={task.id}
                 className={`group flex items-center justify-between p-2.5 rounded-xl border transition-all ${
                   task.completed
-                    ? 'bg-white/[0.02] border-white/5 opacity-50'
-                    : 'bg-white/5 hover:bg-white/[0.08] border-white/10'
+                    ? 'bg-[#F6F3EB]/60 border-[#E2DBD0]/60 opacity-60'
+                    : 'bg-[#FCFAF6] hover:bg-[#F6F3EB] border-[#E2DBD0] shadow-[0_1px_3px_rgba(40,30,20,0.04)]'
                 }`}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -170,8 +170,8 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
                     onClick={() => handleToggle(task.id, task.completed)}
                     className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                       task.completed
-                        ? 'bg-emerald-500 border-emerald-400 text-neutral-950'
-                        : 'border-white/30 hover:border-white/60 bg-white/5'
+                        ? 'bg-[#4A7C59] border-[#3F6A4C] text-[#FCFAF6]'
+                        : 'border-[#CFC5B6] hover:border-[#8F877A] bg-[#FCFAF6]'
                     }`}
                   >
                     {task.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -181,8 +181,8 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
                     <span
                       className={`text-xs text-left truncate transition-all ${
                         task.completed
-                          ? 'line-through text-neutral-400'
-                          : 'text-neutral-100 font-medium'
+                          ? 'line-through text-[#8F877A]'
+                          : 'text-[#211F1C] font-semibold'
                       }`}
                     >
                       {task.title}
@@ -202,7 +202,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
                   {!task.completed && (
                     <button
                       onClick={() => onFocusTask(task)}
-                      className="p-1 text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 rounded transition-all opacity-0 group-hover:opacity-100"
+                      className="p-1 text-[#8F877A] hover:text-[#C84B31] hover:bg-[#FBEBE8] rounded transition-all opacity-0 group-hover:opacity-100"
                       title="Focus on this task"
                     >
                       <Play className="w-3 h-3 fill-current" />
@@ -211,7 +211,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
 
                   <button
                     onClick={() => onDeleteTask(task.id)}
-                    className="p-1 text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-all opacity-0 group-hover:opacity-100"
+                    className="p-1 text-[#8F877A] hover:text-[#C84B31] hover:bg-[#FBEBE8] rounded transition-all opacity-0 group-hover:opacity-100"
                     title="Delete task"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -224,7 +224,7 @@ export const TaskManagerTab: React.FC<TaskManagerTabProps> = ({
       </div>
 
       {/* Persistence Note */}
-      <div className="text-[10px] text-neutral-500 flex items-center justify-between pt-1">
+      <div className="text-[10px] text-[#8F877A] flex items-center justify-between pt-1">
         <span>Auto-saved to local browser storage</span>
         <span>{tasks.length} total tasks</span>
       </div>

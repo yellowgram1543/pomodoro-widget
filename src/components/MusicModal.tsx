@@ -63,11 +63,9 @@ export const MusicModal: React.FC<MusicModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Active sounds map: { [soundId]: volume (0-100) }
   const activeSounds = media.activeAmbientSounds || {};
   const activeSoundCount = Object.entries(activeSounds).filter(([_, vol]) => (vol as number) > 0).length;
 
-  // Toggle individual sound on / off
   const handleToggleSound = (soundId: BuiltInAmbientSound) => {
     getAudioContext();
     const currentVol = activeSounds[soundId] || 0;
@@ -76,7 +74,7 @@ export const MusicModal: React.FC<MusicModalProps> = ({
     if (currentVol > 0) {
       delete newActive[soundId];
     } else {
-      newActive[soundId] = 65; // Default initial volume
+      newActive[soundId] = 65;
     }
 
     const firstActive = Object.keys(newActive)[0] as BuiltInAmbientSound | undefined;
@@ -88,7 +86,6 @@ export const MusicModal: React.FC<MusicModalProps> = ({
     });
   };
 
-  // Change individual sound volume (0 to 100)
   const handleSoundVolumeChange = (soundId: BuiltInAmbientSound, newVol: number) => {
     getAudioContext();
     const newActive = { ...activeSounds };
@@ -108,7 +105,6 @@ export const MusicModal: React.FC<MusicModalProps> = ({
     });
   };
 
-  // Turn off all playing ambient sounds
   const handleTurnOffAllSounds = () => {
     onUpdateMedia({
       activeAmbientSounds: {},
@@ -186,7 +182,6 @@ export const MusicModal: React.FC<MusicModalProps> = ({
         });
       }
     } else {
-      // YouTube link
       const { videoId, listId } = youtubeSource;
       const initialTitle = userEnteredTitle
         ? truncateTitle(userEnteredTitle, 50)
@@ -269,7 +264,6 @@ export const MusicModal: React.FC<MusicModalProps> = ({
   const isSpotifyCurrent =
     media.currentSource.service === 'spotify' || Boolean(media.currentSource.spotifyId);
 
-  // Filter sounds based on category and search query
   const filteredSounds = ALL_AMBIENT_SOUNDS.filter((sound) => {
     const matchesCategory =
       selectedCategory === 'all' || sound.category === selectedCategory;
@@ -284,48 +278,47 @@ export const MusicModal: React.FC<MusicModalProps> = ({
   return (
     <div
       id="music-hub-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#211F1C]/40 backdrop-blur-[2px] animate-fadeIn"
       onClick={onClose}
     >
       <div
         id="music-hub-modal"
-        className="w-full max-w-4xl bg-[#121212] border border-white/10 rounded-2xl shadow-2xl overflow-hidden text-white flex flex-col max-h-[92vh] animate-scaleIn"
+        className="w-full max-w-4xl bg-[#FCFAF6] border border-[#E2DBD0] rounded-2xl shadow-2xl overflow-hidden text-[#211F1C] flex flex-col max-h-[92vh] animate-scaleIn"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 border-b border-white/10 bg-[#141414]">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 border-b border-[#E2DBD0] bg-[#F6F3EB]">
           <div className="flex items-center gap-4 sm:gap-6">
-            {/* Audio Icon & Brand */}
             <div className="flex items-center gap-2.5">
-              <div className="w-6 h-6 rounded-full border-2 border-amber-400 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <div className="w-6 h-6 rounded-full border-2 border-[#8E6F4E] flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-[#8E6F4E]" />
               </div>
-              <span className="font-bold text-base tracking-wide text-white">Audio Hub</span>
+              <span className="font-bold text-base tracking-wide text-[#211F1C]">Soundscapes</span>
             </div>
 
-            {/* Sub-Tabs: Sounds vs My Music */}
-            <div className="flex items-center bg-[#1c1c1c] p-1 rounded-xl border border-white/5">
+            {/* Sub-Tabs */}
+            <div className="flex items-center bg-[#EFE9DF] p-1 rounded-lg border border-[#E2DBD0]">
               <button
                 id="music-tab-sounds"
                 onClick={() => setActiveTab('sounds')}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3.5 sm:px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === 'sounds'
-                    ? 'bg-[#2e230f] text-amber-400 border border-amber-500/40 shadow-sm'
-                    : 'text-neutral-400 hover:text-white'
+                    ? 'bg-[#FCFAF6] text-[#C84B31] border border-[#D5CDC0] shadow-xs'
+                    : 'text-[#6B6255] hover:text-[#211F1C]'
                 }`}
               >
-                Sounds ({ALL_AMBIENT_SOUNDS.length})
+                Ambient Sounds ({ALL_AMBIENT_SOUNDS.length})
               </button>
               <button
                 id="music-tab-mymusic"
                 onClick={() => setActiveTab('my-music')}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3.5 sm:px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === 'my-music'
-                    ? 'bg-[#2e230f] text-amber-400 border border-amber-500/40 shadow-sm'
-                    : 'text-neutral-400 hover:text-white'
+                    ? 'bg-[#FCFAF6] text-[#C84B31] border border-[#D5CDC0] shadow-xs'
+                    : 'text-[#6B6255] hover:text-[#211F1C]'
                 }`}
               >
-                My Music
+                Music & Streams
               </button>
             </div>
           </div>
@@ -333,25 +326,24 @@ export const MusicModal: React.FC<MusicModalProps> = ({
           <button
             id="close-music-hub-modal"
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-[#EFE9DF] hover:bg-[#E5DFD5] text-[#6B6255] hover:text-[#211F1C] border border-[#E2DBD0] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-[#121212]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-[#FCFAF6]">
           {/* TAB 1: SOUNDS */}
           {activeTab === 'sounds' && (
             <div className="space-y-4 animate-fadeIn">
-              {/* Header Title + Turn Off All Sound Button */}
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white tracking-tight">
+                  <h3 className="text-lg font-bold text-[#211F1C] tracking-tight">
                     Ambient Soundscapes
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Mix multiple simultaneous sounds (rain, campfire, birds, waves) to create your custom focus environment.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Layer subtle environmental sounds to construct your ideal reading or deep work atmosphere.
                   </p>
                 </div>
 
@@ -361,36 +353,37 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                   disabled={activeSoundCount === 0}
                   className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-all border shrink-0 ${
                     activeSoundCount > 0
-                      ? 'bg-[#3b1219] border-rose-900/70 text-rose-400 hover:bg-[#4f1822] cursor-pointer shadow-sm'
-                      : 'bg-white/5 border-white/10 text-neutral-500 cursor-not-allowed opacity-50'
+                      ? 'bg-[#C84B31]/10 border-[#C84B31]/40 text-[#C84B31] hover:bg-[#C84B31]/20 cursor-pointer shadow-xs'
+                      : 'bg-[#F6F3EB] border-[#E2DBD0] text-[#9B9182] cursor-not-allowed opacity-50'
                   }`}
                 >
-                  {activeSoundCount > 0 ? `Turn Off Sound (${activeSoundCount})` : 'Turn Off Sound'}
+                  {activeSoundCount > 0 ? `Turn Off Sounds (${activeSoundCount})` : 'Turn Off Sounds'}
                 </button>
               </div>
 
-              {/* 1. Uncluttered Search Sound Bar Placed Above Categories */}
+              {/* Search Bar */}
               <div className="relative w-full">
-                <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#9B9182] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="ambient-search-sound-input"
                   type="text"
                   placeholder="Search ambient sounds by name (rain, birds, ocean, coffee, campfire, fan)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-9 py-2 bg-[#181818] border border-white/10 rounded-xl text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500/70 transition-all shadow-inner"
+                  className="w-full pl-10 pr-9 py-2 bg-[#F6F3EB] border border-[#DCD3C4] rounded-xl text-xs text-[#211F1C] placeholder-[#9B9182] focus:outline-none focus:border-[#C84B31] transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-xs p-1 rounded-md"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9B9182] hover:text-[#211F1C] text-xs p-1 rounded-md flex items-center justify-center cursor-pointer"
+                    aria-label="Clear search"
                   >
-                    ✕
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
 
-              {/* 2. Category Filter Pills Row Below Search */}
+              {/* Category Filter Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
                 {SOUND_CATEGORIES.map((cat) => {
                   const isSelected = selectedCategory === cat.id;
@@ -399,10 +392,10 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                       key={cat.id}
                       id={`sound-cat-${cat.id}`}
                       onClick={() => setSelectedCategory(cat.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-500/20 border border-amber-500/60 text-amber-300 shadow-sm font-semibold'
-                          : 'bg-white/5 hover:bg-white/10 border border-white/5 text-neutral-400 hover:text-white'
+                          ? 'bg-[#C84B31] text-white shadow-xs font-semibold'
+                          : 'bg-[#F6F3EB] hover:bg-[#EFE9DF] border border-[#E2DBD0] text-[#6B6255]'
                       }`}
                     >
                       {cat.name} ({cat.count})
@@ -411,7 +404,7 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                 })}
               </div>
 
-              {/* 3. Soundscape Cards Grid (Custom Layout matching User Sketch) */}
+              {/* Soundscape Cards Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-1">
                 {filteredSounds.map((sound) => {
                   const Icon = sound.icon;
@@ -422,56 +415,50 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                     <div
                       key={sound.id}
                       id={`soundscape-card-${sound.id}`}
-                      className={`relative flex flex-col items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 group ${
+                      className={`relative flex flex-col items-center justify-between p-3.5 rounded-xl border transition-all duration-200 group ${
                         isActive
-                          ? 'bg-[#1a160e] border-amber-500/80 shadow-lg shadow-amber-500/10'
-                          : 'bg-[#181818] border-white/5 hover:border-white/15 hover:bg-[#1e1e1e]'
+                          ? 'bg-[#F6F3EB] border-[#C84B31] shadow-sm'
+                          : 'bg-[#FCFAF6] border-[#E2DBD0] hover:bg-[#F6F3EB]'
                       }`}
                     >
-                      {/* Top Clickable Zone: Toggles Sound ON/OFF */}
                       <button
                         type="button"
                         onClick={() => handleToggleSound(sound.id)}
                         className="w-full flex flex-col items-center cursor-pointer focus:outline-none"
                       >
-                        {/* Circular Icon Badge */}
                         <div
-                          className={`w-11 h-11 rounded-full flex items-center justify-center mb-2 transition-all ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all ${
                             isActive
-                              ? 'bg-amber-500/25 text-amber-300 border border-amber-500/60 shadow-md shadow-amber-500/20 scale-105'
-                              : 'bg-[#242424] text-neutral-400 group-hover:text-neutral-200 group-hover:bg-[#2b2b2b]'
+                              ? 'bg-[#C84B31]/15 text-[#C84B31] border border-[#C84B31]/40 scale-105'
+                              : 'bg-[#F6F3EB] text-[#8E6F4E] group-hover:bg-[#EFE9DF]'
                           }`}
                         >
                           <Icon className="w-5 h-5" />
                         </div>
 
-                        {/* Clean Sound Name (No Description!) */}
                         <span
                           className={`text-xs font-bold leading-tight line-clamp-1 transition-colors ${
-                            isActive ? 'text-amber-300' : 'text-white'
+                            isActive ? 'text-[#C84B31]' : 'text-[#211F1C]'
                           }`}
                         >
                           {sound.label}
                         </span>
                       </button>
 
-                      {/* Active Glowing Dot */}
                       {isActive && (
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#fbbf24]" />
+                        <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#C84B31]" />
                       )}
 
-                      {/* Bottom Individual Volume Slider Bar matching Sketch */}
-                      <div className="w-full mt-3 pt-1 border-t border-white/5 flex flex-col gap-1">
+                      <div className="w-full mt-3 pt-1 border-t border-[#E2DBD0] flex flex-col gap-1">
                         <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className={isActive ? 'text-amber-400 font-semibold' : 'text-neutral-500'}>
+                          <span className={isActive ? 'text-[#C84B31] font-semibold' : 'text-[#9B9182]'}>
                             {isActive ? 'Active' : 'Off'}
                           </span>
-                          <span className={isActive ? 'text-amber-400 font-bold' : 'text-neutral-500'}>
+                          <span className={isActive ? 'text-[#C84B31] font-bold' : 'text-[#9B9182]'}>
                             {volume}%
                           </span>
                         </div>
 
-                        {/* Customized Orange Volume Slider */}
                         <input
                           id={`vol-slider-${sound.id}`}
                           type="range"
@@ -481,10 +468,7 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                           onChange={(e) =>
                             handleSoundVolumeChange(sound.id, Number(e.target.value))
                           }
-                          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-amber-500 bg-neutral-800 focus:outline-none transition-all"
-                          style={{
-                            accentColor: '#f59e0b',
-                          }}
+                          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-[#C84B31] bg-[#E5DFD5] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -493,14 +477,14 @@ export const MusicModal: React.FC<MusicModalProps> = ({
               </div>
 
               {filteredSounds.length === 0 && (
-                <div className="p-8 text-center bg-white/5 rounded-2xl border border-white/5">
-                  <p className="text-xs text-neutral-400">No sounds found matching "{searchQuery}".</p>
+                <div className="p-8 text-center bg-[#F6F3EB] rounded-xl border border-[#E2DBD0]">
+                  <p className="text-xs text-[#6B6255]">No sounds found matching "{searchQuery}".</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
                       setSelectedCategory('all');
                     }}
-                    className="mt-2 text-xs text-amber-400 hover:underline"
+                    className="mt-2 text-xs text-[#C84B31] hover:underline cursor-pointer"
                   >
                     Reset search & filters
                   </button>
@@ -508,18 +492,18 @@ export const MusicModal: React.FC<MusicModalProps> = ({
               )}
 
               {/* Master Volume Bar at Bottom */}
-              <div className="bg-[#181818] p-4 rounded-xl border border-white/5 space-y-2.5 sticky bottom-0 backdrop-blur-md">
+              <div className="bg-[#F6F3EB] p-4 rounded-xl border border-[#E2DBD0] space-y-2 sticky bottom-0">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-neutral-300 font-semibold">Master Soundscape Volume</span>
+                    <span className="text-[#211F1C] font-semibold">Master Soundscape Volume</span>
                     {activeSoundCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#C84B31]/10 text-[#C84B31] border border-[#C84B31]/30 flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
-                        <span>{activeSoundCount} sound{activeSoundCount > 1 ? 's' : ''} mixed</span>
+                        <span>{activeSoundCount} active</span>
                       </span>
                     )}
                   </div>
-                  <span className="text-amber-400 font-mono font-bold">
+                  <span className="text-[#C84B31] font-mono font-bold">
                     {media.ambientSoundVolume}%
                   </span>
                 </div>
@@ -535,33 +519,24 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                       isMuted: Number(e.target.value) === 0,
                     })
                   }
-                  className="w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                  style={{ accentColor: '#f59e0b' }}
+                  className="w-full h-1.5 bg-[#E5DFD5] rounded-lg appearance-none cursor-pointer accent-[#C84B31]"
                 />
               </div>
             </div>
           )}
 
-          {/* TAB 2: MY MUSIC (Spotify & YouTube Streams) */}
+          {/* TAB 2: MY MUSIC */}
           {activeTab === 'my-music' && (
-            <div className="space-y-5 animate-fadeIn">
-              {/* Input Form for Spotify or YouTube */}
-              <div className="bg-[#181818] p-5 rounded-2xl border border-white/5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-white">Custom Playlists & Tracks</h3>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-500 to-yellow-400 text-black uppercase tracking-wider">
-                        Spotify & YouTube
-                      </span>
-                    </div>
-                    <p className="text-xs text-neutral-400 mt-1">
-                      Paste any Spotify track/playlist/album link or YouTube study stream URL.
-                    </p>
-                  </div>
+            <div className="space-y-4 animate-fadeIn">
+              <div className="bg-[#F6F3EB] p-5 rounded-xl border border-[#E2DBD0] space-y-4">
+                <div>
+                  <h3 className="text-sm font-bold text-[#211F1C]">Custom Playlists & Streams</h3>
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Paste any Spotify playlist/track link or YouTube study stream URL.
+                  </p>
                 </div>
 
-                <form onSubmit={handleApplyCustomUrl} className="space-y-3">
+                <form onSubmit={handleApplyCustomUrl} className="space-y-2.5">
                   <div className="space-y-2">
                     <div className="relative">
                       <input
@@ -573,9 +548,9 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                           setCustomUrl(e.target.value);
                           if (inputError) setInputError(null);
                         }}
-                        className="w-full pl-4 pr-24 py-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500 transition-colors"
+                        className="w-full pl-3.5 pr-20 py-2 rounded-lg bg-[#FCFAF6] border border-[#DCD3C4] text-xs text-[#211F1C] placeholder-[#9B9182] focus:outline-none focus:border-[#C84B31] transition-colors"
                       />
-                      <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-neutral-500">
+                      <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[#9B9182]">
                         <SpotifyIcon className="w-3.5 h-3.5" />
                         <Disc3 className="w-3.5 h-3.5" />
                       </div>
@@ -584,54 +559,51 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                     <input
                       id="music-modal-title-input"
                       type="text"
-                      placeholder="Optional custom title (auto-detected if empty)"
+                      placeholder="Optional custom title"
                       value={customTitle}
                       onChange={(e) => setCustomTitle(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full px-3.5 py-1.5 rounded-lg bg-[#FCFAF6] border border-[#DCD3C4] text-xs text-[#211F1C] placeholder-[#9B9182] focus:outline-none focus:border-[#C84B31] transition-colors"
                     />
                   </div>
 
                   {inputError && (
-                    <p className="text-xs text-rose-400 font-medium">{inputError}</p>
+                    <p className="text-xs text-[#C84B31] font-medium">{inputError}</p>
                   )}
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="submit"
-                      id="music-modal-load-btn"
-                      disabled={!customUrl.trim()}
-                      className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Load & Play</span>
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    id="music-modal-load-btn"
+                    disabled={!customUrl.trim()}
+                    className="px-4 py-2 rounded-lg bg-[#8E6F4E] hover:bg-[#785E42] disabled:opacity-40 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Load & Play</span>
+                  </button>
                 </form>
               </div>
 
-              {/* Active Embedded Player Card */}
+              {/* Active Stream Card */}
               {isSpotifyCurrent && media.currentSource.spotifyId ? (
-                /* Spotify Embedded Interactive Player */
-                <div className="bg-[#181818] p-4 rounded-2xl border border-white/10 space-y-3">
+                <div className="bg-[#F6F3EB] p-4 rounded-xl border border-[#E2DBD0] space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <SpotifyIcon className="w-4 h-4 text-emerald-400" />
-                      <span className="text-xs font-bold text-white">
-                        Spotify Web Player ({media.currentSource.spotifyType || 'Playlist'})
+                      <SpotifyIcon className="w-4 h-4 text-[#4A7C59]" />
+                      <span className="text-xs font-bold text-[#211F1C]">
+                        Spotify Player ({media.currentSource.spotifyType || 'Playlist'})
                       </span>
                     </div>
                     <a
                       href={`https://open.spotify.com/${media.currentSource.spotifyType || 'playlist'}/${media.currentSource.spotifyId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold"
+                      className="text-[11px] text-[#4A7C59] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>Open in Spotify</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
 
-                  <div className="w-full rounded-xl overflow-hidden shadow-xl bg-black">
+                  <div className="w-full rounded-lg overflow-hidden shadow-sm bg-black">
                     <iframe
                       key={`spotify-${media.currentSource.spotifyId}`}
                       src={`https://open.spotify.com/embed/${media.currentSource.spotifyType || 'playlist'}/${media.currentSource.spotifyId}?utm_source=generator&theme=0`}
@@ -645,17 +617,16 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                   </div>
                 </div>
               ) : (
-                /* Standard Track Player Card */
-                <div className="bg-black/40 p-4 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="bg-[#F6F3EB] p-4 rounded-xl border border-[#E2DBD0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shrink-0">
-                      <Music2 className="w-5 h-5" />
+                    <div className="p-2.5 rounded-lg bg-[#8E6F4E]/15 border border-[#8E6F4E]/25 text-[#8E6F4E] shrink-0">
+                      <Music2 className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-[10px] uppercase font-bold text-amber-400 tracking-wider block">
+                      <span className="text-[10px] uppercase font-bold text-[#8E6F4E] tracking-wider block">
                         Now Playing
                       </span>
-                      <span className="text-xs font-bold text-white block truncate max-w-sm">
+                      <span className="text-xs font-bold text-[#211F1C] block truncate max-w-sm">
                         {truncateTitle(media.currentSource.title || 'Ambient Stream', 50)}
                       </span>
                     </div>
@@ -665,11 +636,11 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                     <button
                       id="music-modal-mute-btn"
                       onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors"
+                      className="p-1.5 rounded-lg bg-[#FCFAF6] border border-[#E2DBD0] hover:bg-[#EFE9DF] text-[#6B6255] transition-colors cursor-pointer"
                       title={media.isMuted ? 'Unmute' : 'Mute'}
                     >
                       {media.isMuted ? (
-                        <VolumeX className="w-4 h-4 text-rose-400" />
+                        <VolumeX className="w-4 h-4 text-[#C84B31]" />
                       ) : (
                         <Volume2 className="w-4 h-4" />
                       )}
@@ -684,9 +655,9 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                         onChange={(e) =>
                           onUpdateMedia({ volume: Number(e.target.value), isMuted: false })
                         }
-                        className="w-24 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                        className="w-24 h-1.5 bg-[#E5DFD5] rounded-lg appearance-none cursor-pointer accent-[#8E6F4E]"
                       />
-                      <span className="text-[10px] font-mono text-neutral-400 w-8 text-right">
+                      <span className="text-[10px] font-mono text-[#6B6255] w-8 text-right">
                         {media.isMuted ? '0%' : `${media.volume}%`}
                       </span>
                     </div>
@@ -696,10 +667,10 @@ export const MusicModal: React.FC<MusicModalProps> = ({
 
               {/* Saved Playlist Queue */}
               {media.playlist.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                      Saved Playlist Queue ({media.playlist.length})
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E]">
+                      Saved Queue ({media.playlist.length})
                     </h4>
                   </div>
 
@@ -716,36 +687,36 @@ export const MusicModal: React.FC<MusicModalProps> = ({
                           key={item.id}
                           id={`queue-item-${item.id}`}
                           onClick={() => handleSelectQueueItem(idx)}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                          className={`flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
                             isActive
-                              ? 'bg-amber-500/20 border-amber-500/40 text-amber-200'
-                              : 'bg-white/5 border-white/5 text-neutral-300 hover:bg-white/10'
+                              ? 'bg-[#FCFAF6] border-[#C84B31] text-[#211F1C] shadow-xs'
+                              : 'bg-[#F6F3EB] border-[#E2DBD0] text-[#6B6255] hover:bg-[#EFE9DF]'
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="text-[10px] font-mono text-neutral-500 w-4">
+                            <span className="text-[10px] font-mono text-[#9B9182] w-4">
                               {idx + 1}
                             </span>
                             {isSpotifyItem ? (
-                              <SpotifyIcon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <SpotifyIcon className="w-3.5 h-3.5 text-[#4A7C59] shrink-0" />
                             ) : (
-                              <Disc3 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                              <Disc3 className="w-3.5 h-3.5 text-[#8E6F4E] shrink-0" />
                             )}
-                            <span className="font-semibold truncate max-w-sm">
+                            <span className="font-semibold truncate max-w-sm text-[#211F1C]">
                               {truncateTitle(item.title, 50)}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0">
                             {isActive && (
-                              <span className="text-[10px] font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10">
+                              <span className="text-[10px] font-bold text-[#C84B31] px-2 py-0.5 rounded bg-[#C84B31]/10">
                                 Active
                               </span>
                             )}
                             <button
                               id={`remove-queue-item-${item.id}`}
                               onClick={(e) => handleRemoveQueueItem(item.id, e)}
-                              className="p-1 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                              className="p-1 rounded text-[#9B9182] hover:text-[#C84B31] hover:bg-[#C84B31]/10 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>

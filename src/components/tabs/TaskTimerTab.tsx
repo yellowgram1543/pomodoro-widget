@@ -71,32 +71,32 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
     <div className="flex flex-col items-center justify-between w-full space-y-4 py-1">
       {/* Task Objective Header Input */}
       <div className="w-full relative">
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl focus-within:border-cyan-400/50 transition-colors">
-          <Target className="w-4 h-4 text-cyan-400 shrink-0" />
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#FCFAF6] border border-[#E2DBD0] rounded-xl focus-within:border-[#C84B31] transition-colors shadow-sm">
+          <Target className="w-4 h-4 text-[#C84B31] shrink-0" />
           <input
             id="task-timer-objective-input"
             type="text"
-            placeholder="What target are you working on right now?"
+            placeholder="What chapter or assignment are you working on?"
             value={timer.taskTitle}
             onChange={(e) => onUpdateTimer({ taskTitle: e.target.value })}
-            className="w-full bg-transparent text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none"
+            className="w-full bg-transparent text-xs sm:text-sm text-[#211F1C] placeholder-[#8F877A] focus:outline-none"
           />
         </div>
       </div>
 
-      {/* Main Countdown Display without circle, using custom typography theme */}
+      {/* Main Countdown Display */}
       <div className="flex flex-col items-center justify-center my-3 sm:my-5 text-center select-none">
-        <div className={`text-6xl sm:text-7xl tracking-tight text-white drop-shadow-md transition-all ${getTimerFontClass(timerStyle)}`}>
+        <div className={`text-6xl sm:text-7xl tracking-tight text-[#211F1C] transition-all ${getTimerFontClass(timerStyle)}`}>
           {formattedDisplay}
         </div>
 
         <button
           onClick={() => onOpenSettings?.('timer')}
-          className="text-xs text-neutral-400 hover:text-cyan-300 mt-3 font-mono flex items-center gap-2 transition-colors cursor-pointer group"
+          className="text-xs text-[#5C564C] hover:text-[#C84B31] mt-3 font-mono flex items-center gap-2 transition-colors cursor-pointer group"
           title="Click to configure timer duration and typography styles"
         >
           <span className="group-hover:underline">{Math.round(progress * 100)}% Done</span>
-          <span className="text-neutral-600">•</span>
+          <span className="text-[#A39B8E]">•</span>
           <span className="group-hover:underline">Target: {Math.round(timer.duration / 60)}m</span>
         </button>
       </div>
@@ -107,7 +107,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
           id="btn-timer-sub-5m"
           onClick={() => addTime(-5 * 60)}
           disabled={timer.timeLeft <= 300}
-          className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 border border-white/10 rounded-lg text-xs font-mono text-neutral-300 transition-all"
+          className="px-2.5 py-1.5 bg-[#FCFAF6] hover:bg-[#F0EAE1] disabled:opacity-40 disabled:hover:bg-[#FCFAF6] border border-[#E2DBD0] rounded-lg text-xs font-mono text-[#5C564C] transition-all"
           title="Subtract 5 minutes"
         >
           -5m
@@ -115,7 +115,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
         <button
           id="btn-timer-add-5m"
           onClick={() => addTime(5 * 60)}
-          className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-xs font-mono text-cyan-300 font-semibold transition-all flex items-center gap-1"
+          className="px-3 py-1.5 bg-[#FBEBE8] hover:bg-[#F7DDD7] border border-[#F2C2BA] rounded-lg text-xs font-mono text-[#C84B31] font-bold transition-all flex items-center gap-1"
           title="Extend by 5 minutes"
         >
           <Plus className="w-3 h-3" /> 5m
@@ -123,7 +123,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
         <button
           id="btn-timer-add-15m"
           onClick={() => addTime(15 * 60)}
-          className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-xs font-mono text-cyan-300 font-semibold transition-all flex items-center gap-1"
+          className="px-3 py-1.5 bg-[#FBEBE8] hover:bg-[#F7DDD7] border border-[#F2C2BA] rounded-lg text-xs font-mono text-[#C84B31] font-bold transition-all flex items-center gap-1"
           title="Extend by 15 minutes"
         >
           <Plus className="w-3 h-3" /> 15m
@@ -131,7 +131,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
         <button
           id="btn-timer-add-30m"
           onClick={() => addTime(30 * 60)}
-          className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-mono text-neutral-300 transition-all"
+          className="px-2.5 py-1.5 bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-lg text-xs font-mono text-[#5C564C] transition-all"
           title="Extend by 30 minutes"
         >
           +30m
@@ -143,7 +143,7 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
         <button
           id="btn-task-timer-reset"
           onClick={handleReset}
-          className="p-3 text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+          className="p-3 text-[#5C564C] hover:text-[#211F1C] bg-[#FCFAF6] hover:bg-[#F0EAE1] border border-[#E2DBD0] rounded-xl transition-all shadow-[0_1px_3px_rgba(40,30,20,0.05)]"
           title="Reset timer to allocated target"
         >
           <RotateCcw className="w-4 h-4" />
@@ -152,10 +152,10 @@ export const TaskTimerTab: React.FC<TaskTimerTabProps> = ({
         <button
           id="btn-task-timer-toggle-play"
           onClick={toggleTimer}
-          className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg active:scale-95 ${
+          className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all shadow-[0_2px_8px_rgba(40,30,20,0.12)] active:scale-95 ${
             timer.isRunning
-              ? 'bg-cyan-400 hover:bg-cyan-300 text-neutral-950 shadow-cyan-400/25'
-              : 'bg-white hover:bg-neutral-100 text-neutral-950 shadow-white/20'
+              ? 'bg-[#FCFAF6] hover:bg-[#F0EAE1] text-[#C84B31] border border-[#E2DBD0]'
+              : 'bg-[#C84B31] hover:bg-[#B53F27] text-[#FCFAF6]'
           }`}
         >
           {timer.isRunning ? (

@@ -11,14 +11,9 @@ import {
   Sparkles,
   Check,
   Play,
-  Bell,
   Sliders,
-  Flame,
   Info,
-  Upload,
-  Image as ImageIcon,
-  Trash2,
-  Save,
+  BookOpen,
 } from 'lucide-react';
 import {
   PomodoroSettings,
@@ -68,15 +63,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onUpdatePomoState,
   taskTimer,
   onUpdateTaskTimer,
-  media,
-  onUpdateMedia,
+  media: _media,
+  onUpdateMedia: _onUpdateMedia,
   clockTimerStyle = 'default',
   onUpdateClockTimerStyle,
   pomoTimerStyle = 'default',
   onUpdatePomoTimerStyle,
   appearanceSettings = {
     backgroundMode: 'theme',
-    activeTheme: 'defaultDark',
+    activeTheme: 'mangaKissaten',
     customBackgroundUrl: null,
     customBackgroundOverlay: 0,
     videoBackgroundId: null,
@@ -99,7 +94,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     if (!customVideoUrl.trim()) return;
     const { videoId } = extractYouTubeSource(customVideoUrl);
     if (!videoId) {
-      setVideoInputError('Please enter a valid YouTube video URL or 11-char ID.');
+      setVideoInputError('Please enter a valid YouTube video URL or ID.');
       return;
     }
     setVideoInputError(null);
@@ -161,109 +156,102 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   const renderThemeCardVisual = (themeId: BackgroundThemeId) => {
     switch (themeId) {
-      case 'rainbowFlare':
+      case 'mangaKissaten':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-cyan-300 via-pink-300 to-yellow-200">
-            <div className="absolute -top-4 -left-4 w-16 h-16 bg-cyan-400/60 rounded-full blur-lg" />
-            <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-pink-400/70 rounded-full blur-lg" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-yellow-300/50 rounded-full blur-md" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-[#F6F3EB] via-[#ECE6D9] to-[#DFD6C5] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#8E6F4E]/20 border border-[#8E6F4E]/30" />
           </div>
         );
-      case 'darkFlare':
+      case 'tankobonPages':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-neutral-950">
-            <div className="absolute top-2 right-2 w-20 h-20 bg-rose-600/50 rounded-full blur-xl" />
-            <div className="absolute bottom-1 left-2 w-16 h-16 bg-amber-500/40 rounded-full blur-lg" />
-            <div className="absolute inset-0 bg-black/40" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-[#FAF8F3] via-[#F2EDE2] to-[#E5DDCF] flex items-center justify-center">
+            <div className="w-9 h-6 border-y border-[#211F1C]/20 flex flex-col justify-between py-1">
+              <div className="w-full h-[1px] bg-[#211F1C]/20" />
+              <div className="w-3/4 h-[1px] bg-[#211F1C]/20" />
+            </div>
           </div>
         );
-      case 'heatMap':
+      case 'cedarStudy':
         return (
-          <div
-            className="w-full h-full relative overflow-hidden bg-neutral-950"
-            style={{
-              background:
-                'radial-gradient(ellipse at 80% 20%, #facc15 0%, #f97316 30%, #ec4899 60%, #3b82f6 90%, #000 100%)',
-            }}
-          />
-        );
-      case 'darkPurpleHeart':
-        return (
-          <div className="w-full h-full relative overflow-hidden bg-neutral-950 flex items-center justify-center">
-            <svg viewBox="0 0 100 100" className="w-12 h-12 text-fuchsia-500 fill-current filter blur-[2px] drop-shadow-[0_0_12px_rgba(217,70,239,0.9)]">
-              <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
-            </svg>
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-[#EFEAE0] via-[#E2D8C7] to-[#C9B9A2] flex items-center justify-center">
+            <div className="w-10 h-7 border border-[#8E6F4E]/30 rounded bg-[#8E6F4E]/10" />
           </div>
         );
-      case 'flocusViolet':
+      case 'washiSumi':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-violet-400/40 rounded-full blur-md" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-[#F5F2EA] via-[#E8E2D5] to-[#D5CDC0] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full bg-[#211F1C]/15 blur-[1px]" />
           </div>
         );
-      case 'pastelLofi':
+      case 'matchaReading':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-sky-200 via-indigo-200 to-blue-200">
-            <div className="absolute top-1 left-2 w-12 h-12 bg-cyan-300/60 rounded-full blur-md" />
-            <div className="absolute bottom-1 right-2 w-12 h-12 bg-purple-300/60 rounded-full blur-md" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-[#F4F5EE] via-[#E2E8D8] to-[#CBD8BE] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#4A7C59]/25 border border-[#4A7C59]/30" />
           </div>
         );
-      case 'sakura':
+      case 'shinjukuRain':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-rose-200 via-pink-300 to-rose-300">
-            <div className="absolute top-1 right-1 w-14 h-14 bg-pink-400/50 rounded-full blur-md" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-[#F0F2F5] via-[#DEE4EB] to-[#CAD3DE] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#3D5A73]/20 border border-[#3D5A73]/30" />
           </div>
         );
-      case 'lightPurpleHeart':
+      case 'archivalLibrary':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-purple-200 via-fuchsia-200 to-indigo-100 flex items-center justify-center">
-            <svg viewBox="0 0 100 100" className="w-12 h-12 text-fuchsia-400 fill-current filter blur-[2px] drop-shadow-[0_0_10px_rgba(217,70,239,0.8)]">
-              <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
-            </svg>
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-[#F7F3E9] via-[#E8DEC8] to-[#CFBFA3] flex items-center justify-center">
+            <div className="w-8 h-8 rounded bg-[#8E6F4E]/25 border border-[#8E6F4E]/30" />
           </div>
         );
-      case 'grainyGradient':
+      case 'hankoVermilion':
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-blue-700 via-rose-600 to-amber-400">
-            <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:4px_4px]" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-[#F6F2EA] via-[#EFE7D8] to-[#E2D3BE] flex items-center justify-center">
+            <div className="w-6 h-6 rounded border border-[#C84B31]/60 bg-[#C84B31]/20 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#C84B31]" />
+            </div>
           </div>
         );
-      case 'cyberpunk':
-        return (
-          <div className="w-full h-full relative overflow-hidden bg-neutral-950">
-            <div className="absolute top-1 left-1 w-12 h-12 bg-cyan-500/50 rounded-full blur-md" />
-            <div className="absolute bottom-1 right-1 w-12 h-12 bg-fuchsia-600/50 rounded-full blur-md" />
-          </div>
-        );
-      case 'zenEmerald':
-        return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-emerald-950 via-teal-950 to-neutral-950">
-            <div className="absolute top-2 left-2 w-14 h-14 bg-emerald-600/40 rounded-full blur-md" />
-          </div>
-        );
-      case 'defaultDark':
+      case 'crimsonRipples':
+        return <div className="w-full h-full pattern-crimson-ripples" />;
+      case 'draftingGrid':
+        return <div className="w-full h-full pattern-drafting-grid" />;
+      case 'pastelDiamond':
+        return <div className="w-full h-full pattern-pastel-diamond" />;
+      case 'wheatWeave':
+        return <div className="w-full h-full pattern-wheat-weave" />;
+      case 'dynamicTiles':
+        return <div className="w-full h-full pattern-dynamic-tiles" />;
+      case 'badSnakeSunset':
+        return <div className="w-full h-full pattern-bad-snake-sunset" />;
+      case 'modernSkunkPine':
+        return <div className="w-full h-full pattern-modern-skunk-pine" />;
+      case 'fluffyBearClouds':
+        return <div className="w-full h-full pattern-fluffy-bear-clouds" />;
+      case 'niceGrasshopperGrid':
+        return <div className="w-full h-full pattern-nice-grasshopper-grid" />;
+      case 'thinBulldogContour':
+        return <div className="w-full h-full pattern-thin-bulldog-contour" />;
+      case 'greatFishScales':
+        return <div className="w-full h-full pattern-great-fish-scales" />;
       default:
         return (
-          <div className="w-full h-full relative overflow-hidden bg-gradient-to-tr from-neutral-950 via-slate-950 to-neutral-900 flex items-center justify-center">
-            <div className="w-12 h-12 bg-amber-500/10 rounded-full blur-md" />
+          <div className="w-full h-full relative overflow-hidden bg-gradient-to-r from-[#F6F2EA] via-[#EFE7D8] to-[#E2D3BE] flex items-center justify-center">
+            <div className="w-6 h-6 rounded border border-[#C84B31]/60 bg-[#C84B31]/20 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#C84B31]" />
+            </div>
           </div>
         );
     }
   };
 
-  // Sync initialCategory if opened from a specific button
   React.useEffect(() => {
     if (initialCategory) {
       setActiveCategory(initialCategory);
     }
   }, [initialCategory, isOpen]);
 
-  // Timer custom inputs state
   const [timerHours, setTimerHours] = useState(Math.floor(taskTimer.duration / 3600));
   const [timerMinutes, setTimerMinutes] = useState(Math.floor((taskTimer.duration % 3600) / 60));
   const [timerSeconds, setTimerSeconds] = useState(taskTimer.duration % 60);
 
-  // Sync timer state when taskTimer changes
   React.useEffect(() => {
     setTimerHours(Math.floor(taskTimer.duration / 3600));
     setTimerMinutes(Math.floor((taskTimer.duration % 3600) / 60));
@@ -310,46 +298,46 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       case 'default':
         return (
           <div className="flex items-center justify-center w-full h-full">
-            <span className="font-mono font-bold text-xl sm:text-2xl text-white tracking-tight">
+            <span className="font-mono font-bold text-lg sm:text-xl text-[#211F1C] tracking-tight">
               25:00
             </span>
           </div>
         );
       case 'flipClock':
         return (
-          <div className="flex items-center justify-center gap-2 w-full h-full">
-            <div className="relative w-8 h-10 bg-neutral-800/90 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden shadow">
-              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-black" />
-              <span className="font-mono font-black text-base text-white">2</span>
+          <div className="flex items-center justify-center gap-1.5 w-full h-full">
+            <div className="relative w-7 h-9 bg-[#211F1C] rounded-md border border-[#211F1C] flex items-center justify-center overflow-hidden shadow-sm">
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#3B3630]" />
+              <span className="font-mono font-bold text-sm text-[#F6F3EB]">2</span>
             </div>
-            <div className="relative w-8 h-10 bg-neutral-800/90 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden shadow">
-              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-black" />
-              <span className="font-mono font-black text-base text-white">5</span>
+            <div className="relative w-7 h-9 bg-[#211F1C] rounded-md border border-[#211F1C] flex items-center justify-center overflow-hidden shadow-sm">
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-[#3B3630]" />
+              <span className="font-mono font-bold text-sm text-[#F6F3EB]">5</span>
             </div>
           </div>
         );
       case 'progressBar':
         return (
           <div className="flex flex-col items-center justify-center w-full h-full px-4 space-y-2">
-            <span className="text-[11px] font-mono font-bold text-white tracking-tight">25:00</span>
-            <div className="w-full h-2.5 bg-neutral-800 rounded-full overflow-hidden flex p-0.5 border border-white/10">
-              <div className="w-[65%] h-full bg-white rounded-full" />
+            <span className="text-[11px] font-mono font-bold text-[#211F1C]">25:00</span>
+            <div className="w-full h-2 bg-[#E5DFD5] rounded-full overflow-hidden flex p-0.5 border border-[#D8D0C3]">
+              <div className="w-[65%] h-full bg-[#C84B31] rounded-full" />
             </div>
           </div>
         );
       case 'gauge':
         return (
           <div className="flex flex-col items-center justify-center w-full h-full space-y-1">
-            <div className="relative w-9 h-9 flex items-center justify-center">
+            <div className="relative w-8 h-8 flex items-center justify-center">
               <svg viewBox="0 0 36 36" className="w-full h-full">
                 <g transform="rotate(-90 18 18)">
-                  <circle cx="18" cy="18" r="14" fill="none" stroke="#262626" strokeWidth="3.5" />
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#E5DFD5" strokeWidth="3.5" />
                   <circle
                     cx="18"
                     cy="18"
                     r="14"
                     fill="none"
-                    stroke="#ffffff"
+                    stroke="#C84B31"
                     strokeWidth="3.5"
                     strokeDasharray={2 * Math.PI * 14}
                     strokeDashoffset={2 * Math.PI * 14 * 0.35}
@@ -358,37 +346,37 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </g>
               </svg>
             </div>
-            <span className="text-[10px] font-mono font-bold text-white leading-none">25:00</span>
+            <span className="text-[10px] font-mono font-bold text-[#211F1C] leading-none">25:00</span>
           </div>
         );
       case 'dotMatrix':
         return (
           <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
-            <div className="grid grid-cols-6 gap-1.5">
+            <div className="grid grid-cols-6 gap-1">
               {Array.from({ length: 18 }).map((_, i) => {
                 const col = i % 6;
                 const isLit = col < 4;
                 return (
                   <div
                     key={i}
-                    className={`w-1.5 h-1.5 rounded-full ${isLit ? 'bg-white' : 'bg-neutral-800'}`}
+                    className={`w-1.5 h-1.5 rounded-full ${isLit ? 'bg-[#C84B31]' : 'bg-[#E5DFD5]'}`}
                   />
                 );
               })}
             </div>
-            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+            <span className="text-[10px] font-mono font-bold text-[#211F1C]">25:00</span>
           </div>
         );
       case 'pie':
         return (
           <div className="flex flex-col items-center justify-center w-full h-full space-y-1.5">
             <div
-              className="w-7 h-7 rounded-full border border-neutral-700 shadow-sm"
+              className="w-6 h-6 rounded-full border border-[#D8D0C3] shadow-sm"
               style={{
-                background: 'conic-gradient(#ffffff 240deg, #262626 0deg)',
+                background: 'conic-gradient(#C84B31 240deg, #E5DFD5 0deg)',
               }}
             />
-            <span className="text-[10px] font-mono font-bold text-white">25:00</span>
+            <span className="text-[10px] font-mono font-bold text-[#211F1C]">25:00</span>
           </div>
         );
     }
@@ -404,30 +392,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-      {/* Subtle Backdrop so user can clearly preview background theme changes live */}
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/35 backdrop-blur-[1px] transition-opacity"
+        className="fixed inset-0 bg-[#211F1C]/40 backdrop-blur-[2px] transition-opacity"
         onClick={onClose}
       />
 
-      {/* Slide-over Container (Two-part layout: Sidebar + Main Settings) */}
-      <div className="relative z-10 w-full max-w-2xl sm:max-w-3xl h-full bg-neutral-950/95 border-l border-white/10 shadow-2xl backdrop-blur-2xl flex flex-col animate-in slide-in-from-right duration-300">
+      {/* Slide-over Container (Library Paper Surface) */}
+      <div className="relative z-10 w-full max-w-2xl sm:max-w-3xl h-full bg-[#FCFAF6] border-l border-[#E2DBD0] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0 bg-neutral-900/50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2DBD0] shrink-0 bg-[#F6F3EB]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#8E6F4E]/15 border border-[#8E6F4E]/25 flex items-center justify-center text-[#8E6F4E]">
               <Sliders className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-wide">Focus Hub Settings</h2>
-              <p className="text-[11px] text-neutral-400">Customize intervals, alarms, timers, and themes</p>
+              <h2 className="text-sm font-bold text-[#211F1C] tracking-wide">Study Settings</h2>
+              <p className="text-[11px] text-[#6B6255]">Intervals, notifications, themes, and timer styles</p>
             </div>
           </div>
 
           <button
             id="btn-close-settings-panel"
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10 transition-all"
+            className="p-2 rounded-lg bg-[#EFE9DF] hover:bg-[#E5DFD5] text-[#6B6255] hover:text-[#211F1C] border border-[#E2DBD0] transition-all cursor-pointer"
             title="Close settings"
           >
             <X className="w-4 h-4" />
@@ -437,8 +425,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Two-Column Body */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Navigation Sidebar */}
-          <aside className="w-48 sm:w-56 border-r border-white/10 bg-neutral-900/40 p-3 space-y-1.5 shrink-0 overflow-y-auto">
-            <span className="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
+          <aside className="w-48 sm:w-56 border-r border-[#E2DBD0] bg-[#F6F3EB] p-3 space-y-1 shrink-0 overflow-y-auto">
+            <span className="px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#9B9182] block">
               Preferences
             </span>
             {navCategories.map((cat) => {
@@ -449,22 +437,22 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   key={cat.id}
                   id={`btn-settings-cat-${cat.id}`}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all text-left cursor-pointer ${
                     isActive
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30 shadow-sm'
-                      : 'text-neutral-400 hover:text-white hover:bg-white/5 border border-transparent'
+                      ? 'bg-[#E5DFD5] text-[#211F1C] border border-[#D5CDC0] shadow-xs'
+                      : 'text-[#6B6255] hover:text-[#211F1C] hover:bg-[#EFE9DF] border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-neutral-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#C84B31]' : 'text-[#8E6F4E]'}`} />
                   <span>{cat.label}</span>
                 </button>
               );
             })}
 
-            <div className="pt-6 mt-6 border-t border-white/10">
+            <div className="pt-4 mt-4 border-t border-[#E2DBD0]">
               <button
                 onClick={handleResetAllDefaults}
-                className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-neutral-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all"
+                className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-[#6B6255] hover:text-[#C84B31] hover:bg-[#C84B31]/10 rounded-lg transition-all cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset to Defaults</span>
@@ -473,116 +461,103 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </aside>
 
           {/* Right Main Settings Pane */}
-          <main className="flex-1 p-6 overflow-y-auto space-y-6">
+          <main className="flex-1 p-6 overflow-y-auto space-y-6 bg-[#FCFAF6]">
             {/* 1. POMODORO SETTINGS */}
             {activeCategory === 'pomodoro' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-base font-bold text-[#211F1C] flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-[#C84B31]" />
                     <span>Pomodoro Interval Durations</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Configure custom lengths for your focus, short rest, and long rest blocks.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Configure custom lengths for focus sprints, short breaks, and restorative long breaks.
                   </p>
                 </div>
 
                 {/* Duration Inputs Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                    <label className="text-xs font-semibold text-amber-300 flex items-center justify-between">
+                  <div className="p-3.5 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-2">
+                    <label className="text-xs font-semibold text-[#8E6F4E] flex items-center justify-between">
                       <span>Focus Session</span>
-                      <span className="text-[10px] font-mono text-neutral-400">minutes</span>
+                      <span className="text-[10px] font-mono text-[#9B9182]">minutes</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        id="input-setting-work-duration"
-                        type="number"
-                        min="1"
-                        max="120"
-                        value={pomoSettings.workDuration}
-                        onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 25);
-                          onUpdatePomoSettings({ workDuration: val });
-                          if (pomoState.mode === 'work' && !pomoState.isRunning) {
-                            onUpdatePomoState({ timeLeft: val * 60 });
-                          }
-                        }}
-                        className="w-full px-3 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white font-mono text-center font-bold text-sm focus:outline-none focus:border-amber-400"
-                      />
-                    </div>
-                    <span className="text-[10px] text-neutral-500 block">Default: 25 mins</span>
+                    <input
+                      id="input-setting-work-duration"
+                      type="number"
+                      min="1"
+                      max="120"
+                      value={pomoSettings.workDuration}
+                      onChange={(e) => {
+                        const val = Math.max(1, parseInt(e.target.value) || 25);
+                        onUpdatePomoSettings({ workDuration: val });
+                        if (pomoState.mode === 'work' && !pomoState.isRunning) {
+                          onUpdatePomoState({ timeLeft: val * 60 });
+                        }
+                      }}
+                      className="w-full px-3 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] font-mono text-center font-bold text-sm focus:outline-none focus:border-[#C84B31]"
+                    />
+                    <span className="text-[10px] text-[#9B9182] block">Standard: 25 mins</span>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                    <label className="text-xs font-semibold text-emerald-300 flex items-center justify-between">
+                  <div className="p-3.5 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-2">
+                    <label className="text-xs font-semibold text-[#4A7C59] flex items-center justify-between">
                       <span>Short Rest</span>
-                      <span className="text-[10px] font-mono text-neutral-400">minutes</span>
+                      <span className="text-[10px] font-mono text-[#9B9182]">minutes</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        id="input-setting-short-break"
-                        type="number"
-                        min="1"
-                        max="60"
-                        value={pomoSettings.shortBreakDuration}
-                        onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 5);
-                          onUpdatePomoSettings({ shortBreakDuration: val });
-                          if (pomoState.mode === 'shortBreak' && !pomoState.isRunning) {
-                            onUpdatePomoState({ timeLeft: val * 60 });
-                          }
-                        }}
-                        className="w-full px-3 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white font-mono text-center font-bold text-sm focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-                    <span className="text-[10px] text-neutral-500 block">Default: 5 mins</span>
+                    <input
+                      id="input-setting-short-break"
+                      type="number"
+                      min="1"
+                      max="60"
+                      value={pomoSettings.shortBreakDuration}
+                      onChange={(e) => {
+                        const val = Math.max(1, parseInt(e.target.value) || 5);
+                        onUpdatePomoSettings({ shortBreakDuration: val });
+                        if (pomoState.mode === 'shortBreak' && !pomoState.isRunning) {
+                          onUpdatePomoState({ timeLeft: val * 60 });
+                        }
+                      }}
+                      className="w-full px-3 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] font-mono text-center font-bold text-sm focus:outline-none focus:border-[#4A7C59]"
+                    />
+                    <span className="text-[10px] text-[#9B9182] block">Standard: 5 mins</span>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                    <label className="text-xs font-semibold text-sky-300 flex items-center justify-between">
+                  <div className="p-3.5 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-2">
+                    <label className="text-xs font-semibold text-[#3D5A73] flex items-center justify-between">
                       <span>Long Rest</span>
-                      <span className="text-[10px] font-mono text-neutral-400">minutes</span>
+                      <span className="text-[10px] font-mono text-[#9B9182]">minutes</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        id="input-setting-long-break"
-                        type="number"
-                        min="1"
-                        max="90"
-                        value={pomoSettings.longBreakDuration}
-                        onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 15);
-                          onUpdatePomoSettings({ longBreakDuration: val });
-                          if (pomoState.mode === 'longBreak' && !pomoState.isRunning) {
-                            onUpdatePomoState({ timeLeft: val * 60 });
-                          }
-                        }}
-                        className="w-full px-3 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white font-mono text-center font-bold text-sm focus:outline-none focus:border-sky-400"
-                      />
-                    </div>
-                    <span className="text-[10px] text-neutral-500 block">Default: 15 mins</span>
+                    <input
+                      id="input-setting-long-break"
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={pomoSettings.longBreakDuration}
+                      onChange={(e) => {
+                        const val = Math.max(1, parseInt(e.target.value) || 15);
+                        onUpdatePomoSettings({ longBreakDuration: val });
+                        if (pomoState.mode === 'longBreak' && !pomoState.isRunning) {
+                          onUpdatePomoState({ timeLeft: val * 60 });
+                        }
+                      }}
+                      className="w-full px-3 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] font-mono text-center font-bold text-sm focus:outline-none focus:border-[#3D5A73]"
+                    />
+                    <span className="text-[10px] text-[#9B9182] block">Standard: 15 mins</span>
                   </div>
                 </div>
 
                 {/* 1.B. TIMER STYLE (Appearance Gallery for Pomodoro) */}
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-bold text-white tracking-tight">
-                      Timer Style
+                    <h4 className="text-sm font-bold text-[#211F1C] tracking-tight">
+                      Display Style
                     </h4>
-                    <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-600/30 text-purple-300 border border-purple-400/40 rounded-full font-mono flex items-center gap-1">
-                      <span className="text-amber-400">⚡</span> PLUS
-                    </span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 rounded-full font-mono">
-                      NEW
-                    </span>
                   </div>
-                  <p className="text-xs text-neutral-400">
-                    Choose how the time remaining is displayed.
+                  <p className="text-xs text-[#6B6255]">
+                    Select how the remaining time is rendered on your desk.
                   </p>
 
-                  {/* 6 Miniature Style Cards Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
                     {POMO_TIMER_STYLES.map((style) => {
                       const isSelected = pomoTimerStyle === style.id;
@@ -595,21 +570,19 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             isSelected ? 'scale-[1.02]' : 'hover:scale-[1.01]'
                           }`}
                         >
-                          {/* Card Frame */}
                           <div
-                            className={`w-full aspect-[16/11] rounded-2xl flex flex-col items-center justify-center p-3 transition-all relative overflow-hidden ${
+                            className={`w-full aspect-[16/11] rounded-xl flex flex-col items-center justify-center p-3 transition-all relative overflow-hidden ${
                               isSelected
-                                ? 'bg-neutral-900 border-2 border-white shadow-xl shadow-white/5'
-                                : 'bg-neutral-900/60 hover:bg-neutral-900/90 border border-white/10 hover:border-white/25'
+                                ? 'bg-[#FCFAF6] border-2 border-[#C84B31] shadow-md'
+                                : 'bg-[#F6F3EB] hover:bg-[#EFE9DF] border border-[#E2DBD0]'
                             }`}
                           >
                             {renderPomoStylePreview(style.id)}
                           </div>
 
-                          {/* Label under card */}
                           <span
-                            className={`mt-2 text-xs tracking-wide transition-colors ${
-                              isSelected ? 'text-white font-bold' : 'text-neutral-400 group-hover:text-neutral-200'
+                            className={`mt-1.5 text-xs tracking-wide transition-colors ${
+                              isSelected ? 'text-[#C84B31] font-bold' : 'text-[#6B6255] group-hover:text-[#211F1C]'
                             }`}
                           >
                             {style.label}
@@ -621,16 +594,16 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
 
                 {/* Cycles & Automation Group */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E]">
                     Cycle Behavior & Automation
                   </h4>
 
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <span className="text-xs font-semibold text-white block">Cycles Before Long Rest</span>
-                      <span className="text-[11px] text-neutral-400">
-                        Number of focus sprints completed before triggering the long rest break.
+                      <span className="text-xs font-semibold text-[#211F1C] block">Cycles Before Long Rest</span>
+                      <span className="text-[11px] text-[#6B6255]">
+                        Number of focus sprints completed before triggering long rest.
                       </span>
                     </div>
                     <select
@@ -639,7 +612,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       onChange={(e) =>
                         onUpdatePomoSettings({ cyclesBeforeLongBreak: parseInt(e.target.value) || 4 })
                       }
-                      className="bg-neutral-900 border border-white/15 rounded-xl px-3 py-2 text-white text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer"
+                      className="bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg px-3 py-1.5 text-[#211F1C] text-xs font-mono focus:outline-none focus:border-[#C84B31] cursor-pointer"
                     >
                       {[2, 3, 4, 5, 6, 8].map((n) => (
                         <option key={n} value={n}>
@@ -649,10 +622,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/10">
+                  <div className="flex items-center justify-between gap-4 pt-3 border-t border-[#E2DBD0]">
                     <div>
-                      <span className="text-xs font-semibold text-white block">Auto-start Breaks</span>
-                      <span className="text-[11px] text-neutral-400">
+                      <span className="text-xs font-semibold text-[#211F1C] block">Auto-start Breaks</span>
+                      <span className="text-[11px] text-[#6B6255]">
                         Automatically transition into rest periods without manual click.
                       </span>
                     </div>
@@ -663,14 +636,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         onChange={(e) => onUpdatePomoSettings({ autoStartBreaks: e.target.checked })}
                         className="sr-only peer"
                       />
-                      <div className="w-10 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500" />
+                      <div className="w-9 h-5 bg-[#D8D0C3] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C84B31]" />
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/10">
+                  <div className="flex items-center justify-between gap-4 pt-3 border-t border-[#E2DBD0]">
                     <div>
-                      <span className="text-xs font-semibold text-white block">Auto-start Pomodoros</span>
-                      <span className="text-[11px] text-neutral-400">
+                      <span className="text-xs font-semibold text-[#211F1C] block">Auto-start Pomodoros</span>
+                      <span className="text-[11px] text-[#6B6255]">
                         Automatically start the next focus interval when a break concludes.
                       </span>
                     </div>
@@ -681,39 +654,34 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         onChange={(e) => onUpdatePomoSettings({ autoStartPomodoros: e.target.checked })}
                         className="sr-only peer"
                       />
-                      <div className="w-10 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500" />
+                      <div className="w-9 h-5 bg-[#D8D0C3] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C84B31]" />
                     </label>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* 2. TIMER SETTINGS (Includes Target Duration & Timer Typography Appearance) */}
+            {/* 2. TIMER SETTINGS */}
             {activeCategory === 'timer' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <TimerIcon className="w-4 h-4 text-cyan-400" />
-                    <span>Task Countdown Timer Settings</span>
+                  <h3 className="text-base font-bold text-[#211F1C] flex items-center gap-2">
+                    <TimerIcon className="w-4 h-4 text-[#8E6F4E]" />
+                    <span>Countdown Timer Settings</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Customize typography appearance, default target durations, and quick intervals for individual tasks.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Customize typography appearance, default durations, and quick intervals for individual tasks.
                   </p>
                 </div>
 
-                {/* Timer Typography & Clock Style Gallery (Exclusively for Timer) */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3.5">
+                {/* Typography Gallery */}
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-white block">
-                        Timer Style & Typography
-                      </span>
-                      <span className="px-2 py-0.5 text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 rounded-full font-mono">
-                        ⚡ TIMER ONLY
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-neutral-400">
-                      Active: <strong className="text-cyan-300 capitalize">{clockTimerStyle}</strong>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E] block">
+                      Typography Face
+                    </span>
+                    <span className="text-[11px] text-[#6B6255]">
+                      Active: <strong className="text-[#C84B31] capitalize">{clockTimerStyle}</strong>
                     </span>
                   </div>
 
@@ -725,42 +693,29 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           key={style.id}
                           id={`timer-theme-card-${style.id}`}
                           onClick={() => onUpdateClockTimerStyle?.(style.id)}
-                          className={`group relative rounded-2xl p-2 cursor-pointer transition-all border flex flex-col items-center ${
+                          className={`group relative rounded-xl p-2 cursor-pointer transition-all border flex flex-col items-center ${
                             isSelected
-                              ? 'bg-neutral-900 border-cyan-400 shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-400/50'
-                              : 'bg-neutral-900/60 border-white/10 hover:border-white/25 hover:bg-neutral-900/90'
+                              ? 'bg-[#FCFAF6] border-[#C84B31] shadow-md ring-2 ring-[#C84B31]/30'
+                              : 'bg-[#F6F3EB] border-[#E2DBD0] hover:bg-[#EFE9DF]'
                           }`}
                         >
-                          {/* Miniature Desktop Thumbnail Preview */}
-                          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 flex flex-col items-center justify-center p-2 border border-white/5 shadow-inner">
-                            {/* Subtle Ambient Background Gradient simulation */}
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15),transparent_70%)] pointer-events-none" />
-
-                            {/* Top small logo / branding */}
-                            <div className="absolute top-1.5 flex items-center gap-1 opacity-70">
-                              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                              <span className="text-[8px] font-medium text-neutral-300 tracking-wider">flocus</span>
-                            </div>
-
-                            {/* Displayed Time in the exact font theme */}
+                          <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden bg-[#FAF8F3] flex flex-col items-center justify-center p-2 border border-[#E2DBD0]">
                             <div
-                              className={`text-2xl sm:text-3xl text-white tracking-tight drop-shadow-md z-10 transition-transform group-hover:scale-105 ${style.className}`}
+                              className={`text-xl sm:text-2xl text-[#211F1C] tracking-tight transition-transform group-hover:scale-105 ${style.className}`}
                             >
                               {style.previewText}
                             </div>
 
-                            {/* Selection Checkmark */}
                             {isSelected && (
-                              <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full bg-cyan-400 text-neutral-950 flex items-center justify-center shadow-md">
+                              <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full bg-[#C84B31] text-white flex items-center justify-center shadow-xs">
                                 <Check className="w-2.5 h-2.5 stroke-[3]" />
                               </div>
                             )}
                           </div>
 
-                          {/* Theme Name Label */}
                           <span
-                            className={`mt-2 text-xs font-semibold text-center transition-colors ${
-                              isSelected ? 'text-cyan-300 font-bold' : 'text-neutral-300 group-hover:text-white'
+                            className={`mt-1.5 text-xs font-semibold text-center transition-colors ${
+                              isSelected ? 'text-[#C84B31]' : 'text-[#6B6255] group-hover:text-[#211F1C]'
                             }`}
                           >
                             {style.label}
@@ -771,15 +726,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
 
-                {/* Default Target Duration (Hours, Minutes, Seconds) */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
+                {/* Target Duration Input */}
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E] block">
                     Set Target Duration (HH:MM:SS)
                   </span>
 
                   <div className="flex items-center justify-center gap-3 font-mono py-2">
                     <div className="flex flex-col items-center">
-                      <label className="text-[10px] text-neutral-400 mb-1">Hours</label>
+                      <label className="text-[10px] text-[#9B9182] mb-1">Hours</label>
                       <input
                         type="number"
                         min="0"
@@ -790,12 +745,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           setTimerHours(val);
                           applyCustomTimerDuration(val, timerMinutes, timerSeconds);
                         }}
-                        className="w-16 px-2 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white text-center font-bold text-base focus:outline-none focus:border-cyan-400"
+                        className="w-16 px-2 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] text-center font-bold text-sm focus:outline-none focus:border-[#C84B31]"
                       />
                     </div>
-                    <span className="text-neutral-500 text-xl mt-4">:</span>
+                    <span className="text-[#9B9182] text-xl mt-3">:</span>
                     <div className="flex flex-col items-center">
-                      <label className="text-[10px] text-neutral-400 mb-1">Minutes</label>
+                      <label className="text-[10px] text-[#9B9182] mb-1">Minutes</label>
                       <input
                         type="number"
                         min="0"
@@ -806,12 +761,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           setTimerMinutes(val);
                           applyCustomTimerDuration(timerHours, val, timerSeconds);
                         }}
-                        className="w-16 px-2 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white text-center font-bold text-base focus:outline-none focus:border-cyan-400"
+                        className="w-16 px-2 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] text-center font-bold text-sm focus:outline-none focus:border-[#C84B31]"
                       />
                     </div>
-                    <span className="text-neutral-500 text-xl mt-4">:</span>
+                    <span className="text-[#9B9182] text-xl mt-3">:</span>
                     <div className="flex flex-col items-center">
-                      <label className="text-[10px] text-neutral-400 mb-1">Seconds</label>
+                      <label className="text-[10px] text-[#9B9182] mb-1">Seconds</label>
                       <input
                         type="number"
                         min="0"
@@ -822,24 +777,24 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           setTimerSeconds(val);
                           applyCustomTimerDuration(timerHours, timerMinutes, val);
                         }}
-                        className="w-16 px-2 py-2 bg-neutral-900 border border-white/15 rounded-xl text-white text-center font-bold text-base focus:outline-none focus:border-cyan-400"
+                        className="w-16 px-2 py-1.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded-lg text-[#211F1C] text-center font-bold text-sm focus:outline-none focus:border-[#C84B31]"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Preset Intervals Buttons */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
-                    Quick Preset Durations
+                {/* Preset Intervals */}
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E] block">
+                    Quick Preset Intervals
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {[
                       { label: '10m Quick Sprint', secs: 10 * 60 },
                       { label: '15m Sprint', secs: 15 * 60 },
                       { label: '25m Standard', secs: 25 * 60 },
-                      { label: '45m Deep Work', secs: 45 * 60 },
-                      { label: '60m Block', secs: 60 * 60 },
+                      { label: '45m Deep Reading', secs: 45 * 60 },
+                      { label: '60m Study Block', secs: 60 * 60 },
                       { label: '90m Master Focus', secs: 90 * 60 },
                     ].map((p) => {
                       const isSelected = taskTimer.duration === p.secs;
@@ -855,14 +810,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             setTimerSeconds(s);
                             applyCustomTimerDuration(h, m, s);
                           }}
-                          className={`p-2.5 rounded-xl text-xs font-semibold transition-all border text-left flex items-center justify-between ${
+                          className={`p-2 rounded-lg text-xs font-semibold transition-all border text-left flex items-center justify-between cursor-pointer ${
                             isSelected
-                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm'
-                              : 'bg-neutral-900/60 text-neutral-300 border-white/10 hover:bg-white/10'
+                              ? 'bg-[#C84B31]/10 text-[#C84B31] border-[#C84B31]/40'
+                              : 'bg-[#FCFAF6] text-[#6B6255] border-[#E2DBD0] hover:bg-[#EFE9DF]'
                           }`}
                         >
                           <span>{p.label}</span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-[#C84B31] shrink-0" />}
                         </button>
                       );
                     })}
@@ -875,27 +830,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             {activeCategory === 'sound' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-amber-400" />
-                    <span>Alarm Chimes & Sound Settings</span>
+                  <h3 className="text-base font-bold text-[#211F1C] flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-[#8E6F4E]" />
+                    <span>Notification Chimes & Sound Settings</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Select harmonic tones and adjust notification alert volume.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Select harmonic tones and adjust completion alert volume.
                   </p>
                 </div>
 
                 {/* Alarm Sound Picker */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E] block">
                     Session Completion Chime
                   </span>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {[
-                      { id: 'bell' as AlarmSound, name: 'Zen Meditation Bell', desc: 'Harmonic 528Hz calming brass chime' },
-                      { id: 'marimba' as AlarmSound, name: 'Marimba Melodic', desc: 'Uplifting gentle wooden acoustic notes' },
-                      { id: 'bowl' as AlarmSound, name: 'Tibetan Singing Bowl', desc: 'Deep resonating relaxation bowl' },
-                      { id: 'digital' as AlarmSound, name: 'Digital Synth Chime', desc: 'Modern crisp electronic chime' },
+                      { id: 'bell' as AlarmSound, name: 'Zen Temple Bell', desc: 'Resonant 528Hz calming brass chime' },
+                      { id: 'marimba' as AlarmSound, name: 'Marimba Melodic', desc: 'Gentle wooden acoustic notes' },
+                      { id: 'bowl' as AlarmSound, name: 'Tibetan Singing Bowl', desc: 'Deep harmonizing singing bowl' },
+                      { id: 'digital' as AlarmSound, name: 'Modern Chime', desc: 'Clean, crisp electronic signal' },
                     ].map((s) => {
                       const isSelected = pomoSettings.alarmSound === s.id;
                       return (
@@ -905,15 +860,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             onUpdatePomoSettings({ alarmSound: s.id });
                             testAlarm(s.id);
                           }}
-                          className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                          className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                             isSelected
-                              ? 'bg-amber-500/15 border-amber-400/40 text-white'
-                              : 'bg-neutral-900/60 border-white/10 text-neutral-300 hover:bg-white/5'
+                              ? 'bg-[#FCFAF6] border-[#C84B31] text-[#211F1C] shadow-xs'
+                              : 'bg-[#FCFAF6] border-[#E2DBD0] text-[#6B6255] hover:bg-[#EFE9DF]'
                           }`}
                         >
                           <div>
-                            <span className="text-xs font-bold block">{s.name}</span>
-                            <span className="text-[11px] text-neutral-400">{s.desc}</span>
+                            <span className="text-xs font-bold block text-[#211F1C]">{s.name}</span>
+                            <span className="text-[11px] text-[#9B9182]">{s.desc}</span>
                           </div>
                           <button
                             type="button"
@@ -921,7 +876,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                               e.stopPropagation();
                               testAlarm(s.id);
                             }}
-                            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 transition-all shrink-0 ml-2"
+                            className="p-1.5 rounded-lg bg-[#EFE9DF] hover:bg-[#E5DFD5] text-[#8E6F4E] transition-all shrink-0 ml-2 cursor-pointer"
                             title="Play sound sample"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
@@ -933,10 +888,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
 
                 {/* Alarm Volume Slider */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-white">Chime Notification Volume</span>
-                    <span className="font-mono text-amber-300">
+                    <span className="font-semibold text-[#211F1C]">Chime Notification Volume</span>
+                    <span className="font-mono font-bold text-[#C84B31]">
                       {Math.round(pomoSettings.soundVolume * 100)}%
                     </span>
                   </div>
@@ -949,9 +904,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       const val = parseInt(e.target.value) / 100;
                       onUpdatePomoSettings({ soundVolume: val });
                     }}
-                    className="w-full accent-amber-400 h-2 bg-neutral-800 rounded-lg cursor-pointer"
+                    className="w-full accent-[#C84B31] h-1.5 bg-[#E5DFD5] rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[10px] text-neutral-500 font-mono">
+                  <div className="flex justify-between text-[10px] text-[#9B9182] font-mono">
                     <span>Muted (0%)</span>
                     <span>Gentle (50%)</span>
                     <span>Loud (100%)</span>
@@ -963,36 +918,25 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             {/* 4. APPEARANCE & THEMES */}
             {activeCategory === 'appearance' && (
               <div className="space-y-6 animate-in fade-in duration-200">
-                {/* Section Header */}
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Palette className="w-4 h-4 text-amber-400" />
-                    <span>Appearance & Atmosphere</span>
+                  <h3 className="text-base font-bold text-[#211F1C] flex items-center gap-2">
+                    <Palette className="w-4 h-4 text-[#8E6F4E]" />
+                    <span>Atmosphere & Paper Themes</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Customize background themes, ambient video backdrops, custom wallpapers, and overlay tints.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Select Japanese manga library atmospheres, quiet study backdrops, or custom paper wallpapers.
                   </p>
                 </div>
 
                 {/* THEME PRESET GALLERY */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
-                      Themes
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#8E6F4E]">
+                      Library Atmospheric Themes
                     </span>
-                    {appearanceSettings.backgroundMode === 'video' && appearanceSettings.videoBackgroundId && (
-                      <span className="text-[11px] text-amber-400/90 font-mono">
-                        (Video background active)
-                      </span>
-                    )}
-                    {appearanceSettings.backgroundMode === 'custom' && appearanceSettings.customBackgroundUrl && (
-                      <span className="text-[11px] text-emerald-400/90 font-mono">
-                        (Custom wallpaper active)
-                      </span>
-                    )}
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 pt-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
                     {THEME_PRESETS.map((theme) => {
                       const isSelected =
                         appearanceSettings.backgroundMode === 'theme' &&
@@ -1014,31 +958,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             isSelected ? 'scale-[1.02]' : 'hover:scale-[1.01]'
                           }`}
                         >
-                          {/* Card Preview Container */}
                           <div
-                            className={`w-full aspect-[16/10] rounded-2xl relative overflow-hidden transition-all shadow-md ${
+                            className={`w-full aspect-[16/10] rounded-xl relative overflow-hidden transition-all shadow-xs ${
                               isSelected
-                                ? 'border-2 border-white ring-2 ring-white/20 shadow-xl'
-                                : 'border border-white/10 group-hover:border-white/25'
+                                ? 'border-2 border-[#C84B31] ring-2 ring-[#C84B31]/30 shadow-md'
+                                : 'border border-[#E2DBD0] group-hover:border-[#D5CDC0]'
                             }`}
                           >
-                            {/* Inner Visual */}
                             {renderThemeCardVisual(theme.id)}
 
-                            {/* Active Checkmark Pill on Bottom Right */}
                             {isSelected && (
-                              <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-white text-black flex items-center justify-center shadow-lg z-10">
-                                <Check className="w-3 h-3 stroke-[3]" />
+                              <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full bg-[#C84B31] text-white flex items-center justify-center shadow-xs z-10">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
                               </div>
                             )}
                           </div>
 
-                          {/* Theme Label */}
                           <span
-                            className={`mt-2 text-xs tracking-wide transition-colors ${
+                            className={`mt-1.5 text-[11px] font-semibold tracking-wide transition-colors ${
                               isSelected
-                                ? 'text-white font-bold'
-                                : 'text-neutral-300 group-hover:text-white'
+                                ? 'text-[#C84B31]'
+                                : 'text-[#6B6255] group-hover:text-[#211F1C]'
                             }`}
                           >
                             {theme.name}
@@ -1049,18 +989,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
 
-                {/* VIDEO BACKGROUND MODULE */}
-                <div className="pt-3 space-y-4 border-t border-white/10">
+                {/* VIDEO STUDY BACKDROPS */}
+                <div className="pt-3 space-y-4 border-t border-[#E2DBD0]">
                   <div>
-                    <h4 className="text-base font-bold text-white tracking-tight">
-                      Video Background
+                    <h4 className="text-sm font-bold text-[#211F1C] tracking-tight">
+                      Ambient Study Video Stream
                     </h4>
-                    <p className="text-xs text-neutral-400 mt-0.5">
-                      Paste YouTube URL below, adjust the opacity above.
+                    <p className="text-xs text-[#6B6255] mt-0.5">
+                      Paste YouTube study stream URL below or pick from curated library backdrops.
                     </p>
                   </div>
 
-                  {/* YouTube URL Input & Save Button */}
                   <form onSubmit={handleSaveVideoUrl} className="space-y-2">
                     <div className="flex items-center gap-2">
                       <input
@@ -1071,45 +1010,43 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                           setCustomVideoUrl(e.target.value);
                           if (videoInputError) setVideoInputError(null);
                         }}
-                        className="flex-1 bg-neutral-900/90 border border-neutral-700 focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all"
+                        className="flex-1 bg-[#FCFAF6] border border-[#DCD3C4] focus:border-[#C84B31] rounded-lg px-3 py-2 text-xs text-[#211F1C] placeholder-[#9B9182] focus:outline-none transition-all"
                       />
                       <button
                         type="submit"
                         disabled={!customVideoUrl.trim()}
-                        className="px-5 py-2.5 bg-[#8b5cf6] hover:bg-[#7c3aed] active:scale-95 disabled:opacity-40 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-1.5"
+                        className="px-4 py-2 bg-[#8E6F4E] hover:bg-[#785E42] active:scale-95 disabled:opacity-40 text-white font-bold rounded-lg text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         {videoSavedSuccess ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-white" />
+                            <Check className="w-3.5 h-3.5" />
                             <span>Saved</span>
                           </>
                         ) : (
-                          <span>Save</span>
+                          <span>Apply</span>
                         )}
                       </button>
                     </div>
 
                     {videoInputError && (
-                      <p className="text-[11px] text-rose-400">{videoInputError}</p>
+                      <p className="text-[11px] text-[#C84B31]">{videoInputError}</p>
                     )}
                   </form>
 
-                  {/* Video Active Status & Controls */}
                   {appearanceSettings.backgroundMode === 'video' && appearanceSettings.videoBackgroundId && (
-                    <div className="p-3 bg-neutral-900/80 border border-amber-400/30 rounded-xl flex items-center justify-between gap-3">
+                    <div className="p-3 bg-[#F6F3EB] border border-[#C84B31]/30 rounded-xl flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                        <span className="text-xs font-semibold text-amber-200 truncate">
-                          Active: {truncateTitle(appearanceSettings.videoBackgroundTitle || 'Video Background', 50)}
+                        <span className="w-2 h-2 rounded-full bg-[#C84B31] animate-pulse" />
+                        <span className="text-xs font-semibold text-[#211F1C] truncate">
+                          Active: {truncateTitle(appearanceSettings.videoBackgroundTitle || 'Video Backdrop', 50)}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <span
-                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-neutral-400 flex items-center gap-1.5"
-                          title="Video backgrounds are always muted for focus"
+                          className="px-2 py-0.5 rounded-md text-xs font-medium bg-[#EFE9DF] border border-[#E2DBD0] text-[#6B6255] flex items-center gap-1"
                         >
-                          <VolumeX className="w-3.5 h-3.5 text-neutral-400" />
+                          <VolumeX className="w-3.5 h-3.5 text-[#9B9182]" />
                           <span>Muted</span>
                         </span>
 
@@ -1121,7 +1058,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                               videoBackgroundId: null,
                             });
                           }}
-                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700 transition-all"
+                          className="px-2.5 py-1 rounded-md text-xs font-medium bg-[#E5DFD5] hover:bg-[#D5CDC0] text-[#211F1C] border border-[#D5CDC0] transition-all cursor-pointer"
                         >
                           Turn Off
                         </button>
@@ -1129,25 +1066,24 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
                   )}
 
-                  {/* CURATED FOCUS PRESETS (VIDEO BACKDROPS) */}
+                  {/* CURATED FOCUS PRESETS */}
                   <div className="space-y-2.5 pt-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                        Curated Focus Presets
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E6F4E] flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#C84B31]" />
+                        Curated Library Presets
                       </span>
                     </div>
 
-                    {/* Category Filter Pills */}
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                       {['All', 'City', 'Coastal', 'Europe'].map((cat) => (
                         <button
                           key={cat}
                           onClick={() => setVideoCategory(cat)}
-                          className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-all ${
+                          className={`px-3 py-1 rounded-md text-xs whitespace-nowrap transition-all cursor-pointer ${
                             videoCategory === cat
-                              ? 'bg-amber-400 text-neutral-950 font-bold shadow-sm'
-                              : 'bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-neutral-200'
+                              ? 'bg-[#C84B31] text-white font-bold shadow-xs'
+                              : 'bg-[#F6F3EB] hover:bg-[#EFE9DF] text-[#6B6255] border border-[#E2DBD0]'
                           }`}
                         >
                           {cat}
@@ -1155,7 +1091,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       ))}
                     </div>
 
-                    {/* Presets Grid */}
                     <div className="grid grid-cols-2 gap-2.5 pt-1">
                       {(videoCategory === 'All'
                         ? AMBIENT_PRESETS
@@ -1177,28 +1112,28 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                                 customBackgroundUrl: null,
                               });
                             }}
-                            className={`group relative overflow-hidden rounded-2xl border p-3 cursor-pointer transition-all flex flex-col justify-end h-24 ${
+                            className={`group relative overflow-hidden rounded-xl border p-3 cursor-pointer transition-all flex flex-col justify-end h-22 ${
                               isCurrentVideo
-                                ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-xl'
-                                : 'border-white/10 hover:border-white/30 bg-neutral-900/70'
+                                ? 'border-[#C84B31] ring-2 ring-[#C84B31]/30 shadow-md'
+                                : 'border-[#E2DBD0] hover:border-[#D5CDC0] bg-[#F6F3EB]'
                             }`}
                           >
                             <div
-                              className="absolute inset-0 bg-cover bg-center opacity-45 group-hover:opacity-65 transition-all group-hover:scale-105 duration-500"
+                              className="absolute inset-0 bg-cover bg-center opacity-60 group-hover:opacity-80 transition-all group-hover:scale-105 duration-300"
                               style={{ backgroundImage: `url(${preset.thumbnail})` }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/75 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#211F1C]/90 via-[#211F1C]/40 to-transparent" />
 
                             <div className="relative z-10 flex flex-col">
-                              <span className="text-[10px] font-mono text-amber-300 font-semibold">{preset.tag}</span>
+                              <span className="text-[10px] font-mono text-[#F6F3EB] font-semibold">{preset.tag}</span>
                               <span className="text-xs font-bold text-white leading-tight truncate mt-0.5">
                                 {truncateTitle(preset.title, 50)}
                               </span>
                             </div>
 
                             {isCurrentVideo && (
-                              <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-amber-400 text-neutral-950 flex items-center justify-center shadow-lg z-10">
-                                <Check className="w-3 h-3 stroke-[3]" />
+                              <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#C84B31] text-white flex items-center justify-center shadow-xs z-10">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
                               </div>
                             )}
                           </div>
@@ -1209,16 +1144,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
 
                 {/* CUSTOM BACKGROUND MODULE */}
-                <div className="pt-3 space-y-3 border-t border-white/10">
-                  <h4 className="text-base font-bold text-white tracking-tight">
-                    Custom Background
+                <div className="pt-3 space-y-3 border-t border-[#E2DBD0]">
+                  <h4 className="text-sm font-bold text-[#211F1C] tracking-tight">
+                    Custom Wallpaper
                   </h4>
-                  <p className="text-xs text-neutral-400">
-                    Upload your own theme image. All uploads must follow our guidelines.
+                  <p className="text-xs text-[#6B6255]">
+                    Upload your own backdrop image (JPG, PNG, WEBP).
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                    {/* Left: Drag & Drop Dropzone Box */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div
                       onDragOver={(e) => {
                         e.preventDefault();
@@ -1227,12 +1161,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       onDragLeave={() => setIsDragOver(false)}
                       onDrop={handleFileDrop}
                       onClick={() => fileInputRef.current?.click()}
-                      className={`relative rounded-2xl border-2 border-dashed transition-all p-5 flex flex-col items-center justify-center text-center cursor-pointer min-h-[145px] overflow-hidden ${
+                      className={`relative rounded-xl border-2 border-dashed transition-all p-4 flex flex-col items-center justify-center text-center cursor-pointer min-h-[120px] overflow-hidden ${
                         isDragOver
-                          ? 'border-indigo-400 bg-indigo-500/20'
+                          ? 'border-[#C84B31] bg-[#C84B31]/10'
                           : appearanceSettings.backgroundMode === 'custom' && appearanceSettings.customBackgroundUrl
-                          ? 'border-emerald-500/50 bg-neutral-900/80 hover:border-emerald-400'
-                          : 'border-neutral-700 bg-neutral-900/50 hover:border-neutral-500 hover:bg-neutral-900/80'
+                          ? 'border-[#4A7C59] bg-[#4A7C59]/10'
+                          : 'border-[#DCD3C4] bg-[#F6F3EB] hover:bg-[#EFE9DF]'
                       }`}
                     >
                       <input
@@ -1247,35 +1181,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         <>
                           <img
                             src={appearanceSettings.customBackgroundUrl}
-                            alt="Custom uploaded wallpaper"
+                            alt="Custom wallpaper"
                             className="absolute inset-0 w-full h-full object-cover opacity-60 pointer-events-none"
                           />
-                          <div className="absolute inset-0 bg-black/40" />
+                          <div className="absolute inset-0 bg-black/25" />
                           <div className="relative z-10 flex flex-col items-center gap-1">
-                            <span className="px-2.5 py-1 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold flex items-center gap-1 backdrop-blur-md">
-                              <Check className="w-3 h-3" /> Image Applied
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#4A7C59] text-white text-[10px] font-bold flex items-center gap-1">
+                              <Check className="w-3 h-3" /> Image Active
                             </span>
-                            <span className="text-[11px] text-neutral-200 mt-1 font-medium">
-                              Click or drop to replace
+                            <span className="text-[10px] text-white mt-1 font-medium">
+                              Click to replace
                             </span>
                           </div>
                         </>
                       ) : (
                         <div className="flex flex-col items-center justify-center space-y-1">
-                          <p className="text-xs text-neutral-200">
-                            Drop file here or{' '}
-                            <span className="underline font-bold text-white">browse</span>
+                          <p className="text-xs text-[#211F1C]">
+                            Drop file here or <span className="underline font-bold text-[#8E6F4E]">browse</span>
                           </p>
-                          <p className="text-[11px] text-neutral-400">
-                            JPG, PNG, WEBP, HEIC (max 5MB, min 800px)
+                          <p className="text-[10px] text-[#9B9182]">
+                            JPG, PNG, WEBP (max 5MB)
                           </p>
                         </div>
                       )}
                     </div>
 
-                    {/* Right: Controls (Save upload, Remove image, Overlay slider) */}
-                    <div className="flex flex-col justify-between space-y-4">
-                      {/* Action Buttons */}
+                    <div className="flex flex-col justify-between space-y-3">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
@@ -1290,15 +1221,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                               fileInputRef.current?.click();
                             }
                           }}
-                          className="flex-1 px-4 py-2.5 bg-[#5850ec] hover:bg-[#4f46e5] active:scale-95 text-white font-semibold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-1.5"
+                          className="flex-1 px-3 py-2 bg-[#8E6F4E] hover:bg-[#785E42] active:scale-95 text-white font-semibold rounded-lg text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           {savedSuccess ? (
                             <>
-                              <Check className="w-3.5 h-3.5 text-emerald-300" />
+                              <Check className="w-3.5 h-3.5" />
                               <span>Saved!</span>
                             </>
                           ) : (
-                            <span>Save upload</span>
+                            <span>Apply upload</span>
                           )}
                         </button>
 
@@ -1311,51 +1242,47 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             });
                           }}
                           disabled={!appearanceSettings.customBackgroundUrl}
-                          className={`flex-1 px-4 py-2.5 font-semibold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 ${
+                          className={`flex-1 px-3 py-2 font-semibold rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 ${
                             appearanceSettings.customBackgroundUrl
-                              ? 'bg-[#991b1b] hover:bg-[#7f1d1d] active:scale-95 text-rose-100 cursor-pointer'
-                              : 'bg-neutral-800 text-neutral-500 cursor-not-allowed opacity-60'
+                              ? 'bg-[#C84B31]/10 text-[#C84B31] hover:bg-[#C84B31]/20 border border-[#C84B31]/30 cursor-pointer'
+                              : 'bg-[#EFE9DF] text-[#9B9182] cursor-not-allowed opacity-60 border border-[#E2DBD0]'
                           }`}
                         >
-                          <span>Remove image</span>
+                          <span>Remove</span>
                         </button>
                       </div>
 
-                      {/* Overlay Slider (0% - 100%) */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="text-sm font-bold text-white">Overlay</label>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={appearanceSettings.customBackgroundOverlay}
-                            onChange={(e) => {
-                              const val = Math.max(0, Math.min(100, parseInt(e.target.value) || 0));
-                              onUpdateAppearance?.({
-                                customBackgroundOverlay: val,
-                              });
-                            }}
-                            className="flex-1 accent-indigo-400 h-2 bg-neutral-800 rounded-lg cursor-pointer"
-                          />
-                          <div className="px-3 py-1.5 bg-black/80 border border-white/20 rounded-lg text-xs font-mono font-bold text-white min-w-[50px] text-center shadow-inner">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <label className="font-semibold text-[#211F1C]">Overlay Tint</label>
+                          <span className="font-mono text-xs text-[#8E6F4E] font-bold">
                             {appearanceSettings.customBackgroundOverlay}%
-                          </div>
+                          </span>
                         </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={appearanceSettings.customBackgroundOverlay}
+                          onChange={(e) => {
+                            const val = Math.max(0, Math.min(100, parseInt(e.target.value) || 0));
+                            onUpdateAppearance?.({
+                              customBackgroundOverlay: val,
+                            });
+                          }}
+                          className="w-full accent-[#8E6F4E] h-1.5 bg-[#E5DFD5] rounded-lg cursor-pointer"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Zen Mode Shortcut Tip */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 mt-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
-                    Zen & Fullscreen Mode
+                <div className="p-3.5 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] space-y-1">
+                  <span className="text-xs font-bold text-[#8E6F4E] block">
+                    Distraction-Free Immersion
                   </span>
-                  <p className="text-xs text-neutral-400">
-                    Press <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/15 rounded text-[10px] font-mono text-white">Z</kbd> anytime to immerse in Zen Mode and hide all floating headers.
+                  <p className="text-xs text-[#6B6255]">
+                    Press <kbd className="px-1.5 py-0.5 bg-[#FCFAF6] border border-[#DCD3C4] rounded text-[10px] font-mono text-[#211F1C]">Z</kbd> anytime to enter Zen focus mode.
                   </p>
                 </div>
               </div>
@@ -1365,49 +1292,49 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             {activeCategory === 'shortcuts' && (
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Keyboard className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-base font-bold text-[#211F1C] flex items-center gap-2">
+                    <Keyboard className="w-4 h-4 text-[#8E6F4E]" />
                     <span>Keyboard Shortcuts</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-0.5">
-                    Navigate and control your ambient session effortlessly.
+                  <p className="text-xs text-[#6B6255] mt-0.5">
+                    Navigate and control your study session effortlessly.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 divide-y divide-white/10 text-xs">
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] divide-y divide-[#E2DBD0] text-xs">
                   <div className="flex items-center justify-between py-2.5">
-                    <span className="text-neutral-300">Play / Pause Active Timer</span>
-                    <kbd className="px-2 py-1 bg-white/10 border border-white/20 rounded-lg text-white font-mono font-bold text-[11px]">
+                    <span className="text-[#211F1C] font-medium">Play / Pause Active Timer</span>
+                    <kbd className="px-2 py-1 bg-[#FCFAF6] border border-[#DCD3C4] rounded-md text-[#211F1C] font-mono font-bold text-[11px] shadow-xs">
                       Space
                     </kbd>
                   </div>
                   <div className="flex items-center justify-between py-2.5">
-                    <span className="text-neutral-300">Toggle Mute / Unmute Media</span>
-                    <kbd className="px-2 py-1 bg-white/10 border border-white/20 rounded-lg text-white font-mono font-bold text-[11px]">
+                    <span className="text-[#211F1C] font-medium">Toggle Mute / Unmute Media</span>
+                    <kbd className="px-2 py-1 bg-[#FCFAF6] border border-[#DCD3C4] rounded-md text-[#211F1C] font-mono font-bold text-[11px] shadow-xs">
                       M
                     </kbd>
                   </div>
                   <div className="flex items-center justify-between py-2.5">
-                    <span className="text-neutral-300">Toggle Zen Distraction-Free Mode</span>
-                    <kbd className="px-2 py-1 bg-white/10 border border-white/20 rounded-lg text-white font-mono font-bold text-[11px]">
+                    <span className="text-[#211F1C] font-medium">Toggle Zen Study Mode</span>
+                    <kbd className="px-2 py-1 bg-[#FCFAF6] border border-[#DCD3C4] rounded-md text-[#211F1C] font-mono font-bold text-[11px] shadow-xs">
                       Z
                     </kbd>
                   </div>
                   <div className="flex items-center justify-between py-2.5">
-                    <span className="text-neutral-300">Exit Zen Mode</span>
-                    <kbd className="px-2 py-1 bg-white/10 border border-white/20 rounded-lg text-white font-mono font-bold text-[11px]">
+                    <span className="text-[#211F1C] font-medium">Exit Zen Mode</span>
+                    <kbd className="px-2 py-1 bg-[#FCFAF6] border border-[#DCD3C4] rounded-md text-[#211F1C] font-mono font-bold text-[11px] shadow-xs">
                       Esc
                     </kbd>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 shrink-0">
-                    <Info className="w-4 h-4" />
+                <div className="p-4 rounded-xl bg-[#F6F3EB] border border-[#E2DBD0] flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#8E6F4E]/15 border border-[#8E6F4E]/25 flex items-center justify-center text-[#8E6F4E] shrink-0">
+                    <BookOpen className="w-4 h-4" />
                   </div>
-                  <div className="text-xs text-neutral-400">
-                    <strong className="text-white block">Focus Hub Pro</strong>
-                    <span>Designed for uninterrupted deep work, ambient flow, and multi-screen productivity.</span>
+                  <div className="text-xs text-[#6B6255]">
+                    <strong className="text-[#211F1C] block">Manga Library Focus Hub</strong>
+                    <span>Designed for calm, undisturbed deep study, reading sprints, and creative flow.</span>
                   </div>
                 </div>
               </div>

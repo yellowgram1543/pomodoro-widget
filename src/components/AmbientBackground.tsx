@@ -12,7 +12,7 @@ interface AmbientBackgroundProps {
 
 export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
   mode = 'theme',
-  theme = 'defaultDark',
+  theme = 'mangaKissaten',
   customBackgroundUrl = null,
   customOverlay = 0,
   videoBackgroundId = null,
@@ -23,7 +23,7 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
     const embedUrl = `https://www.youtube.com/embed/${videoBackgroundId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoBackgroundId}&playsinline=1&rel=0&enablejsapi=1`;
 
     return (
-      <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
+      <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-[#F6F3EB]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
           <iframe
             src={embedUrl}
@@ -33,10 +33,10 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
           />
         </div>
 
-        {/* User-controlled dark contrast overlay */}
+        {/* User-controlled contrast overlay */}
         {customOverlay > 0 && (
           <div
-            className="absolute inset-0 bg-black transition-opacity duration-300 pointer-events-none"
+            className="absolute inset-0 bg-[#211F1C] transition-opacity duration-300 pointer-events-none"
             style={{ opacity: customOverlay / 100 }}
           />
         )}
@@ -47,15 +47,15 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
   // 2. If Custom Background Image is active
   if (mode === 'custom' && customBackgroundUrl) {
     return (
-      <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
+      <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-[#F6F3EB]">
         <img
           src={customBackgroundUrl}
           alt="Custom Theme Background"
           className="w-full h-full object-cover select-none"
         />
-        {/* User-controlled dark contrast overlay */}
+        {/* User-controlled contrast overlay */}
         <div
-          className="absolute inset-0 bg-black transition-opacity duration-300 pointer-events-none"
+          className="absolute inset-0 bg-[#211F1C] transition-opacity duration-300 pointer-events-none"
           style={{ opacity: customOverlay / 100 }}
         />
       </div>
@@ -65,156 +65,129 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
   // Render presets
   const renderThemeAtmosphere = () => {
     switch (theme) {
-      case 'rainbowFlare':
+      case 'tankobonPages':
         return (
-          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-300 via-pink-300 to-yellow-200">
-            <div className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-cyan-400/60 blur-3xl animate-aura-pulse" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-pink-400/70 blur-3xl animate-aura-pulse" />
-            <div className="absolute top-1/3 right-1/4 w-[45vw] h-[45vw] rounded-full bg-yellow-300/50 blur-3xl" />
-            <div className="absolute bottom-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-purple-400/50 blur-3xl" />
+          <div className="absolute inset-0 bg-[#F5EFEB]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2] via-[#F2EDE2] to-[#E6DEC0] opacity-90" />
+            <div className="absolute top-[-10%] left-[-5%] w-[60vw] h-[60vw] rounded-full bg-[#EADDC9]/60 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-[-10%] right-[-5%] w-[55vw] h-[55vw] rounded-full bg-[#DFD0B8]/50 blur-3xl" />
           </div>
         );
 
-      case 'darkFlare':
+      case 'cedarStudy':
         return (
-          <div className="absolute inset-0 bg-neutral-950">
-            <div className="absolute top-1/4 right-1/4 w-[65vw] h-[65vw] rounded-full bg-rose-600/40 blur-[130px] animate-aura-pulse" />
-            <div className="absolute bottom-1/4 left-1/5 w-[60vw] h-[60vw] rounded-full bg-amber-600/35 blur-[140px]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45vw] h-[45vw] rounded-full bg-purple-700/35 blur-[110px]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+          <div className="absolute inset-0 bg-[#EFEAE0]">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#E6DCCB] via-[#EFE8DC] to-[#DCCBB4] opacity-95" />
+            <div className="absolute top-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-[#D4BC9B]/50 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/4 left-1/4 w-[45vw] h-[45vw] rounded-full bg-[#C8AE8A]/40 blur-3xl" />
           </div>
         );
 
-      case 'heatMap':
+      case 'washiSumi':
         return (
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-neutral-950 to-black overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-90"
-              style={{
-                background:
-                  'radial-gradient(ellipse at 80% 20%, #facc15 0%, #f97316 28%, #ec4899 55%, #3b82f6 80%, transparent 100%), radial-gradient(ellipse at 20% 80%, #06b6d4 0%, #a855f7 40%, #e11d48 70%, transparent 100%)',
-                filter: 'blur(60px)',
-              }}
-            />
-            <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-[#F5F2EA]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#FCFAF5] via-[#EBE5D8] to-[#D9D1C2] opacity-90" />
+            <div className="absolute top-1/3 left-1/4 w-[45vw] h-[45vw] rounded-full bg-[#D3CBC0]/40 blur-3xl" />
+            <div className="absolute bottom-1/3 right-1/4 w-[50vw] h-[50vw] rounded-full bg-[#C8BFAF]/35 blur-3xl animate-aura-pulse" />
           </div>
         );
 
-      case 'darkPurpleHeart':
+      case 'matchaReading':
         return (
-          <div className="absolute inset-0 bg-gradient-to-b from-neutral-950 via-purple-950/80 to-neutral-950 flex items-center justify-center">
-            {/* Glowing Neon Heart Shape Aura */}
-            <div className="relative w-80 h-80 sm:w-96 sm:h-96 flex items-center justify-center animate-heart-pulse">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-pink-500 fill-current opacity-90 filter blur-xl">
-                <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
-              </svg>
-              <div className="absolute inset-0 bg-fuchsia-500/50 rounded-full blur-3xl -z-10" />
-            </div>
-            <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-[#F3F5ED]">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#E3EAD8] via-[#F1F4EB] to-[#D0DEC0] opacity-95" />
+            <div className="absolute top-1/4 left-1/3 w-[55vw] h-[55vw] rounded-full bg-[#C2D6B0]/45 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/4 right-1/3 w-[45vw] h-[45vw] rounded-full bg-[#D8E4CB]/50 blur-3xl" />
           </div>
         );
 
-      case 'flocusViolet':
+      case 'shinjukuRain':
         return (
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 animate-fluid-flow opacity-95">
-            <div className="absolute top-1/4 left-1/3 w-[50vw] h-[50vw] rounded-full bg-violet-400/50 blur-3xl animate-aura-pulse" />
-            <div className="absolute bottom-1/3 right-1/4 w-[45vw] h-[45vw] rounded-full bg-fuchsia-500/40 blur-3xl" />
+          <div className="absolute inset-0 bg-[#EEF2F6]">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#E4ECF4] via-[#EEF3F8] to-[#D2DEEA] opacity-95" />
+            <div className="absolute top-1/5 right-1/4 w-[50vw] h-[50vw] rounded-full bg-[#C5D5E6]/50 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/5 left-1/4 w-[45vw] h-[45vw] rounded-full bg-[#DFE7F0]/60 blur-3xl" />
           </div>
         );
 
-      case 'pastelLofi':
+      case 'archivalLibrary':
         return (
-          <div className="absolute inset-0 bg-gradient-to-tr from-sky-200 via-indigo-200 to-blue-200 animate-fluid-flow opacity-95">
-            <div className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] rounded-full bg-cyan-300/60 blur-3xl animate-aura-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-purple-300/60 blur-3xl animate-aura-pulse" />
-            <div className="absolute top-1/2 right-1/3 w-[40vw] h-[40vw] rounded-full bg-pink-200/50 blur-3xl" />
+          <div className="absolute inset-0 bg-[#F7F3E9]">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#E8DEC8] via-[#F6F1E3] to-[#DECFA8] opacity-95" />
+            <div className="absolute top-1/3 right-1/3 w-[50vw] h-[50vw] rounded-full bg-[#DCC89F]/45 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/4 left-1/4 w-[45vw] h-[45vw] rounded-full bg-[#EADBB8]/50 blur-3xl" />
           </div>
         );
 
-      case 'sakura':
+      case 'hankoVermilion':
         return (
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-200 via-pink-300 to-rose-300 animate-fluid-flow opacity-95">
-            <div className="absolute top-1/5 right-1/5 w-[55vw] h-[55vw] rounded-full bg-pink-400/55 blur-3xl animate-aura-pulse" />
-            <div className="absolute bottom-1/5 left-1/5 w-[50vw] h-[50vw] rounded-full bg-rose-400/50 blur-3xl" />
-            <div className="absolute top-1/2 left-1/3 w-[40vw] h-[40vw] rounded-full bg-orange-200/50 blur-3xl" />
+          <div className="absolute inset-0 bg-[#F6F2EA]">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F6F1E6] via-[#EFE7D8] to-[#E5D7C2] opacity-95" />
+            <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-[#E8CCA6]/40 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/3 right-1/4 w-[40vw] h-[40vw] rounded-full bg-[#DDBB8D]/35 blur-3xl" />
           </div>
         );
 
-      case 'lightPurpleHeart':
-        return (
-          <div className="absolute inset-0 bg-gradient-to-b from-purple-200 via-fuchsia-200 to-indigo-100 flex items-center justify-center">
-            {/* Soft Radiant Heart Shape */}
-            <div className="relative w-80 h-80 sm:w-96 sm:h-96 flex items-center justify-center animate-heart-pulse">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-fuchsia-400 fill-current opacity-80 filter blur-xl">
-                <path d="M50,85 C50,85 10,55 10,32 C10,18 20,10 32,10 C41,10 47,16 50,22 C53,16 59,10 68,10 C80,10 90,18 90,32 C90,55 50,85 50,85 Z" />
-              </svg>
-              <div className="absolute inset-0 bg-purple-400/60 rounded-full blur-3xl -z-10" />
-            </div>
-          </div>
-        );
+      case 'crimsonRipples':
+        return <div className="absolute inset-0 pattern-crimson-ripples" />;
 
-      case 'grainyGradient':
-        return (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-700 via-rose-600 to-amber-400 overflow-hidden">
-            <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-500/70 rounded-full blur-3xl" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-pink-500/70 rounded-full blur-3xl" />
-            <div className="absolute top-1/3 right-1/4 w-[40vw] h-[40vw] bg-yellow-400/50 rounded-full blur-3xl" />
-            {/* Subtle retro grain overlay */}
-            <div className="absolute inset-0 opacity-20 bg-repeat bg-[radial-gradient(#000_1.5px,transparent_1.5px)] [background-size:6px_6px]" />
-          </div>
-        );
+      case 'draftingGrid':
+        return <div className="absolute inset-0 pattern-drafting-grid" />;
 
-      case 'cyberpunk':
-        return (
-          <div className="absolute inset-0 bg-neutral-950">
-            <div className="absolute top-1/4 left-1/4 w-[55vw] h-[55vw] rounded-full bg-cyan-500/40 blur-[130px] animate-aura-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-[55vw] h-[55vw] rounded-full bg-fuchsia-600/40 blur-[130px] animate-aura-pulse" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[35vw] h-[35vw] rounded-full bg-purple-600/30 blur-[100px]" />
-          </div>
-        );
+      case 'pastelDiamond':
+        return <div className="absolute inset-0 pattern-pastel-diamond" />;
 
-      case 'zenEmerald':
-        return (
-          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950 via-teal-950 to-neutral-950">
-            <div className="absolute top-1/3 left-1/4 w-[55vw] h-[55vw] rounded-full bg-emerald-600/30 blur-[120px]" />
-            <div className="absolute bottom-1/3 right-1/4 w-[50vw] h-[50vw] rounded-full bg-teal-500/25 blur-[120px]" />
-          </div>
-        );
+      case 'wheatWeave':
+        return <div className="absolute inset-0 pattern-wheat-weave" />;
 
-      case 'sunsetGlow':
-        return (
-          <div className="absolute inset-0 bg-gradient-to-br from-neutral-950 via-amber-950/50 to-neutral-950">
-            <div className="absolute top-1/4 right-1/3 w-[60vw] h-[60vw] rounded-full bg-amber-500/35 blur-[130px]" />
-            <div className="absolute bottom-1/4 left-1/3 w-[55vw] h-[55vw] rounded-full bg-rose-600/30 blur-[130px]" />
-          </div>
-        );
+      case 'dynamicTiles':
+        return <div className="absolute inset-0 pattern-dynamic-tiles" />;
 
-      case 'defaultDark':
+      case 'badSnakeSunset':
+        return <div className="absolute inset-0 pattern-bad-snake-sunset" />;
+
+      case 'modernSkunkPine':
+        return <div className="absolute inset-0 pattern-modern-skunk-pine" />;
+
+      case 'fluffyBearClouds':
+        return <div className="absolute inset-0 pattern-fluffy-bear-clouds" />;
+
+      case 'niceGrasshopperGrid':
+        return <div className="absolute inset-0 pattern-nice-grasshopper-grid" />;
+
+      case 'thinBulldogContour':
+        return <div className="absolute inset-0 pattern-thin-bulldog-contour" />;
+
+      case 'greatFishScales':
+        return <div className="absolute inset-0 pattern-great-fish-scales" />;
+
+      case 'mangaKissaten':
       default:
         return (
-          <div className="absolute inset-0 bg-neutral-950">
-            <div className="absolute inset-0 bg-gradient-to-tr from-neutral-950 via-slate-950 to-neutral-900 opacity-95" />
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[#F6F3EB]">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FAF7F0] via-[#F2EDE1] to-[#E3D8C3] opacity-95" />
+            <div className="absolute top-1/4 left-1/3 w-[55vw] h-[55vw] rounded-full bg-[#E2D2B8]/45 blur-3xl animate-aura-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-[#D6C4A6]/40 blur-3xl" />
           </div>
         );
     }
   };
 
   return (
-    <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-neutral-950">
+    <div id="ambient-canvas-root" className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-[#F6F3EB]">
       {renderThemeAtmosphere()}
 
-      {/* Subtle Micro-Grid Texture */}
-      <div className="absolute inset-0 opacity-[0.03] bg-repeat bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* Subtle Archival Washi Texture Overlay */}
+      <div className="absolute inset-0 opacity-[0.035] bg-repeat bg-[radial-gradient(#211F1C_1px,transparent_1px)] [background-size:20px_20px]" />
 
-      {/* User Contrast Overlay when applied on themes */}
+      {/* User Contrast Overlay */}
       {customOverlay > 0 && (
         <div
-          className="absolute inset-0 bg-black transition-opacity duration-300 pointer-events-none"
+          className="absolute inset-0 bg-[#211F1C] transition-opacity duration-300 pointer-events-none"
           style={{ opacity: customOverlay / 100 }}
         />
       )}
     </div>
   );
 };
+
