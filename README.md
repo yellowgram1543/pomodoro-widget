@@ -4,36 +4,36 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-## ✨ Features
+##  Features
 
-### ⏱️ Pomodoro & Deep Work Engine
+###  Pomodoro & Deep Work Engine
 - **Customizable Intervals**: Configurable focus, short break, and long break intervals with automatic cycle progression.
 - **Multiple Timer Visual Styles**: Minimalist digits, circular radial progress rings, retro flip clocks, and Japanese woodblock typographic dials.
 - **Dedicated Task Stopwatch & Timers**: Track specific task durations independently from Pomodoro intervals.
 - **Synthesized Audio Notifications**: Clean audio chime tones built with the native **Web Audio API** (no external audio assets required).
 
-### 🎨 Dynamic Ambient & Visual Backgrounds
+###  Dynamic Ambient & Visual Backgrounds
 - **Curated Video & Lofi Scenes**: High-definition ambient video backgrounds (Rainy Tokyo Cafe, Cozy Library, Campfire Night, Autumn Forest).
 - **Procedural CSS Geometric Patterns**: Includes curated patterns with customizable brightness, blur, and opacity overlays:
   - *Pastel Sunset Horizon*, *Geometric Pine Forest*, *Fluffy Cloud Weave*, *Sage Matrix Grid*, *Topographic Contours*, and *Monochrome Scales*.
 - **Live Background Controls**: Adjust backdrop blur, darkness overlay, saturation, and contrast in real time.
 
-### 🎵 Ambient Soundscape & Media Hub
+###  Ambient Soundscape & Media Hub
 - **Multi-Layer Ambient Sound Mixer**: Mix rainfall, crackling fireplace, binaural alpha waves, coffee shop chatter, and forest winds with individual volume sliders.
 - **Integrated YouTube & Spotify Players**: Embed lofi radio streams and custom study playlists directly within the workspace.
 
-### 📝 Integrated Task & Goal Management
+###  Integrated Task & Goal Management
 - **Task Management**: Create, edit, prioritize, and reorder tasks with custom color tags.
 - **Local Persistence**: All settings, tasks, and timer preferences persist automatically across sessions via `localStorage`.
 - **Keyboard Shortcuts & Fullscreen**: Support for `Space` (play/pause), `F` (toggle fullscreen), and quick hotkeys.
 
-### 🪟 Draggable & Resizable Focus Hub
+###  Draggable & Resizable Focus Hub
 - **Floating UI Container**: Fluid drag-and-drop position and mouse-resizable container corners.
 - **Focus Mode & Minimalist Toggle**: Collapse the widget to an ultra-clean floating clock or hide all interface elements for zero-distraction focus.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend Framework**: React 18
 - **Language**: TypeScript
@@ -45,7 +45,7 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 ├── src/
@@ -75,7 +75,7 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js (version 18.0.0 or higher)
@@ -107,7 +107,7 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-## ☁️ Deployment on Vercel
+##  Deployment on Vercel
 
 1. Push your repository to **GitHub**.
 2. Go to [Vercel](https://vercel.com) and click **"Add New" → "Project"**.
@@ -121,6 +121,6 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-## 📄 License
+##  License
 
 This project is open source and available under the [MIT License](LICENSE).
