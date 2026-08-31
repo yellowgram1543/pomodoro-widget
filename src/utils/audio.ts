@@ -120,7 +120,7 @@ export function playChime(type: AlarmSound = 'bell', volume = 0.8): void {
 }
 
 // Map of royalty-free, high-quality, loopable ambient audio tracks (CC0 / Public Domain)
-const AMBIENT_AUDIO_URLS: Partial<Record<BuiltInAmbientSound, string>> = {
+export const AMBIENT_AUDIO_URLS: Partial<Record<BuiltInAmbientSound, string>> = {
   light_rain: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/light-rain.mp3',
   heavy_rain: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/heavy-rain.mp3',
   rain_on_tent: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/rain/rain-on-tent.mp3',
@@ -149,11 +149,7 @@ const AMBIENT_AUDIO_URLS: Partial<Record<BuiltInAmbientSound, string>> = {
   forest: 'https://cdn.jsdelivr.net/gh/remvze/moodist@main/public/sounds/animals/birds.mp3',
 };
 
-// Global audio track state
-let activeAudioElement: HTMLAudioElement | null = null;
-let currentPlayingSound: BuiltInAmbientSound = 'none';
-
-// Global Web Audio synth state for noise and binaural frequencies
+// Multi-track audio engine state
 interface ActiveSynthState {
   masterGain: GainNode;
   sources: (AudioNode | { stop: () => void })[];
@@ -161,7 +157,8 @@ interface ActiveSynthState {
   type: BuiltInAmbientSound;
 }
 
-let activeSynth: ActiveSynthState | null = null;
+const activeAudioElements = new Map<string, HTMLAudioElement>();
+const activeSynths = new Map<string, ActiveSynthState>();
 
 function createNoiseBuffer(ctx: AudioContext, type: 'white' | 'pink' | 'brown'): AudioBuffer {
   const bufferSize = ctx.sampleRate * 4;
@@ -198,21 +195,28 @@ function createNoiseBuffer(ctx: AudioContext, type: 'white' | 'pink' | 'brown'):
   return buffer;
 }
 
-function stopCurrentAudio() {
-  if (activeAudioElement) {
+/**
+ * Stop a single active sound
+ */
+export function stopSingleAmbientSound(sound: BuiltInAmbientSound): void {
+  // Stop audio element if present
+  const audio = activeAudioElements.get(sound);
+  if (audio) {
     try {
-      activeAudioElement.pause();
-      activeAudioElement.src = '';
-      activeAudioElement.load();
+      audio.pause();
+      audio.src = '';
+      audio.load();
     } catch {
       // Ignored
     }
-    activeAudioElement = null;
+    activeAudioElements.delete(sound);
   }
 
-  if (activeSynth) {
-    activeSynth.timers.forEach((t) => clearInterval(t));
-    activeSynth.sources.forEach((s) => {
+  // Stop synth if present
+  const synth = activeSynths.get(sound);
+  if (synth) {
+    synth.timers.forEach((t) => clearInterval(t));
+    synth.sources.forEach((s) => {
       try {
         if ('stop' in s && typeof s.stop === 'function') {
           s.stop();
@@ -225,48 +229,87 @@ function stopCurrentAudio() {
       }
     });
     try {
-      activeSynth.masterGain.disconnect();
+      synth.masterGain.disconnect();
     } catch {
       // Ignored
     }
-    activeSynth = null;
+    activeSynths.delete(sound);
   }
-
-  currentPlayingSound = 'none';
 }
 
 /**
- * Plays royalty-free audio tracks (rain, birds, keyboard, cafe, etc.) on seamless repeat,
- * or synthesizes pure noise colors and binaural brainwave frequencies.
+ * Stops all currently active ambient sounds
  */
-export function setAmbientSound(sound: BuiltInAmbientSound, volume: number): void {
+export function stopAllAmbientSounds(): void {
+  activeAudioElements.forEach((audio) => {
+    try {
+      audio.pause();
+      audio.src = '';
+      audio.load();
+    } catch {
+      // Ignored
+    }
+  });
+  activeAudioElements.clear();
+
+  activeSynths.forEach((synth) => {
+    synth.timers.forEach((t) => clearInterval(t));
+    synth.sources.forEach((s) => {
+      try {
+        if ('stop' in s && typeof s.stop === 'function') {
+          s.stop();
+        }
+        if ('disconnect' in s && typeof s.disconnect === 'function') {
+          s.disconnect();
+        }
+      } catch {
+        // Ignored
+      }
+    });
+    try {
+      synth.masterGain.disconnect();
+    } catch {
+      // Ignored
+    }
+  });
+  activeSynths.clear();
+}
+
+/**
+ * Sets or adjusts the volume of an individual ambient sound track (0 to 100).
+ * If volume is 0 or sound is 'none', it stops that individual sound.
+ * Multi-sound playback allows many sound tracks to run simultaneously.
+ */
+export function setMultiAmbientSound(sound: BuiltInAmbientSound, volume: number): void {
   if (sound === 'none' || volume <= 0) {
-    stopCurrentAudio();
+    stopSingleAmbientSound(sound);
     return;
   }
 
   const normalizedVol = Math.max(0, Math.min(1, volume / 100));
 
-  // If already playing this exact sound, simply update the volume
-  if (currentPlayingSound === sound) {
-    if (activeAudioElement) {
-      activeAudioElement.volume = normalizedVol;
-    }
-    if (activeSynth) {
-      const ctx = getAudioContext();
-      if (ctx) {
-        activeSynth.masterGain.gain.setValueAtTime(normalizedVol, ctx.currentTime);
-      }
+  // 1. Check if audio element already playing
+  const existingAudio = activeAudioElements.get(sound);
+  if (existingAudio) {
+    existingAudio.volume = normalizedVol;
+    if (existingAudio.paused) {
+      existingAudio.play().catch(() => {});
     }
     return;
   }
 
-  // Stop previous sound
-  stopCurrentAudio();
+  // 2. Check if synth already playing
+  const existingSynth = activeSynths.get(sound);
+  if (existingSynth) {
+    const ctx = getAudioContext();
+    if (ctx) {
+      existingSynth.masterGain.gain.setValueAtTime(normalizedVol, ctx.currentTime);
+    }
+    return;
+  }
 
+  // 3. Start new audio element if track URL exists
   const audioUrl = AMBIENT_AUDIO_URLS[sound];
-
-  // 1. If we have a dedicated high-quality audio recording
   if (audioUrl) {
     try {
       const audio = new Audio();
@@ -279,19 +322,18 @@ export function setAmbientSound(sound: BuiltInAmbientSound, volume: number): voi
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.warn('Ambient track auto-play paused or blocked until user gesture:', err);
+          console.warn(`Ambient track ${sound} autoplay waiting for gesture:`, err);
         });
       }
 
-      activeAudioElement = audio;
-      currentPlayingSound = sound;
+      activeAudioElements.set(sound, audio);
       return;
     } catch (err) {
-      console.warn('Failed to load audio track, falling back to Web Audio:', err);
+      console.warn(`Failed to play audio track ${sound}:`, err);
     }
   }
 
-  // 2. Synthesized Web Audio for pure noises and binaural beats
+  // 4. Synthesized Web Audio for pure noises and binaural beats
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -452,11 +494,56 @@ export function setAmbientSound(sound: BuiltInAmbientSound, volume: number): voi
     sourcesList.push(left, right);
   }
 
-  activeSynth = {
+  activeSynths.set(sound, {
     masterGain,
     sources: sourcesList,
     timers: timersList,
     type: sound,
-  };
-  currentPlayingSound = sound;
+  });
+}
+
+/**
+ * Synchronizes an active sound map Record<soundId, volume> with the master volume/mute.
+ */
+export function syncActiveAmbientMix(
+  activeSounds: Record<string, number>,
+  masterVolume = 100,
+  isMuted = false
+): void {
+  const allCurrentKeys = new Set([
+    ...Array.from(activeAudioElements.keys()),
+    ...Array.from(activeSynths.keys()),
+  ]);
+
+  // Master scale factor
+  const masterScale = isMuted ? 0 : Math.max(0, Math.min(1, masterVolume / 100));
+
+  // 1. Update or start all sounds in the active map
+  Object.entries(activeSounds).forEach(([soundId, rawVol]) => {
+    const effectiveVol = rawVol * masterScale;
+    if (effectiveVol > 0) {
+      setMultiAmbientSound(soundId as BuiltInAmbientSound, effectiveVol);
+      allCurrentKeys.delete(soundId);
+    } else {
+      stopSingleAmbientSound(soundId as BuiltInAmbientSound);
+      allCurrentKeys.delete(soundId);
+    }
+  });
+
+  // 2. Stop any remaining sounds not in the active map
+  allCurrentKeys.forEach((soundId) => {
+    stopSingleAmbientSound(soundId as BuiltInAmbientSound);
+  });
+}
+
+/**
+ * Single sound setter for backwards compatibility
+ */
+export function setAmbientSound(sound: BuiltInAmbientSound, volume: number): void {
+  if (sound === 'none' || volume <= 0) {
+    stopAllAmbientSounds();
+    return;
+  }
+  stopAllAmbientSounds();
+  setMultiAmbientSound(sound, volume);
 }

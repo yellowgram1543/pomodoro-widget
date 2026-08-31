@@ -104,12 +104,18 @@ export interface AmbientSource {
   tag: string;
 }
 
+export type MediaServiceType = 'youtube' | 'spotify' | 'custom';
+export type SpotifyMediaType = 'track' | 'playlist' | 'album' | 'artist' | 'episode' | 'show';
+
 export interface PlaylistItem {
   id: string;
   url: string;
   title: string;
-  videoId: string | null;
-  listId: string | null;
+  videoId?: string | null;
+  listId?: string | null;
+  spotifyId?: string | null;
+  spotifyType?: SpotifyMediaType | null;
+  service?: MediaServiceType;
   addedAt: number;
 }
 
@@ -117,6 +123,9 @@ export interface MediaSettings {
   currentSource: {
     videoId: string | null;
     listId: string | null;
+    spotifyId?: string | null;
+    spotifyType?: SpotifyMediaType | null;
+    service?: MediaServiceType;
     title: string;
   };
   playlist: PlaylistItem[];
@@ -127,6 +136,7 @@ export interface MediaSettings {
   playbackRate: number;
   ambientSound: BuiltInAmbientSound;
   ambientSoundVolume: number; // 0 to 100
+  activeAmbientSounds?: Record<string, number>; // Map of soundId -> volume (0 to 100) for multi-sound mixing
 }
 
 export type TabType = 'pomodoro' | 'timer' | 'tasks' | 'media';

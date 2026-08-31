@@ -10,9 +10,10 @@ import {
   Clock,
   Layers,
   Settings,
+  Music2,
 } from 'lucide-react';
 import { MediaSettings, AmbientSource, TabType, SettingsCategory } from '../types';
-import { AMBIENT_PRESETS } from '../utils/youtube';
+import { AMBIENT_PRESETS, truncateTitle } from '../utils/youtube';
 
 interface TopBarProps {
   media: MediaSettings;
@@ -23,6 +24,7 @@ interface TopBarProps {
   activeTab: TabType;
   setActiveTab: (t: TabType) => void;
   onOpenSettings?: (cat: SettingsCategory) => void;
+  onOpenMusic?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -34,6 +36,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   activeTab,
   setActiveTab,
   onOpenSettings,
+  onOpenMusic,
 }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -85,7 +88,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span className="truncate max-w-[140px]">
-              {media.currentSource.title || 'Ambience'}
+              {truncateTitle(media.currentSource.title || 'Ambience', 50)}
             </span>
           </button>
 
@@ -108,7 +111,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         : 'hover:bg-white/10 text-neutral-300'
                     }`}
                   >
-                    <span className="truncate">{preset.title}</span>
+                    <span className="truncate">{truncateTitle(preset.title, 50)}</span>
                     <span className="text-[10px] text-neutral-500 font-mono">
                       {preset.tag}
                     </span>
@@ -120,8 +123,26 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Mute, Zen Mode, Fullscreen, Settings */}
+      {/* Right Controls: Music, Settings, Mute, Zen Mode, Fullscreen */}
       <div className="flex items-center gap-2 pointer-events-auto">
+        <button
+          id="btn-topbar-music"
+          onClick={() => onOpenMusic?.()}
+          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-amber-300 hover:text-amber-200 transition-all shadow-lg hover:border-amber-500/30"
+          title="Music & Ambient Soundscapes"
+        >
+          <Music2 className="w-4 h-4" />
+        </button>
+
+        <button
+          id="btn-topbar-settings"
+          onClick={() => onOpenSettings?.('pomodoro')}
+          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-200 hover:text-white transition-all shadow-lg"
+          title="Settings & Preferences"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
+
         <button
           id="btn-topbar-mute-toggle"
           onClick={() => onUpdateMedia({ isMuted: !media.isMuted })}
@@ -133,15 +154,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           title={media.isMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
         >
           {media.isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-        </button>
-
-        <button
-          id="btn-topbar-settings"
-          onClick={() => onOpenSettings?.('pomodoro')}
-          className="p-2 bg-neutral-950/60 hover:bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-neutral-200 hover:text-white transition-all shadow-lg"
-          title="Settings & Preferences"
-        >
-          <Settings className="w-4 h-4" />
         </button>
 
         <button

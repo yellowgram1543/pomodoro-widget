@@ -37,6 +37,7 @@ import { PomodoroTab } from './tabs/PomodoroTab';
 import { TaskTimerTab } from './tabs/TaskTimerTab';
 import { TaskManagerTab } from './tabs/TaskManagerTab';
 import { MediaTab } from './tabs/MediaTab';
+import { truncateTitle } from '../utils/youtube';
 
 interface FocusHubProps {
   activeTab: TabType;
@@ -311,7 +312,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
       const left = tasks.filter((t) => !t.completed).length;
       return `📋 ${left} Tasks`;
     }
-    return `🎵 ${media.currentSource.title || 'Ambient'}`;
+    return `🎵 ${truncateTitle(media.currentSource.title || 'Ambient', 50)}`;
   };
 
   // The complete widget inner card structure
@@ -598,7 +599,7 @@ export const FocusHub: React.FC<FocusHubProps> = ({
               {/* Status Overlay in Video Header */}
               <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-950/80 backdrop-blur-md border border-white/10 text-xs font-semibold text-white pointer-events-none">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="truncate max-w-xs">{media.currentSource.title || 'Ambient Focus Stream'}</span>
+                <span className="truncate max-w-xs">{truncateTitle(media.currentSource.title || 'Ambient Focus Stream', 50)}</span>
               </div>
             </div>
           </div>

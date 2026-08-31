@@ -1,6 +1,132 @@
 import { AmbientSource } from '../types';
 
 /**
+ * Truncates any title to a maximum of 50 characters, appending '...' if it exceeds 50 characters.
+ */
+export function truncateTitle(title: string | null | undefined, maxLength: number = 50): string {
+  if (!title || typeof title !== 'string') return '';
+  const trimmed = title.trim();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+  return trimmed.slice(0, maxLength).trimEnd() + '...';
+}
+
+/**
+ * Decodes common HTML entities returned in oEmbed title fields (e.g. &#39; -> ', &amp; -> &)
+ */
+export function decodeHtmlEntities(str: string): string {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec));
+}
+
+/**
+ * In-memory cache for fast retrieved YouTube titles
+ */
+const YOUTUBE_TITLE_CACHE = new Map<string, string>();
+
+/**
+ * Fetches the authentic YouTube video title via YouTube oEmbed with fallback to noembed & JSONP
+ */
+export async function fetchYouTubeTitle(urlOrId: string): Promise<string | null> {
+  const { videoId, listId } = extractYouTubeSource(urlOrId);
+  if (!videoId && !listId) return null;
+
+  const cacheKey = videoId || listId || '';
+  if (cacheKey && YOUTUBE_TITLE_CACHE.has(cacheKey)) {
+    return YOUTUBE_TITLE_CACHE.get(cacheKey)!;
+  }
+
+  const targetUrl = videoId
+    ? `https://www.youtube.com/watch?v=${videoId}`
+    : `https://www.youtube.com/playlist?list=${listId}`;
+
+  // 1. Try direct fetch with YouTube oEmbed
+  try {
+    const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.title) {
+        const clean = decodeHtmlEntities(data.title);
+        YOUTUBE_TITLE_CACHE.set(cacheKey, clean);
+        return clean;
+      }
+    }
+  } catch {
+    // Continue to fallback
+  }
+
+  // 2. Try noembed fallback
+  try {
+    const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(targetUrl)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.title) {
+        const clean = decodeHtmlEntities(data.title);
+        YOUTUBE_TITLE_CACHE.set(cacheKey, clean);
+        return clean;
+      }
+    }
+  } catch {
+    // Continue to fallback
+  }
+
+  // 3. Try JSONP fallback via script tag (bypasses any browser sandbox CORS restriction)
+  if (typeof document !== 'undefined') {
+    try {
+      const title = await new Promise<string>((resolve, reject) => {
+        const callbackName = `yt_oembed_cb_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement('script');
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('JSONP timeout'));
+        }, 3500);
+
+        const cleanup = () => {
+          clearTimeout(timeout);
+          delete (window as unknown as Record<string, unknown>)[callbackName];
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        };
+
+        (window as unknown as Record<string, (data: { title?: string }) => void>)[callbackName] = (data) => {
+          cleanup();
+          if (data && data.title) {
+            resolve(decodeHtmlEntities(data.title));
+          } else {
+            reject(new Error('No title in oEmbed JSONP response'));
+          }
+        };
+
+        script.src = `https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json&callback=${callbackName}`;
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('JSONP script load error'));
+        };
+        document.head.appendChild(script);
+      });
+
+      if (title) {
+        YOUTUBE_TITLE_CACHE.set(cacheKey, title);
+        return title;
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  return null;
+}
+
+/**
  * Extracts YouTube video ID and playlist ID from various URL formats:
  * - standard watch URLs: https://www.youtube.com/watch?v=VIDEO_ID&list=LIST_ID
  * - short URLs: https://youtu.be/VIDEO_ID?list=LIST_ID

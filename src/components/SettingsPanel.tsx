@@ -36,7 +36,7 @@ import { playChime } from '../utils/audio';
 import { CLOCK_TIMER_STYLES } from '../utils/timerThemes';
 import { POMO_TIMER_STYLES } from '../utils/pomoTimerStyles';
 import { THEME_PRESETS } from '../utils/themePresets';
-import { AMBIENT_PRESETS, extractYouTubeSource } from '../utils/youtube';
+import { AMBIENT_PRESETS, extractYouTubeSource, fetchYouTubeTitle, truncateTitle } from '../utils/youtube';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -106,11 +106,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     onUpdateAppearance?.({
       backgroundMode: 'video',
       videoBackgroundId: videoId,
-      videoBackgroundTitle: 'Custom Video Background',
+      videoBackgroundTitle: 'Loading title...',
       customBackgroundUrl: null,
     });
     setVideoSavedSuccess(true);
     setTimeout(() => setVideoSavedSuccess(false), 2000);
+
+    const targetUrl = customVideoUrl.trim();
+    fetchYouTubeTitle(targetUrl).then((fetchedTitle) => {
+      if (fetchedTitle) {
+        onUpdateAppearance?.({
+          videoBackgroundTitle: truncateTitle(fetchedTitle, 50),
+        });
+      }
+    }).catch(() => {});
   };
 
   const handleFileDrop = (e: React.DragEvent) => {
@@ -1091,7 +1100,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                         <span className="text-xs font-semibold text-amber-200 truncate">
-                          Active: {appearanceSettings.videoBackgroundTitle || 'Video Background'}
+                          Active: {truncateTitle(appearanceSettings.videoBackgroundTitle || 'Video Background', 50)}
                         </span>
                       </div>
 
@@ -1183,7 +1192,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             <div className="relative z-10 flex flex-col">
                               <span className="text-[10px] font-mono text-amber-300 font-semibold">{preset.tag}</span>
                               <span className="text-xs font-bold text-white leading-tight truncate mt-0.5">
-                                {preset.title}
+                                {truncateTitle(preset.title, 50)}
                               </span>
                             </div>
 
