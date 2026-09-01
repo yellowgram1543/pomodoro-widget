@@ -75,13 +75,7 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ---
 
-##  Getting Started
-
-### Prerequisites
-- Node.js (version 18.0.0 or higher)
-- npm, yarn, or pnpm
-
-### Running
+##  Running
 
 Website Link:  https://pomodoro-widget-4f6z.vercel.app/
 
