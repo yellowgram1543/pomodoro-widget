@@ -35,13 +35,13 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 
 ##  Tech Stack
 
-- **Frontend Framework**: React 18
+- **Frontend Framework**: React
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS, CSS Custom Properties
 - **Icons**: Lucide React
 - **Audio Engine**: Web Audio API (Tone generation & audio synthesis)
 - **Build Tool**: Vite
-- **Deployment Target**: Vercel / Cloud Run / Netlify
+- **Deployment Target**: Vercel
 
 ---
 
