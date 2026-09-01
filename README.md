@@ -81,44 +81,9 @@ An aesthetic, distraction-free ambient workspace and productivity suite built wi
 - Node.js (version 18.0.0 or higher)
 - npm, yarn, or pnpm
 
-### Installation
+### Running
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/ambient-focus-dashboard.git
-   cd ambient-focus-dashboard
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-4. **Build for production**:
-   ```bash
-   npm run build
-   ```
-
----
-
-##  Deployment on Vercel
-
-1. Push your repository to **GitHub**.
-2. Go to [Vercel](https://vercel.com) and click **"Add New" → "Project"**.
-3. Import your GitHub repository.
-4. Keep the default settings:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: `./` (Default)
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-5. Click **Deploy**.
-
+Website Link: pomodoro-widget-4f6z.vercel.app
 ---
 
 ##  License
