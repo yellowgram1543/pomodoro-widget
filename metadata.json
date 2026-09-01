@@ -1,6 +1,5 @@
 {
   "name": "Ambient Focus & Pomodoro Dashboard",
   "description": "Customizable floating focus widget with integrated ambient video player, Pomodoro cycles, dedicated task timers, task manager, and mouse-resizable container.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "requestFramePermissions": []
 }
